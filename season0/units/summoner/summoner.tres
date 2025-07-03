@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="UnitType" load_steps=4 format=3 uid="uid://d1u2fqug0vddg"]
+
+[ext_resource type="Texture2D" uid="uid://cpn0ae1aed766" path="res://season0/units/summoner/summoner_icon.png" id="1_mbbhp"]
+[ext_resource type="PackedScene" uid="uid://beg1lu503cw25" path="res://season0/units/summoner/summoner_prefab.tscn" id="2_k4jph"]
+[ext_resource type="Script" path="res://logic/core/unit/UnitType.cs" id="3_anhbp"]
+
+[resource]
+script = ExtResource("3_anhbp")
+Name = "Summoner"
+SlotsNeeded = 1
+Size = 2
+Cost = 5
+Rarity = 5
+MaxHealth = 1000.0
+MaxMana = 100.0
+StartingMana = 100.0
+Armor = 10.0
+Aegis = 10.0
+Strength = 50.0
+AttackSpeed = 0.75
+Range = 4.0
+UnitInstancePrefab = ExtResource("2_k4jph")
+Icon = ExtResource("1_mbbhp")

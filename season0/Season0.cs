@@ -1,4 +1,4 @@
-using MPAutoChess.logic.core.game;
+using Season = MPAutoChess.logic.core.Season;
 
 namespace MPAutoChess.season0;
 

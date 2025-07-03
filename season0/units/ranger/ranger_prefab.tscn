@@ -1,0 +1,23 @@
+[gd_scene load_steps=5 format=3 uid="uid://ciphnirn3ae0b"]
+
+[ext_resource type="Script" path="res://logic/core/unit/UnitInstance.cs" id="1_r7f0l"]
+[ext_resource type="SpriteFrames" uid="uid://dj4n57mdkyqbc" path="res://season0/units/ranger/ranger_sprite_frames.tres" id="2_hj5oo"]
+[ext_resource type="Script" path="res://season0/units/ranger/RangerSpell.cs" id="3_rtdpn"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_o4pqj"]
+radius = 1.0
+
+[node name="RangerPrefab" type="CharacterBody2D"]
+script = ExtResource("1_r7f0l")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_o4pqj")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -0.165)
+scale = Vector2(0.08, 0.08)
+sprite_frames = ExtResource("2_hj5oo")
+animation = &"cast"
+
+[node name="RangerSpell" type="Node" parent="."]
+script = ExtResource("3_rtdpn")

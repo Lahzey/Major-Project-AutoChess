@@ -10,13 +10,13 @@ namespace MPAutoChess.logic.core.unit;
 [GlobalClass, Tool]
 public partial class UnitInstance : CharacterBody2D {
     
-    public Unit Unit { get; private set; }
-    public Stats Stats { get; private set; } = new Stats();
-    public float CurrentHealth { get; private set; }
-    public float CurrentMana { get; private set; }
+    public Unit Unit { get; set; }
+    public Stats Stats { get; set; } = new Stats();
+    public float CurrentHealth { get; set; }
+    public float CurrentMana { get; set; }
     
-    public AnimatedSprite2D Sprite { get; private set; }
-    public bool IsCombatUnit { get; private set; }
+    public AnimatedSprite2D Sprite { get; set; }
+    public bool IsCombatInstance { get; set; }
     
     public void Heal(float amount) {
         if (amount <= 0) return;
@@ -36,5 +36,9 @@ public partial class UnitInstance : CharacterBody2D {
         }
         
         return warnings.ToArray();
+    }
+
+    public void SetHightlight(bool highlight) {
+        Modulate = highlight ? new Color(2f, 2f, 2f) : Colors.White;
     }
 }

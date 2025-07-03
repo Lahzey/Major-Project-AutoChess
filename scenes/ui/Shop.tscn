@@ -1,0 +1,99 @@
+[gd_scene load_steps=9 format=3 uid="uid://b1mjtwvjjws5j"]
+
+[ext_resource type="Script" path="res://plugins/MaterialTheming/Scripts/PolygonInfo.cs" id="1_ar8y8"]
+[ext_resource type="Script" path="res://logic/core/shop/ShopUI.cs" id="1_g66i2"]
+[ext_resource type="Material" uid="uid://b2mv00fv4xlp6" path="res://plugins/MaterialTheming/shaders/DecoratedPanelMaterial.tres" id="2_k1ply"]
+[ext_resource type="PackedScene" uid="uid://dyquuipmd6w7j" path="res://scenes/ui/ShopSlot.tscn" id="2_yau7m"]
+[ext_resource type="Script" path="res://plugins/MaterialTheming/Scripts/StyleBoxDecorated.cs" id="3_lwyo3"]
+
+[sub_resource type="Resource" id="Resource_o4wv2"]
+script = ExtResource("1_ar8y8")
+BackgroundColor = Color(0.105882, 0.2, 0.266667, 1)
+BorderColor = Color(0.0627451, 0.117647, 0.156863, 1)
+BorderThickness = 6.0
+PolygonPoints = PackedVector2Array(0, 0, 1, 0, 51, 1, -50, 1)
+
+[sub_resource type="StyleBox" id="StyleBox_qlybo"]
+resource_local_to_scene = false
+resource_name = ""
+content_margin_left = 56.0
+content_margin_top = 10.0
+content_margin_right = 56.0
+content_margin_bottom = 10.0
+script = ExtResource("3_lwyo3")
+UseOutlineRectBorderPattern = true
+Animated = false
+Duration = 1.0
+HighlightColor = Color(0, 0, 0, 0)
+Loop = true
+Mode = 0
+Material = ExtResource("2_k1ply")
+BackgroundMode = 2
+BackgroundRelativeRect = Rect2(0, 0, 0, 0)
+BackgroundColor = Color(1, 1, 1, 1)
+BackgroundPolygon = SubResource("Resource_o4wv2")
+RelativeContentMargins = true
+AdditionalContentMarginLeft = 50.0
+AdditionalContentMarginTop = 4.0
+AdditionalContentMarginRight = 50.0
+AdditionalContentMarginBottom = 4.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3hw7j"]
+bg_color = Color(0, 0, 0, 0.454)
+
+[node name="Shop" type="Control" node_paths=PackedStringArray("RerollButton", "XpButton", "GoldLabel", "ShopSlotContainer")]
+layout_mode = 3
+anchor_left = 0.2
+anchor_top = 0.8
+anchor_right = 0.8
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+script = ExtResource("1_g66i2")
+RerollButton = NodePath("PanelContainer/HBoxContainer/VBoxContainer/RerollButton")
+XpButton = NodePath("PanelContainer/HBoxContainer/VBoxContainer/XPButton")
+GoldLabel = NodePath("PanelContainer/HBoxContainer/VBoxContainer/GoldLabel")
+ShopSlotContainer = NodePath("PanelContainer/HBoxContainer/ShopSlots")
+ShopSlotScene = ExtResource("2_yau7m")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -10.7
+offset_bottom = 10.7
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBox_qlybo")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/HBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="RerollButton" type="Button" parent="PanelContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+text = "Reroll"
+
+[node name="XPButton" type="Button" parent="PanelContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+text = "Buy XP"
+
+[node name="GoldLabel" type="Label" parent="PanelContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "n/a"
+
+[node name="Panel" type="Panel" parent="PanelContainer/HBoxContainer"]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_3hw7j")
+
+[node name="ShopSlots" type="HBoxContainer" parent="PanelContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1

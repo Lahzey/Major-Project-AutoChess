@@ -1,0 +1,20 @@
+[gd_resource type="ShaderMaterial" load_steps=4 format=3 uid="uid://bxx8q4fvmd0bo"]
+
+[ext_resource type="Shader" path="res://scenes/Board.gdshader" id="1_e5d0d"]
+
+[sub_resource type="Curve" id="Curve_xuymi"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.100865, 1), 0.0, 0.0, 0, 0, Vector2(0.193084, 0.157272), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_gbpcv"]
+curve = SubResource("Curve_xuymi")
+
+[resource]
+shader = ExtResource("1_e5d0d")
+shader_parameter/normal_color = Color(0.190762, 0.190762, 0.190762, 1)
+shader_parameter/highlight_color = Color(0, 0.347909, 0.588206, 1)
+shader_parameter/highlight_shrink = 1.25
+shader_parameter/highlight_range = Vector4(0, 0, 1, 1)
+shader_parameter/columns = 16
+shader_parameter/rows = 6
+shader_parameter/edge_curve = SubResource("CurveTexture_gbpcv")

@@ -6,7 +6,4 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <RootNamespace>MPAutoChess</RootNamespace>
   </PropertyGroup>
-  <ItemGroup>
-    <Folder Include="logic\season0\spells\" />
-  </ItemGroup>
 </Project>

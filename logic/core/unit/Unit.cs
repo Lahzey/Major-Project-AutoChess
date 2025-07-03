@@ -13,10 +13,22 @@ public class Unit {
     public UnitType Type { get; private set; }
     
     public UnitContainer Container { get; set; }
+
+    private UnitPool pool;
+
+    private UnitInstance passiveInstance;
     
-    public Unit(UnitType type) {
+    public Unit(UnitType type, UnitPool pool) {
         Type = type;
+        this.pool = pool;
         // TODO: Load stats from type
+        Stats.GetCalculation(StatType.WIDTH).BaseValue = new ConstantValue(2f);
+        Stats.GetCalculation(StatType.HEIGHT).BaseValue = new ConstantValue(2f);
+    }
+    
+    ~Unit() {
+        pool.ReturnUnit(Type);
+        passiveInstance?.Dispose();
     }
 
     public float GetStatValue(StatType statType) {
@@ -28,14 +40,23 @@ public class Unit {
     }
 
     public bool CanBePlacedAt(UnitContainer unitContainer, Vector2 position) {
-        if (unitContainer == Container) {
-            Unit? existingUnit = unitContainer.GetUnitAt(position);
-            return unitContainer.CanFitAt(this, position, existingUnit);
-        } else {
-            Unit? existingUnit = unitContainer.GetUnitAt(position);
-            bool thisCanFit = unitContainer.CanFitAt(this, position, existingUnit);
-            bool existingCanFit = existingUnit == null || Container.CanFitAt(existingUnit, Container.GetPlacement(this), this);
-            return thisCanFit && existingCanFit;
+        Unit? existingUnit = unitContainer.GetUnitAt(position);
+        bool thisCanFit = unitContainer.CanFitAt(this, position, existingUnit);
+        bool existingCanFit = existingUnit == null || Container.CanFitAt(existingUnit, Container.GetPlacement(this), this);
+        return thisCanFit && existingCanFit;
+    }
+
+    public UnitInstance CreateInstance(bool isCombatInstance) {
+        UnitInstance instance = Type.UnitInstancePrefab.Instantiate<UnitInstance>();
+        instance.Unit = this;
+        instance.IsCombatInstance = false;
+        return instance;
+    }
+    
+    public UnitInstance GetOrCreatePassiveInstance() {
+        if (passiveInstance == null) {
+            passiveInstance = CreateInstance(false);
         }
+        return passiveInstance;
     }
 }

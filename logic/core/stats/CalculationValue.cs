@@ -1,5 +1,3 @@
-using System;
-
 namespace MPAutoChess.logic.core.stats;
 
 public class CalculationValue : Value {

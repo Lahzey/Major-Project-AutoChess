@@ -1,0 +1,23 @@
+[gd_scene load_steps=5 format=3 uid="uid://cdj41tcujebtk"]
+
+[ext_resource type="Script" path="res://logic/core/unit/UnitInstance.cs" id="1_hw826"]
+[ext_resource type="SpriteFrames" uid="uid://tjr3w6dmtmxq" path="res://season0/units/mage/mage_sprite_frames.tres" id="2_bqmgc"]
+[ext_resource type="Script" path="res://season0/units/mage/MageSpell.cs" id="3_vvlxu"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_rhvva"]
+radius = 1.0
+
+[node name="MagePrefab" type="CharacterBody2D"]
+script = ExtResource("1_hw826")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_rhvva")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -0.165)
+scale = Vector2(0.08, 0.08)
+sprite_frames = ExtResource("2_bqmgc")
+animation = &"idle"
+
+[node name="MageSpell" type="Node" parent="."]
+script = ExtResource("3_vvlxu")

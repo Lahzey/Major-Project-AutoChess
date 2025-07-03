@@ -1,6 +1,6 @@
 using Godot;
-using Godot.Collections;
 using MPAutoChess.logic.core.placement;
+using MPAutoChess.logic.core.shop;
 using MPAutoChess.logic.core.stats;
 using MPAutoChess.logic.core.unit;
 
@@ -16,28 +16,37 @@ public partial class Player : Node {
 
     public int Gold { get; private set; } = 100;
     
-    public Board Board { get; private set; }
+    public Shop Shop { get; private set; }
+    
+    [Export] public Board Board { get; private set; }
     
     [Export] public Bench Bench { get; private set; }
     
-    public Calculation BoardSize { get; private set; } = new Calculation(1);
+    [Export] public PlayerUI UI { get; private set; }
+    
+    public Calculation BoardSize { get; private set; } = new Calculation(5);
 
     public Player() {
-        Board = new Board(this);
+        Shop = new Shop(this);
     }
-    
-    public bool TryPurchase(UnitType unitType) {
+
+    public override void _Ready() {
+        Board.Player = this;
+        Bench.Player = this;
+    }
+
+    public bool TryPurchase(Unit unit) {
         SingleUnitSlot benchSlot = Bench.GetFirstFreeSlot();
         if (benchSlot == null) return false;
-        if (Gold >= unitType.Cost) {
-            Gold -= unitType.Cost;
-            benchSlot.AddUnit(new Unit(unitType), Vector2.Zero);
+        if (Gold >= unit.Type.Cost) {
+            Gold -= unit.Type.Cost;
+            benchSlot.AddUnit(unit, Vector2.Zero);
             return true;
         }
         return false;
     }
     
-    public void MoveToTemporaryBench(unit.Unit unit) {
+    public void MoveToTemporaryBench(Unit unit) {
         // TODO: Implement logic to move the unit to a temporary bench
     }
 

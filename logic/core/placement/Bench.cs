@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Godot;
-using Godot.Collections;
 using MPAutoChess.logic.core.player;
 
 namespace MPAutoChess.logic.core.placement;

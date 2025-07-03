@@ -1,7 +1,6 @@
-using System;
 using Godot;
-using MPAutoChess.logic.core.game;
 using MPAutoChess.logic.core.player;
+using MPAutoChess.logic.core.unit;
 using PlayerController = MPAutoChess.logic.core.player.PlayerController;
 
 namespace MPAutoChess.logic.core.placement;
@@ -14,13 +13,13 @@ public partial class SingleUnitSlot : Area2D, UnitContainer {
     
     public Player Player { get; set; }
 
-    public unit.Unit? Unit { get; private set; }
+    public Unit? Unit { get; private set; }
     
-    public void OnDragStart(unit.Unit unit) {
+    public void OnDragStart(Unit unit) {
         HoverEffect.Texture = HoverOffTexture;
     }
     
-    public void OnDragProcess(unit.Unit unit, UnitDropTarget? target, Vector2 pos) {
+    public void OnDragProcess(Unit unit, UnitDropTarget? target, Vector2 pos) {
         if (target == this && IsValidDrop(unit, pos)) {
             HoverEffect.Texture = HoverOnTexture;
         } else {
@@ -28,7 +27,7 @@ public partial class SingleUnitSlot : Area2D, UnitContainer {
         }
     }
     
-    public void OnDragEnd(unit.Unit unit) {
+    public void OnDragEnd(Unit unit) {
         HoverEffect.Texture = null;
     }
 
@@ -45,11 +44,11 @@ public partial class SingleUnitSlot : Area2D, UnitContainer {
         PlayerController.Instance.OnDragEnd -= OnDragEnd;
     }
 
-    public bool IsValidDrop(unit.Unit unit, Vector2 pos) {
+    public bool IsValidDrop(Unit unit, Vector2 pos) {
         return Unit == null || unit.CanBePlacedAt(this, pos);
     }
     
-    public void OnUnitDrop(unit.Unit unit, Vector2 pos) {
+    public void OnUnitDrop(Unit unit, Vector2 pos) {
         if (!IsValidDrop(unit, pos)) {
             GD.PrintErr("Invalid drop position for unit: " + unit.Type.Name);
             return;
@@ -58,7 +57,7 @@ public partial class SingleUnitSlot : Area2D, UnitContainer {
         UnitContainer prevContainer = unit.Container;
         Vector2 prevPlacement = unit.Container.RemoveUnit(unit);
         if (Unit != null) {
-            unit.Unit toBeReplaced = Unit;
+            Unit toBeReplaced = Unit;
             RemoveUnit(Unit);
             prevContainer.AddUnit(toBeReplaced, prevPlacement);
         }
@@ -67,28 +66,30 @@ public partial class SingleUnitSlot : Area2D, UnitContainer {
     public Player GetPlayer() {
         return Player;
     }
-    public unit.Unit GetUnitAt(Vector2 position) {
+    public Unit GetUnitAt(Vector2 position) {
         return Unit;
     }
-    public Vector2 GetPlacement(unit.Unit unit) {
+    public Vector2 GetPlacement(Unit unit) {
         return unit == Unit ? Vector2.Zero : Vector2.One * -1; // Return a negative value if the unit is not placed
     }
-    public bool CanFitAt(unit.Unit unit, Vector2 position, unit.Unit replacedUnit = null) {
+    public bool CanFitAt(Unit unit, Vector2 position, Unit? replacedUnit = null) {
         return true;
     }
-    public Vector2 RemoveUnit(unit.Unit unit) {
+    public Vector2 RemoveUnit(Unit unit) {
         if (unit == Unit) {
             Unit.Container = null;
             Unit = null;
+            RemoveChild(unit.GetOrCreatePassiveInstance());
             return Vector2.Zero;
         } else {
             return Vector2.One * -1;
         }
     }
-    public void AddUnit(unit.Unit unit, Vector2 position) {
+    public void AddUnit(Unit unit, Vector2 position) {
         Unit = unit;
         unit.Container = this;
-        AddChild(unit.Type.UnitInstancePrefab.Instantiate());
-        GD.Print("Hello");
+        UnitInstance instance = unit.GetOrCreatePassiveInstance();
+        AddChild(instance);
+        instance.Position = Vector2.Zero;
     }
 }

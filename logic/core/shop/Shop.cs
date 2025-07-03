@@ -1,73 +1,65 @@
-using System;
+using System.Collections.Generic;
+using System.Linq;
 using Godot;
-using MPAutoChess.logic.core.game;
 using MPAutoChess.logic.core.player;
+using MPAutoChess.logic.core.session;
 using MPAutoChess.logic.core.unit;
 
 namespace MPAutoChess.logic.core.shop;
 
-public partial class Shop : Control {
+public class Shop {
     
-    [Export] public Button RerollButton { get; set; }
-    [Export] public Button XpButton { get; set; }
-    [Export] public Label GoldLabel { get; set; }
-    [Export] public Container ShopSlotContainer { get; set; }
+    public Player player { get; private set; }
 
-    public override void _Ready() {
-        RerollButton.Pressed += Reroll;
-        Reroll();
+    public int Size { get; set; } = 5;
+
+    private List<ShopOffer> offers = new List<ShopOffer>();
+    
+    public Shop(Player player) {
+        this.player = player;
     }
 
-    public override void _Process(double delta) {
-        GoldLabel.Text = PlayerController.Instance.CurrentPlayer.Gold + "";
+    public float[] GetNormalizedRarityOdds() {
+        // TODO calculate from player level and fire event
+        float[] odds = { 40, 30, 15, 10, 5 };
+
+        float totalOdds = 0;
+        foreach (float odd in odds) totalOdds += odd;
+        // use linq to return an array containing each value divided by totalOdds
+        return odds.Select(o => o / totalOdds).ToArray();
     }
 
-    private void Reroll() {
-        UnitType[] offers = new UnitType[5];
+    public void Reroll() {
+        float[] odds = GetNormalizedRarityOdds();
+        ShopOffer[] offers = new ShopOffer[Size];
         for (int i = 0; i < offers.Length; i++) {
-            int rarity = new Random().Next(5);
-            UnitType[] pool;
-            switch (rarity) {
-                case 0:
-                    pool = DummyGameManager.Instance.Season.Units.CommonUnits;
-                    break;
-                case 1:
-                    pool = DummyGameManager.Instance.Season.Units.UncommonUnits;
-                    break;
-                case 2:
-                    pool = DummyGameManager.Instance.Season.Units.RareUnits;
-                    break;
-                case 3:
-                    pool = DummyGameManager.Instance.Season.Units.EpicUnits;
-                    break;
-                case 4:
-                    pool = DummyGameManager.Instance.Season.Units.LegendaryUnits;
-                    break;
-                default:
-                    throw new Exception();
-            }
-
-            offers[i] = pool[new Random().Next(pool.Length)];
+            UnitPool pool = UnitPool.OfRarity(WeightedRandomIndex(odds) + 1); // rarity starts at 1, 0 means no rarity like for a free special unit
+            UnitOffer offer = new UnitOffer();
+            offer.Unit = pool.TakeRandomUnit(GameSession.Instance.Random);
+            offers[i] = offer;
         }
+        // TODO fire ShopRollEvent
         AddOffers(offers);
     }
     
-    private void AddOffers(UnitType[] offers) {
-        foreach (Node child in ShopSlotContainer.GetChildren()) {
-            child.QueueFree(); // Clear existing slots
-        }
-        foreach (UnitType offer in offers) {
-            TextureButton slot = new TextureButton();
-            slot.SetTextureNormal(offer.Icon);
-            slot.SetStretchMode(TextureButton.StretchModeEnum.KeepAspectCentered);
-            slot.SizeFlagsHorizontal = SizeFlags.ExpandFill;
-            slot.Pressed += () => {
-                if (PlayerController.Instance.CurrentPlayer.TryPurchase(offer)) {
-                    slot.QueueFree();
-                }
-            };
-            ShopSlotContainer.AddChild(slot);
+    private void AddOffers(ShopOffer[] offers) {
+        this.offers.Clear();
+        this.offers.AddRange(offers);
+
+        if (PlayerController.Instance.CurrentPlayer == player) { // just to be sure, currently the server should only send shop rolls to the owning player
+            player.UI.ShopUI.AddOffers(offers);
         }
     }
-    
+
+    public static int WeightedRandomIndex(float[] odds) {
+        float roll = GameSession.Instance.Random.NextSingle();
+        float cumulative = 0f;
+        for (int i = 0; i < odds.Length; i++) {
+            cumulative += odds[i];
+            if (roll < cumulative)
+                return i;
+        }
+        return odds.Length - 1; // fallback (in case of rounding errors)
+    }
+
 }

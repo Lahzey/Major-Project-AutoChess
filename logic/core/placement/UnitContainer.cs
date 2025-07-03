@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using Godot;
 using MPAutoChess.logic.core.player;
+using MPAutoChess.logic.core.unit;
 
 namespace MPAutoChess.logic.core.placement;
 
@@ -8,14 +8,14 @@ public interface UnitContainer : UnitDropTarget {
     
     public Player GetPlayer();
     
-    public unit.Unit? GetUnitAt(Vector2 position);
+    public Unit? GetUnitAt(Vector2 position);
     
-    public Vector2 GetPlacement(unit.Unit unit);
+    public Vector2 GetPlacement(Unit unit);
     
-    public bool CanFitAt(unit.Unit unit, Vector2 position, unit.Unit? replacedUnit = null);
+    public bool CanFitAt(Unit unit, Vector2 position, Unit? replacedUnit = null);
     
-    public Vector2 RemoveUnit(unit.Unit unit);
+    public Vector2 RemoveUnit(Unit unit);
     
-    public void AddUnit(unit.Unit unit, Vector2 position);
+    public void AddUnit(Unit unit, Vector2 position);
     
 }

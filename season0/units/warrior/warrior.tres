@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="UnitType" load_steps=4 format=3 uid="uid://ci5usp1tdsfcl"]
+
+[ext_resource type="Texture2D" uid="uid://c6ocqgi15ivkc" path="res://season0/units/warrior/warrior_icon.png" id="1_wbqy1"]
+[ext_resource type="PackedScene" uid="uid://dabn87xyhhe31" path="res://season0/units/warrior/warrior_prefab.tscn" id="2_j01fn"]
+[ext_resource type="Script" path="res://logic/core/unit/UnitType.cs" id="3_e0hxc"]
+
+[resource]
+script = ExtResource("3_e0hxc")
+Name = "Warrior"
+SlotsNeeded = 1
+Size = 2
+Cost = 3
+Rarity = 3
+MaxHealth = 1000.0
+MaxMana = 100.0
+StartingMana = 100.0
+Armor = 10.0
+Aegis = 10.0
+Strength = 50.0
+AttackSpeed = 0.75
+Range = 1.0
+UnitInstancePrefab = ExtResource("2_j01fn")
+Icon = ExtResource("1_wbqy1")

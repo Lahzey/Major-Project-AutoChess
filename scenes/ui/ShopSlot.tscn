@@ -1,0 +1,68 @@
+[gd_scene load_steps=8 format=3 uid="uid://dyquuipmd6w7j"]
+
+[ext_resource type="Script" path="res://logic/core/shop/ShopSlot.cs" id="1_fmqg4"]
+[ext_resource type="Texture2D" uid="uid://cg8w7tua6ut6d" path="res://assets/ui/common_border.png" id="2_psirm"]
+[ext_resource type="Texture2D" uid="uid://bltndhyqfhs2l" path="res://assets/ui/uncommon_border.png" id="3_243c0"]
+[ext_resource type="Texture2D" uid="uid://cgkg0jtkdwk6f" path="res://assets/ui/rare_border.png" id="4_05mur"]
+[ext_resource type="Texture2D" uid="uid://dbjr5lvvxe1a5" path="res://assets/ui/epic_border.png" id="5_uyu73"]
+[ext_resource type="Texture2D" uid="uid://dew7kx2q8t874" path="res://assets/ui/legendary_border.png" id="6_1r7k7"]
+[ext_resource type="Texture2D" uid="uid://uv15gyjx8dmh" path="res://icon.svg" id="7_te3qs"]
+
+[node name="ShopSlot" type="Control" node_paths=PackedStringArray("BuyButton", "Texture")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_fmqg4")
+rarity_border/Special = ExtResource("2_psirm")
+rarity_border/Common = ExtResource("2_psirm")
+rarity_border/Uncommon = ExtResource("3_243c0")
+rarity_border/Rare = ExtResource("4_05mur")
+rarity_border/Epic = ExtResource("5_uyu73")
+rarity_border/Legendary = ExtResource("6_1r7k7")
+BuyButton = NodePath("BuyButton")
+Texture = NodePath("AspectRatioContainer/Control/Texture")
+
+[node name="BuyButton" type="TextureButton" parent="."]
+modulate = Color(0, 0, 0, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+disabled = true
+texture_normal = ExtResource("2_psirm")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Control" type="Control" parent="AspectRatioContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Texture" type="TextureRect" parent="AspectRatioContainer/Control"]
+modulate = Color(0, 0, 0, 0)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.098
+anchor_top = 0.094
+anchor_right = 0.912
+anchor_bottom = 0.912
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("7_te3qs")
+expand_mode = 1
+stretch_mode = 5

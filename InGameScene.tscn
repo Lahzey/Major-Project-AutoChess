@@ -1,21 +1,19 @@
-[gd_scene load_steps=8 format=3 uid="uid://blm4vucwag1rg"]
+[gd_scene load_steps=9 format=3 uid="uid://blm4vucwag1rg"]
 
 [ext_resource type="Script" path="res://logic/core/player/PlayerController.cs" id="1_1ss78"]
-[ext_resource type="PackedScene" uid="uid://cvu8csgnfw3cs" path="res://ui/Bench.tscn" id="2_166rw"]
-[ext_resource type="Script" path="res://logic/core/game/DummyGameManager.cs" id="3_dkcr1"]
+[ext_resource type="PackedScene" uid="uid://cvu8csgnfw3cs" path="res://scenes/Bench.tscn" id="2_166rw"]
+[ext_resource type="Script" path="res://logic/core/session/DummyGameManager.cs" id="3_dkcr1"]
 [ext_resource type="Script" path="res://season0/Season0.cs" id="4_qnth6"]
 [ext_resource type="Resource" uid="uid://15mwm4jux6bs" path="res://season0/season0_units.tres" id="5_o5nxx"]
-[ext_resource type="PackedScene" uid="uid://b1mjtwvjjws5j" path="res://ui/Shop.tscn" id="6_5154x"]
 [ext_resource type="Script" path="res://logic/core/player/Player.cs" id="6_jbqxp"]
-
+[ext_resource type="PackedScene" uid="uid://cj1ikyyt77nmw" path="res://scenes/Board.tscn" id="7_jrjre"]
+[ext_resource type="PackedScene" uid="uid://c2fryil7qt0qx" path="res://scenes/ui/PlayerUI.tscn" id="7_yoj1t"]
 
 [node name="InGameScene" type="Node2D"]
 
-[node name="PlayerController" type="Node2D" parent="."]
-script = ExtResource("1_1ss78")
-
 [node name="Camera2D" type="Camera2D" parent="."]
 anchor_mode = 0
+zoom = Vector2(30, 30)
 
 [node name="DummyGameManager" type="Node" parent="." node_paths=PackedStringArray("Season")]
 script = ExtResource("3_dkcr1")
@@ -25,19 +23,26 @@ Season = NodePath("Season")
 script = ExtResource("4_qnth6")
 Units = ExtResource("5_o5nxx")
 
-[node name="PlayerManager" type="Node2D" parent="." node_paths=PackedStringArray("CurrentPlayer")]
+[node name="PlayerController" type="Node2D" parent="." node_paths=PackedStringArray("CurrentPlayer")]
 script = ExtResource("1_1ss78")
 CurrentPlayer = NodePath("Player")
 
-[node name="Player" type="Node" parent="PlayerManager" node_paths=PackedStringArray("Bench")]
+[node name="Player" type="Node" parent="PlayerController" node_paths=PackedStringArray("Board", "Bench", "UI")]
 script = ExtResource("6_jbqxp")
+Board = NodePath("Board")
 Bench = NodePath("Bench")
+UI = NodePath("../../CanvasLayer/PlayerUI")
 
-[node name="Bench" parent="PlayerManager/Player" instance=ExtResource("2_166rw")]
-position = Vector2(593, 494)
+[node name="Bench" parent="PlayerController/Player" instance=ExtResource("2_166rw")]
+position = Vector2(20, 16)
 
-[node name="Shop" parent="." instance=ExtResource("6_5154x")]
-offset_left = 598.0
-offset_top = 604.0
-offset_right = 598.0
-offset_bottom = 604.0
+[node name="Board" parent="PlayerController/Player" instance=ExtResource("7_jrjre")]
+position = Vector2(12, 8)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="PlayerUI" parent="CanvasLayer" instance=ExtResource("7_yoj1t")]
+offset_left = -10.0
+offset_top = -5.0
+offset_right = -10.0
+offset_bottom = -5.0

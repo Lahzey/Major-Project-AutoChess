@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="UnitType" load_steps=4 format=3 uid="uid://bsfnnltelsj0s"]
+
+[ext_resource type="Texture2D" uid="uid://buln5i3ub41cg" path="res://season0/units/ranger/ranger_icon.png" id="1_lsfi2"]
+[ext_resource type="PackedScene" uid="uid://ciphnirn3ae0b" path="res://season0/units/ranger/ranger_prefab.tscn" id="2_0rdsr"]
+[ext_resource type="Script" path="res://logic/core/unit/UnitType.cs" id="3_50hkb"]
+
+[resource]
+script = ExtResource("3_50hkb")
+Name = ""
+SlotsNeeded = 1
+Size = 2
+Cost = 2
+Rarity = 2
+MaxHealth = 1000.0
+MaxMana = 100.0
+StartingMana = 100.0
+Armor = 10.0
+Aegis = 10.0
+Strength = 50.0
+AttackSpeed = 0.75
+Range = 1.0
+UnitInstancePrefab = ExtResource("2_0rdsr")
+Icon = ExtResource("1_lsfi2")

@@ -1,0 +1,36 @@
+[gd_scene load_steps=3 format=3 uid="uid://cvu8csgnfw3cs"]
+
+[ext_resource type="Script" path="res://logic/core/placement/Bench.cs" id="1_t0yqd"]
+[ext_resource type="PackedScene" uid="uid://ckbe6lwub46o8" path="res://scenes/BenchSlot.tscn" id="2_h861h"]
+
+[node name="Bench" type="Node2D" node_paths=PackedStringArray("SlotContainer")]
+script = ExtResource("1_t0yqd")
+SlotContainer = NodePath("Slots")
+
+[node name="Slots" type="Node2D" parent="."]
+
+[node name="BenchSlot0" parent="Slots" instance=ExtResource("2_h861h")]
+position = Vector2(-9.6, 0)
+
+[node name="BenchSlot1" parent="Slots" instance=ExtResource("2_h861h")]
+position = Vector2(-7.2, 0)
+
+[node name="BenchSlot2" parent="Slots" instance=ExtResource("2_h861h")]
+position = Vector2(-4.8, 0)
+
+[node name="BenchSlot3" parent="Slots" instance=ExtResource("2_h861h")]
+position = Vector2(-2.4, 0)
+
+[node name="BenchSlot4" parent="Slots" instance=ExtResource("2_h861h")]
+
+[node name="BenchSlot5" parent="Slots" instance=ExtResource("2_h861h")]
+position = Vector2(2.4, 0)
+
+[node name="BenchSlot6" parent="Slots" instance=ExtResource("2_h861h")]
+position = Vector2(4.8, 0)
+
+[node name="BenchSlot7" parent="Slots" instance=ExtResource("2_h861h")]
+position = Vector2(7.2, 0)
+
+[node name="BenchSlot8" parent="Slots" instance=ExtResource("2_h861h")]
+position = Vector2(9.6, 0)

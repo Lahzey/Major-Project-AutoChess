@@ -1,5 +1,3 @@
-using Godot;
-
 namespace MPAutoChess.logic.core.stats;
 
 public class ConstantValue : Value {
