@@ -1,18 +1,20 @@
 using Godot;
+using ProtoBuf;
 
 namespace MPAutoChess.logic.core.session;
 
+[ProtoContract]
 public class EchoMode : GameMode {
-    public void CreateUserInterface(Node2D parent) {
+    public override void CreateUserInterface(Node2D parent) {
         
     }
-    public void Tick(double delta) {
+    public override void Tick(double delta) {
         
     }
-    public int GetPhase() {
+    public override int GetPhase() {
         return 0;
     }
-    public string GetPhaseName() {
+    public override string GetPhaseName() {
         return "";
     }
 }

@@ -1,0 +1,31 @@
+[gd_scene load_steps=6 format=3 uid="uid://jvh77p6sx12j"]
+
+[ext_resource type="Script" path="res://logic/core/environment/Arena.cs" id="1_qm1y1"]
+[ext_resource type="PackedScene" uid="uid://cj1ikyyt77nmw" path="res://prefabs/placement/Board.tscn" id="2_d0jws"]
+[ext_resource type="PackedScene" uid="uid://cvu8csgnfw3cs" path="res://prefabs/placement/Bench.tscn" id="3_8u81s"]
+[ext_resource type="Texture2D" uid="uid://d3ooxsh8otlj1" path="res://prefabs/arenas/star_chart/star_chart.png" id="4_skien"]
+[ext_resource type="Texture2D" uid="uid://bon5pix2ghl2" path="res://assets/white.png" id="5_35plp"]
+
+[node name="Arena" type="Node2D" node_paths=PackedStringArray("Board", "Bench")]
+script = ExtResource("1_qm1y1")
+ArenaSize = Vector2(40, 20)
+Board = NodePath("Board")
+Bench = NodePath("Bench")
+
+[node name="SizePreview" type="Sprite2D" parent="."]
+visible = false
+modulate = Color(1, 1, 1, 0.151)
+scale = Vector2(40, 20)
+texture = ExtResource("5_35plp")
+centered = false
+
+[node name="Background" type="Sprite2D" parent="."]
+position = Vector2(19.955, 10.265)
+scale = Vector2(0.0209269, 0.0202672)
+texture = ExtResource("4_skien")
+
+[node name="Board" parent="." instance=ExtResource("2_d0jws")]
+position = Vector2(12, 9)
+
+[node name="Bench" parent="." instance=ExtResource("3_8u81s")]
+position = Vector2(20, 17)

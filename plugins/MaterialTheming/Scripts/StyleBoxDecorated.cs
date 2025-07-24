@@ -72,12 +72,12 @@ public partial class StyleBoxDecorated : StyleBoxMaterial {
     private class DecoratedPolygonRenderer : PolygonRenderer {
         protected override void CreateBorderGeometry(PolygonInfo polygon, SurfaceTool surfaceTool, PrecomputedEdge edge, Rect2 totalRect) {
             float thirdBorder = polygon.BorderThickness * ONE_THIRD;
-            Vector2 startOutward = edge.Start + edge.OutwardNormal * polygon.BorderThickness;
-            Vector2 startCornerOffset = (edge.StartOuterCorner - startOutward) * ONE_THIRD;
-            Vector2 innerStartCorner = edge.Start + edge.OutwardNormal * thirdBorder + startCornerOffset;
-            Vector2 endOutward = edge.End + edge.OutwardNormal * polygon.BorderThickness;
-            Vector2 endCornerOffset = (edge.EndOuterCorner - endOutward) * ONE_THIRD;
-            Vector2 innerEndCorner = edge.End + edge.OutwardNormal * thirdBorder + endCornerOffset;
+            Vector2 startOutward = edge.start + edge.outwardNormal * polygon.BorderThickness;
+            Vector2 startCornerOffset = (edge.startOuterCorner - startOutward) * ONE_THIRD;
+            Vector2 innerStartCorner = edge.start + edge.outwardNormal * thirdBorder + startCornerOffset;
+            Vector2 endOutward = edge.end + edge.outwardNormal * polygon.BorderThickness;
+            Vector2 endCornerOffset = (edge.endOuterCorner - endOutward) * ONE_THIRD;
+            Vector2 innerEndCorner = edge.end + edge.outwardNormal * thirdBorder + endCornerOffset;
             
             // outerTopLeft===========================================================================outerTopRight
             // innerTopLeft==innerTopLeftInner====================================innerTopRightInner==innerTopRight
@@ -85,18 +85,18 @@ public partial class StyleBoxDecorated : StyleBoxMaterial {
             // ||###################||                                                    ||#####################||
             // innerBotLeft==innerBotLeftInner====================================innerBotRightInner==innerBotRight
             //      outerBotLeft=================================================================outerBotRight
-            Vector2 outerTopLeft = innerStartCorner + edge.OutwardNormal * thirdBorder * 2;
-            Vector2 outerTopRight = innerEndCorner + edge.OutwardNormal * thirdBorder * 2;
-            Vector2 innerTopLeft = innerStartCorner + edge.OutwardNormal * thirdBorder;
-            Vector2 innerTopRight = innerEndCorner + edge.OutwardNormal * thirdBorder;
-            Vector2 innerTopLeftInner = innerTopLeft + edge.EdgeNormal * thirdBorder;
-            Vector2 innerTopRightInner = innerTopRight - edge.EdgeNormal * thirdBorder;
+            Vector2 outerTopLeft = innerStartCorner + edge.outwardNormal * thirdBorder * 2;
+            Vector2 outerTopRight = innerEndCorner + edge.outwardNormal * thirdBorder * 2;
+            Vector2 innerTopLeft = innerStartCorner + edge.outwardNormal * thirdBorder;
+            Vector2 innerTopRight = innerEndCorner + edge.outwardNormal * thirdBorder;
+            Vector2 innerTopLeftInner = innerTopLeft + edge.edgeNormal * thirdBorder;
+            Vector2 innerTopRightInner = innerTopRight - edge.edgeNormal * thirdBorder;
             Vector2 innerBotLeft = innerStartCorner;
             Vector2 innerBotRight = innerEndCorner;
-            Vector2 innerBotLeftInner = innerBotLeft + edge.EdgeNormal * thirdBorder;
-            Vector2 innerBotRightInner = innerBotRight - edge.EdgeNormal * thirdBorder;
-            Vector2 outerBotLeft = edge.Start;
-            Vector2 outerBotRight = edge.End;
+            Vector2 innerBotLeftInner = innerBotLeft + edge.edgeNormal * thirdBorder;
+            Vector2 innerBotRightInner = innerBotRight - edge.edgeNormal * thirdBorder;
+            Vector2 outerBotLeft = edge.start;
+            Vector2 outerBotRight = edge.end;
             
             // Top side
             AddRectToMesh(surfaceTool, outerTopLeft, outerTopRight, innerTopRight, innerTopLeft, polygon.BorderColor, BORDER_CUSTOM, totalRect);

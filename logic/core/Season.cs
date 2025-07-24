@@ -1,9 +1,13 @@
-using Godot;
-using UnitCollection = MPAutoChess.logic.core.unit.UnitCollection;
+using MPAutoChess.logic.core.unit;
+using MPAutoChess.seasons.season0;
+using ProtoBuf;
 
 namespace MPAutoChess.logic.core;
 
-public abstract partial class Season : Node {
+[ProtoContract]
+[ProtoInclude(1, typeof(Season0))]
+public abstract class Season {
     
-    [Export] public UnitCollection Units { get; set; }
+    public abstract UnitCollection GetUnits();
+    
 }

@@ -1,8 +1,14 @@
+
+using ProtoBuf;
+
 namespace MPAutoChess.logic.core.stats;
 
-public class ConstantValue : Value {
+[ProtoContract]
+public partial class ConstantValue : Value {
     
-    private float value;
+    [ProtoMember(1)] private float value;
+
+    private ConstantValue() { } // for ProtoBuf serialization
     
     public ConstantValue(float value) {
         this.value = value;
@@ -11,5 +17,8 @@ public class ConstantValue : Value {
     public override float Get() {
         return value;
     }
-    
+
+    public override Value Clone() {
+        return new ConstantValue(value);
+    }
 }

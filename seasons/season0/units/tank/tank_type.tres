@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="UnitType" load_steps=4 format=3 uid="uid://dumtn6764ehaa"]
+
+[ext_resource type="Texture2D" uid="uid://cchykonplol2y" path="res://seasons/season0/units/tank/tank_icon.png" id="1_mjlik"]
+[ext_resource type="PackedScene" uid="uid://cftyrxie6upnj" path="res://seasons/season0/units/tank/tank_prefab.tscn" id="2_eqvhb"]
+[ext_resource type="Script" path="res://logic/core/unit/UnitType.cs" id="3_2ghqi"]
+
+[resource]
+script = ExtResource("3_2ghqi")
+Name = "Tank"
+SlotsNeeded = 1
+Size = Vector2(2, 2)
+Cost = 1
+Rarity = 1
+MaxHealth = 1000.0
+MaxMana = 100.0
+StartingMana = 30.0
+Armor = 10.0
+Aegis = 10.0
+Strength = 50.0
+AttackSpeed = 0.75
+Range = 1.0
+UnitInstancePrefab = ExtResource("2_eqvhb")
+Icon = ExtResource("1_mjlik")

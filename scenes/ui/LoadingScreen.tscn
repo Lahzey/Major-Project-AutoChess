@@ -1,0 +1,60 @@
+[gd_scene load_steps=5 format=3 uid="uid://cj1b7knqrg43p"]
+
+[ext_resource type="Script" path="res://logic/menu/LoadingScreen.cs" id="1_rynww"]
+[ext_resource type="SpriteFrames" uid="uid://dncdknl6utbaj" path="res://assets/ui/loading_spriteframes.tres" id="1_suxdi"]
+
+[sub_resource type="Gradient" id="Gradient_758da"]
+offsets = PackedFloat32Array(0.17377, 0.572131)
+colors = PackedColorArray(0.267921, 0.216636, 0.210119, 1, 0.0943558, 0.128933, 0.14116, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_pn3rn"]
+gradient = SubResource("Gradient_758da")
+fill_to = Vector2(1, 1)
+
+[node name="LoadingScreen" type="CanvasLayer" node_paths=PackedStringArray("MessageLabel")]
+script = ExtResource("1_rynww")
+MessageLabel = NodePath("Control/HBoxContainer/Label")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="TextureRect" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("GradientTexture2D_pn3rn")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Control" type="Control" parent="Control/HBoxContainer"]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="Spinner" type="AnimatedSprite2D" parent="Control/HBoxContainer/Control"]
+scale = Vector2(0.2, 0.2)
+sprite_frames = ExtResource("1_suxdi")
+autoplay = "default"
+centered = false
+
+[node name="Label" type="Label" parent="Control/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 11
+text = "Loading"

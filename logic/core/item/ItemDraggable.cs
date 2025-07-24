@@ -1,6 +1,6 @@
 namespace MPAutoChess.logic.core.item;
 
-public interface ItemDraggable {
+public interface ITemDraggable {
 
     public Inventory GetInventory();
     

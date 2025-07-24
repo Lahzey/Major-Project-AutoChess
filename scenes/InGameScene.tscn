@@ -1,0 +1,38 @@
+[gd_scene load_steps=9 format=3 uid="uid://dwn3j7yo8jn1a"]
+
+[ext_resource type="Script" path="res://logic/core/networking/ServerController.cs" id="1_ytwbe"]
+[ext_resource type="PackedScene" uid="uid://bpvjg64gxvyjj" path="res://prefabs/Player.tscn" id="2_q3aqn"]
+[ext_resource type="PackedScene" uid="uid://cj1b7knqrg43p" path="res://scenes/ui/LoadingScreen.tscn" id="3_i0gyj"]
+[ext_resource type="Shader" path="res://assets/ui/background_space_shader.gdshader" id="4_8lxle"]
+[ext_resource type="Texture2D" uid="uid://bon5pix2ghl2" path="res://assets/white.png" id="4_qlt2k"]
+[ext_resource type="Texture2D" uid="uid://b3j62enh3c6ga" path="res://assets/ui/star.png" id="5_w52rg"]
+[ext_resource type="Script" path="res://logic/core/player/CameraController.cs" id="7_yt8wk"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_nyt2v"]
+shader = ExtResource("4_8lxle")
+shader_parameter/star_scale_range = Vector2(0.1, 2)
+shader_parameter/density = 0.135
+shader_parameter/background_color = Color(0, 0, 0, 1)
+shader_parameter/colorful_chance = 0.1
+shader_parameter/star_texture = ExtResource("5_w52rg")
+
+[node name="InGameScene" type="Node2D"]
+
+[node name="Background" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_nyt2v")
+scale = Vector2(1e+06, 1e+06)
+texture = ExtResource("4_qlt2k")
+
+[node name="ServerController" type="Node" parent="."]
+script = ExtResource("1_ytwbe")
+PlayerScene = ExtResource("2_q3aqn")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+anchor_mode = 0
+
+[node name="CameraController" type="Node" parent="Camera2D"]
+script = ExtResource("7_yt8wk")
+
+[node name="Players" type="Node" parent="."]
+
+[node name="LoadingScreen" parent="." instance=ExtResource("3_i0gyj")]

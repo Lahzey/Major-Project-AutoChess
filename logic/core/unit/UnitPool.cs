@@ -5,7 +5,7 @@ namespace MPAutoChess.logic.core.unit;
 
 public class UnitPool {
     
-    private static readonly Dictionary<int, UnitPool> pools = new Dictionary<int, UnitPool>();
+    private static readonly Dictionary<int, UnitPool> POOLS = new Dictionary<int, UnitPool>();
 
     private readonly Dictionary<UnitType, int> pool;
     private int totalCount = 0;
@@ -19,15 +19,15 @@ public class UnitPool {
     }
 
     public static void Initialize(Season season) {
-        pools[1] = new UnitPool(season.Units.CommonUnits, 30);
-        pools[2] = new UnitPool(season.Units.UncommonUnits, 24);
-        pools[3] = new UnitPool(season.Units.RareUnits, 18);
-        pools[4] = new UnitPool(season.Units.EpicUnits, 12);
-        pools[5] = new UnitPool(season.Units.LegendaryUnits, 9);
+        POOLS[1] = new UnitPool(season.GetUnits().CommonUnits, 30);
+        POOLS[2] = new UnitPool(season.GetUnits().UncommonUnits, 24);
+        POOLS[3] = new UnitPool(season.GetUnits().RareUnits, 18);
+        POOLS[4] = new UnitPool(season.GetUnits().EpicUnits, 12);
+        POOLS[5] = new UnitPool(season.GetUnits().LegendaryUnits, 9);
     }
 
     public static UnitPool For(UnitType unitType) {
-        foreach (var pool in pools.Values) {
+        foreach (var pool in POOLS.Values) {
             if (pool.pool.ContainsKey(unitType)) {
                 return pool;
             }
@@ -37,7 +37,7 @@ public class UnitPool {
     }
 
     public static UnitPool OfRarity(int rarity) {
-        return pools[rarity];
+        return POOLS[rarity];
     }
 
 

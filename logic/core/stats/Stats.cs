@@ -1,10 +1,14 @@
 using System.Collections.Generic;
+using ProtoBuf;
 
 namespace MPAutoChess.logic.core.stats;
 
+[ProtoContract]
 public class Stats {
     
-    private Dictionary<StatType, Calculation> values = new Dictionary<StatType, Calculation>();
+    [ProtoMember(1)] private Dictionary<StatType, Calculation> values = new Dictionary<StatType, Calculation>();
+    
+    public IEnumerable<StatType> Types => values.Keys;
     
     public Calculation GetCalculation(StatType statType) {
         if (!values.ContainsKey(statType)) {
@@ -16,5 +20,12 @@ public class Stats {
     public float GetValue(StatType statType) {
         return GetCalculation(statType).Evaluate();
     }
-    
+
+    public Stats Clone() {
+        Stats clone = new Stats();
+        foreach (KeyValuePair<StatType, Calculation> kvp in values) {
+            clone.values[kvp.Key] = kvp.Value.Clone();
+        }
+        return clone;
+    }
 }

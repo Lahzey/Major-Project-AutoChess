@@ -1,22 +1,34 @@
 using System.Collections.Generic;
 using Godot;
 using MPAutoChess.logic.core.player;
+using ProtoBuf;
 
 namespace MPAutoChess.logic.core.placement;
 
+[ProtoContract]
 public partial class Bench : Node {
-
-    public Player Player { get; set; }
     
+    private Player player;
+    public Player Player {
+        get => player;
+        set {
+            player = value;
+            foreach (SingleUnitSlot slot in slots) { // in case player is set after _Ready
+                slot.Player = player;
+            }
+        }
+    }
+
     [Export] public Node SlotContainer { get; set; }
     
-    private readonly List<SingleUnitSlot> slots = new List<SingleUnitSlot>();
+    [ProtoMember(1)] private List<SingleUnitSlot> slots = new List<SingleUnitSlot>();
 
     public override void _Ready() {
         slots.Clear();
         foreach (Node child in SlotContainer.GetChildren()) {
             if (child is SingleUnitSlot slot) {
                 slots.Add(slot);
+                slot.Player = Player;
             }
         }
     }
@@ -28,5 +40,9 @@ public partial class Bench : Node {
             }
         }
         return null;
+    }
+    
+    public IEnumerable<SingleUnitSlot> GetSlots() {
+        return slots;
     }
 }

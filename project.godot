@@ -11,13 +11,21 @@ config_version=5
 [application]
 
 config/name="MP - AutoChess"
-run/main_scene="res://InGameScene.tscn"
+run/main_scene="res://scenes/InGameScene.tscn"
 config/features=PackedStringArray("4.3", "C#", "Forward Plus")
 config/icon="res://icon.svg"
+
+[autoload]
+
+SceneSafeMultiplayer="*res://addons/scene_safe_multiplayer/scene_safe_mp_manager.gd"
 
 [dotnet]
 
 project/assembly_name="MP - AutoChess"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/scene_safe_multiplayer/plugin.cfg")
 
 [gui]
 
@@ -29,6 +37,10 @@ theme/custom="res://plugins/MaterialTheming/ModernBlueTheme.tres"
 2d_physics/layer_2="UnitDropTarget"
 2d_physics/layer_3="CombatUnitInstance"
 2d_physics/layer_4="Projectile"
+
+[rendering]
+
+anti_aliasing/quality/msaa_2d=1
 
 [shader_globals]
 

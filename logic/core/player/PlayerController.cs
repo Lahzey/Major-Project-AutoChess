@@ -1,133 +1,176 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using Godot;
+using MPAutoChess.logic.core.environment;
+using MPAutoChess.logic.core.networking;
 using MPAutoChess.logic.core.placement;
+using MPAutoChess.logic.core.shop;
 using MPAutoChess.logic.core.unit;
+using MPAutoChess.logic.core.util;
 using UnitInstance = MPAutoChess.logic.core.unit.UnitInstance;
 
 namespace MPAutoChess.logic.core.player;
 
 public partial class PlayerController : Node2D {
     
-    [Export] public Player CurrentPlayer { get; private set; }
+    public Player Player { get; private set; }
 
     public event Action<Unit> OnDragStart;
-    public event Action<Unit, UnitDropTarget?, Vector2> OnDragProcess;
+    public event Action<Unit, IUnitDropTarget?, Vector2> OnDragProcess;
     public event Action<Unit> OnDragEnd;
-    
-    private UnitInstance? unitInstanceUnderMouse;
-    private UnitDropTarget? unitDropTargetUnderMouse;
-    private Vector2 unitDropPositionUnderMouse;
-    
-    public UnitInstance CurrentlyDraggedUnit { get; private set; }
-    private Vector2 dragStartPosition;
-    private Vector2 distToDragStartPosition;
-    private DateTime dragStartTime;
-    
-    public static PlayerController Instance { get; private set; }
 
-    public override void _EnterTree() {
-        if (Instance != null) {
-            GD.PrintErr("PlayerController instance already exists, this should not happen!");
-            return;
+    private readonly UnitDragProcessor dragProcessor = new UnitDragProcessor();
+    
+    private static Dictionary<Player, PlayerController> playerControllers = new Dictionary<Player, PlayerController>();
+    public static PlayerController Current { get; private set; }
+
+    public PlayerController() { }
+
+    public PlayerController(Player player) {
+        Player = player;
+        Name = player.Name +"Controller";
+        if (!ServerController.Instance.IsServer) {
+            if (Current != null) throw new InvalidOperationException("Only servers can have multiple PlayerController instances.");
+            Current = this;
         }
-        Instance = this;
+        if (Player == null) throw new ArgumentNullException(nameof(Player), "Player cannot be null.");
+        playerControllers.Add(Player, this);
+    }
+
+    public override void _Ready() {
+        if (!ServerController.Instance.IsServer) {
+            CameraController.Instance.Cover(new Rect2(Player.Arena.GlobalPosition, Player.Arena.ArenaSize));
+        }
+    }
+
+    public static PlayerController GetForPlayer(Player player) {
+        return playerControllers[player];
+    }
+
+    public void RunInContext(Action action) {
+        if (!ServerController.Instance.IsServer) throw new ArgumentException("RunInContext can only be called on the server.");
+        Current = this;
+        action.Invoke();
+        Current = null;
     }
 
     public override void _Input(InputEvent @event) {
+        if (ServerController.Instance.IsServer) return; // Server should not receive input events, but just to be sure
+        
         if (@event is InputEventMouseButton mouseButtonEvent) {
             if (mouseButtonEvent.ButtonIndex == MouseButton.Left) {
                 OnLeftClick(mouseButtonEvent);
-            }
-        } else if (@event is InputEventMouseMotion mouseMotionEvent) {
-            if (CurrentlyDraggedUnit != null) {
-                Vector2 mousePosition = GetViewport().GetCamera2D().GetGlobalMousePosition();
-                CurrentlyDraggedUnit.GlobalPosition = mousePosition;
             }
         }
     }
     
     private void OnLeftClick(InputEventMouseButton mouseButtonEvent) {
-        Vector2 mousePosition = GetViewport().GetCamera2D().GetGlobalMousePosition();
+        GD.Print("Left click");
         if (mouseButtonEvent.Pressed) {
-            if (CurrentlyDraggedUnit == null) TryStartDrag(mousePosition);
-            else TryDrop();
-        } else if(CurrentlyDraggedUnit != null) {
+            GD.Print("Drag process running: " + dragProcessor.Running);
+            if (!dragProcessor.Running) {
+                UnitInstance? hoveredUnitInstance = HoverChecker.GetHoveredNodeOrNull<UnitInstance>(CollisionLayers.PASSIVE_UNIT_INSTANCE, this);
+                if (hoveredUnitInstance != null) {
+                    dragProcessor.Start(hoveredUnitInstance);
+                    OnDragStart?.Invoke(dragProcessor.UnitInstance.Unit);
+                }
+            } else {
+                OnDragEnd?.Invoke(dragProcessor.UnitInstance.Unit);
+                dragProcessor.Complete();
+            }
+        } else if(dragProcessor.Running) {
             // Mouse up within 100 ms of mouse down: click to pickup -> click to drop (select and place)
             // Mouse up after 100 ms of mouse down:  mouse down to pickup -> mouse up to drop (drag to destination)
-            if ((dragStartTime - DateTime.Now).TotalMilliseconds > 100) {
-                TryDrop();
+            if ((dragProcessor.DragStartTime - DateTime.Now).TotalMilliseconds > 100) {
+                OnDragEnd?.Invoke(dragProcessor.UnitInstance.Unit);
+                dragProcessor.Complete();
             }
         }
-    }
-
-    private void TryStartDrag(Vector2 mousePosition) {
-        if (unitInstanceUnderMouse == null) return;
-        
-        dragStartPosition = mousePosition;
-        distToDragStartPosition = unitInstanceUnderMouse.GlobalPosition - dragStartPosition;
-        dragStartTime = DateTime.Now;
-        CurrentlyDraggedUnit = unitInstanceUnderMouse;
-        OnDragStart?.Invoke(unitInstanceUnderMouse.Unit);
-    }
-
-    private void TryDrop() {
-        if (CurrentlyDraggedUnit == null) return;
-        
-        // if dropped outside a drop target, cancel the drag
-        if (unitDropTargetUnderMouse == null) {
-            GD.Print("Dropped outside a valid drop target, cancelling drag.");
-            CancelDrag();
-            return;
-        }
-        
-        if (!unitDropTargetUnderMouse.IsValidDrop(CurrentlyDraggedUnit.Unit, unitDropPositionUnderMouse)) {
-            GD.PrintErr("Invalid drop position for unit: " + CurrentlyDraggedUnit.Unit.Type.Name);
-            CancelDrag();
-            return;
-        }
-
-        unitDropTargetUnderMouse.OnUnitDrop(CurrentlyDraggedUnit.Unit, unitDropPositionUnderMouse);
-        OnDragEnd?.Invoke(CurrentlyDraggedUnit.Unit);
-        CurrentlyDraggedUnit = null;
-    }
-
-    private void CancelDrag() {
-        CurrentlyDraggedUnit.GlobalPosition = dragStartPosition + distToDragStartPosition;
-        OnDragEnd?.Invoke(CurrentlyDraggedUnit.Unit);
-        CurrentlyDraggedUnit = null;
     }
 
     public override void _Process(double delta) {
-        CheckUnderMouse();
-        if (CurrentlyDraggedUnit != null) OnDragProcess?.Invoke(CurrentlyDraggedUnit.Unit, unitDropTargetUnderMouse, unitDropPositionUnderMouse);
+        if (ServerController.Instance.IsServer) return;
+        if (dragProcessor.Running) {
+            dragProcessor.Update(this);
+            OnDragProcess?.Invoke(dragProcessor.UnitInstance.Unit, dragProcessor.HoveredDropTarget, dragProcessor.CurrentMousePosition);
+            GD.Print("Called on drag process: " + OnDragProcess);
+        }
+    }
+    
+    public void MoveUnit(Unit unit, IUnitDropTarget dropTarget, Vector2 placement) {
+        if (dropTarget is not Node dropTargetNode) throw new ArgumentException("Drop target must be a Node.", nameof(dropTarget));
+        Rpc(MethodName.RequestMoveUnit, unit.Id, dropTargetNode.GetPath(), placement);
     }
 
-    private void CheckUnderMouse() {
-        Vector2 mousePosition = GetViewport().GetCamera2D().GetGlobalMousePosition();
-        PhysicsDirectSpaceState2D spaceState = GetWorld2D().DirectSpaceState;
-        PhysicsPointQueryParameters2D queryParameters = new PhysicsPointQueryParameters2D {
-            Position = mousePosition,
-            CollideWithAreas = true,
-            CollisionMask = (uint) (CollisionLayers.PassiveUnitInstance | CollisionLayers.UnitDropTarget)
-        };
-
-        unitInstanceUnderMouse?.SetHightlight(false);
-        unitDropTargetUnderMouse = null;
-        unitInstanceUnderMouse = null;
-        unitDropPositionUnderMouse = mousePosition; // only not relative if no drop target is under mouse
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
+    private void RequestMoveUnit(string unitId, string dropTargetPath, Vector2 placement) {
+        if (!ServerController.Instance.IsServer) throw new InvalidOperationException("RequestMoveUnit can only be called on the server.");
         
-        foreach (IntersectionHit2D intersectionHit in spaceState.IntersectPointTyped(queryParameters)) {
-            if (intersectionHit.Collider.Obj is UnitDropTarget dropTarget) {
-                unitDropTargetUnderMouse = dropTarget;
-                unitDropPositionUnderMouse = intersectionHit.Collider.As<Node2D>().ToLocal(mousePosition);
-            } else if (intersectionHit.Collider.Obj is UnitInstance unitInstance) {
-                unitInstanceUnderMouse = unitInstance;
-                unitInstance.SetHightlight(true);
-            }
+        IIdentifiable identifiable = IIdentifiable.TryGetInstance(unitId);
+        if (identifiable is not Unit unit) {
+            GD.PrintErr($"Unit with ID {unitId} not found or is not a Unit.");
+            return;
         }
+        
+        Node node = GetNode(dropTargetPath);
+        if (node is not IUnitDropTarget dropTarget) {
+            GD.PrintErr($"Node at path {dropTargetPath} not found or not a drop target.");
+            return;
+        }
+        
+        ServerController.Instance.RunInContext(() => {
+            if (unit.Container == null) {
+                GD.PrintErr($"Unit {unit.Type.ResourcePath} has no container, cannot move.");
+                return;
+            }
+            if (unit.Container.GetPlayer() != Player || dropTarget.GetPlayer() != Player) {
+                throw new InvalidOperationException($"Unit or drop target not owned by current player. Owner: {unit.Container.GetPlayer()?.Account.Id.ToString() ?? "null"} Current: {Player.Account.Id}");
+            }
+            dropTarget.OnUnitDrop(unit, placement);
+        }, this);
     }
 
     public void RerollShop() {
-        CurrentPlayer.Shop.Reroll();
+        if (ServerController.Instance.IsServer)
+            RequestShopReroll();
+        else
+            Rpc(MethodName.RequestShopReroll);
+    }
+
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
+    private void RequestShopReroll() {
+        ServerController.Instance.RunInContext(() => {
+            Player.TryPurchase(2, () => Player.Shop.Reroll()); // TODO dynamic cost and fire event
+        }, this);
+    }
+
+    public void BuyXp() {
+        if (ServerController.Instance.IsServer)
+            RequestBuyXp();
+        else
+            Rpc(MethodName.RequestBuyXp);
+    }
+
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
+    private void RequestBuyXp() {
+        ServerController.Instance.RunInContext(() => {
+            Player.TryPurchase(1, () => Player.Experience += 1); // TODO dynamic cost and fire event
+        }, this);
+    }
+
+    public void BuyShopOffer(ShopOffer offer) {
+        if (ServerController.Instance.IsServer)
+            RequestBuyShopOffer(Player.Shop.IndexOf(offer));
+        else
+            Rpc(MethodName.RequestBuyShopOffer, Player.Shop.IndexOf(offer));
+    }
+    
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
+    private void RequestBuyShopOffer(int slotIndex) {
+        ServerController.Instance.RunInContext(() => {
+            ShopOffer shopOffer = Player.Shop.GetOfferAt(slotIndex);
+            shopOffer.TryPurchase();
+        }, this);
     }
 }

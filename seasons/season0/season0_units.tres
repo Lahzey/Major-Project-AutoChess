@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="UnitCollection" load_steps=7 format=3 uid="uid://15mwm4jux6bs"]
+
+[ext_resource type="Resource" uid="uid://dumtn6764ehaa" path="res://seasons/season0/units/tank/tank_type.tres" id="1_e2xn7"]
+[ext_resource type="Script" path="res://logic/core/unit/UnitCollection.cs" id="1_rw41e"]
+[ext_resource type="Resource" uid="uid://cgg2wp7hi636j" path="res://seasons/season0/units/mage/mage_type.tres" id="2_e2cpc"]
+[ext_resource type="Resource" uid="uid://d1u2fqug0vddg" path="res://seasons/season0/units/summoner/summoner_type.tres" id="3_vihid"]
+[ext_resource type="Resource" uid="uid://ci5usp1tdsfcl" path="res://seasons/season0/units/warrior/warrior_type.tres" id="4_0ey15"]
+[ext_resource type="Resource" uid="uid://bsfnnltelsj0s" path="res://seasons/season0/units/ranger/ranger_type.tres" id="5_ksaop"]
+
+[resource]
+script = ExtResource("1_rw41e")
+CommonUnits = Array[Object]([ExtResource("1_e2xn7")])
+UncommonUnits = Array[Object]([ExtResource("5_ksaop")])
+RareUnits = Array[Object]([ExtResource("4_0ey15")])
+EpicUnits = Array[Object]([ExtResource("2_e2cpc")])
+LegendaryUnits = Array[Object]([ExtResource("3_vihid")])

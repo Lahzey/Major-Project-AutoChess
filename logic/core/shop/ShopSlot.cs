@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using Godot.Bridge;
+using MPAutoChess.logic.core.player;
 using MPAutoChess.logic.core.unit;
 
 namespace MPAutoChess.logic.core.shop;
@@ -79,7 +80,7 @@ public partial class ShopSlot : Control {
 
     private void TryPurchase() {
         if (ShopOffer == null || ShopOffer.Purchased) return;
-        ShopOffer.TryPurchase();
+        PlayerController.Current.BuyShopOffer(ShopOffer);
         if (ShopOffer.Purchased) {
             BuyButton.TextureNormal = null;
         }

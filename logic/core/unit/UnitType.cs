@@ -1,15 +1,18 @@
 using Godot;
+using ProtoBuf;
 
 namespace MPAutoChess.logic.core.unit;
 
 [GlobalClass]
+// resources do not need ProtoContract attribute, they are added all registered automatically (including Godot's built-in resources)
 public partial class UnitType : Resource {
     
+    // DO NOT CHANGE SETTERS TO PRIVATE! Godot silently fails in that case and leaves all the properties to their types default values.
     [Export] public string Name { get; set; }
-    [Export] public int SlotsNeeded { get; private set; } = 1;
-    [Export] public int Size { get; private set; } = 2;
-    [Export] public int Cost { get; private set; } = 1;
-    [Export] public UnitRarity Rarity { get; private set; } = UnitRarity.Special;
+    [Export] public int SlotsNeeded { get; set; } = 1;
+    [Export] public Vector2 Size { get; set; } = new Vector2(2f, 2f);
+    [Export] public int Cost { get; set; } = 1;
+    [Export] public UnitRarity Rarity { get; set; } = UnitRarity.SPECIAL;
     [ExportCategory("Default Stats")]
     [Export] public float MaxHealth { get; set; } = 1000;
     [Export] public float MaxMana { get; set; } = 100;
@@ -26,10 +29,10 @@ public partial class UnitType : Resource {
 }
 
 public enum UnitRarity {
-    Special = 0,
-    Common = 1,
+    SPECIAL = 0,
+    COMMON = 1,
     Uncommon = 2,
-    Rare = 3,
-    Epic = 4,
+    RARE = 3,
+    EPIC = 4,
     Legendary = 5
 }

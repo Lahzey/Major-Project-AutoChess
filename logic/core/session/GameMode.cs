@@ -1,15 +1,19 @@
 using Godot;
+using MPAutoChess.logic.core.shop;
+using ProtoBuf;
 
 namespace MPAutoChess.logic.core.session;
 
-public interface GameMode {
+[ProtoContract]
+[ProtoInclude(1, typeof(EchoMode))]
+public abstract class GameMode {
 
-    public void CreateUserInterface(Node2D parent);
+    public abstract void CreateUserInterface(Node2D parent);
     
-    public void Tick(double delta);
+    public abstract void Tick(double delta);
 
-    public int GetPhase();
+    public abstract int GetPhase();
 
-    public string GetPhaseName();
+    public abstract string GetPhaseName();
 
 }

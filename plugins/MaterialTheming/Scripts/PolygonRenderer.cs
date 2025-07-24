@@ -73,15 +73,15 @@ public class PolygonRenderer {
             int nextI = (i + 1) % edges.Length;
             PrecomputedEdge current = edges[i];
             PrecomputedEdge next = edges[nextI];
-            Vector2 endCornerOutwards = (current.OutwardNormal + next.OutwardNormal).Normalized();
-            Vector2 endOuter = current.End + current.OutwardNormal * polygon.BorderThickness;
-            Vector2? endCornerOuter = TryGetLineIntersection(current.End, endCornerOutwards, endOuter, current.EdgeNormal);
+            Vector2 endCornerOutwards = (current.outwardNormal + next.outwardNormal).Normalized();
+            Vector2 endOuter = current.end + current.outwardNormal * polygon.BorderThickness;
+            Vector2? endCornerOuter = TryGetLineIntersection(current.end, endCornerOutwards, endOuter, current.edgeNormal);
             if (endCornerOuter == null) {
-                GD.PrintErr($"Failed to calculate border corners, polygon contains parallel lines at {i}&{nextI} ({current.Start}-{current.End} & {next.Start}-{next.End}).");
+                GD.PrintErr($"Failed to calculate border corners, polygon contains parallel lines at {i}&{nextI} ({current.start}-{current.end} & {next.start}-{next.end}).");
                 return surfaceTool;
             }
-            edges[i].EndOuterCorner = (Vector2) endCornerOuter;
-            edges[nextI].StartOuterCorner = (Vector2) endCornerOuter;
+            edges[i].endOuterCorner = (Vector2) endCornerOuter;
+            edges[nextI].startOuterCorner = (Vector2) endCornerOuter;
         }
         
         foreach (PrecomputedEdge edge in edges) {
@@ -106,7 +106,7 @@ public class PolygonRenderer {
     }
 
     protected virtual void CreateBorderGeometry(PolygonInfo polygon, SurfaceTool surfaceTool, PrecomputedEdge edge, Rect2 totalRect) {
-        AddRectToMesh(surfaceTool, edge.StartOuterCorner, edge.EndOuterCorner, edge.End, edge.Start, polygon.BorderColor, BORDER_CUSTOM, totalRect);
+        AddRectToMesh(surfaceTool, edge.startOuterCorner, edge.endOuterCorner, edge.end, edge.start, polygon.BorderColor, BORDER_CUSTOM, totalRect);
     }
 
     static Vector2? TryGetLineIntersection(Vector2 pointA, Vector2 directionA, Vector2 pointB, Vector2 directionB) {
@@ -184,19 +184,19 @@ public class PolygonRenderer {
     }
 
     protected struct PrecomputedEdge {
-        public Vector2 Start;
-        public Vector2 StartOuterCorner = Vector2.Zero;
-        public Vector2 End;
-        public Vector2 EndOuterCorner = Vector2.Zero;
+        public Vector2 start;
+        public Vector2 startOuterCorner = Vector2.Zero;
+        public Vector2 end;
+        public Vector2 endOuterCorner = Vector2.Zero;
         
-        public Vector2 EdgeNormal;
-        public Vector2 OutwardNormal;
+        public Vector2 edgeNormal;
+        public Vector2 outwardNormal;
         
         public PrecomputedEdge(Vector2 start, Vector2 end, Vector2 edgeNormal, Vector2 outwardNormal) {
-            Start = start;
-            End = end;
-            EdgeNormal = edgeNormal;
-            OutwardNormal = outwardNormal;
+            this.start = start;
+            this.end = end;
+            this.edgeNormal = edgeNormal;
+            this.outwardNormal = outwardNormal;
         }
     }
 }

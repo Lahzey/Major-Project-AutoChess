@@ -1,0 +1,244 @@
+[gd_scene load_steps=19 format=3 uid="uid://b1mjtwvjjws5j"]
+
+[ext_resource type="Script" path="res://logic/core/shop/ShopUI.cs" id="1_yngk1"]
+[ext_resource type="PackedScene" uid="uid://dyquuipmd6w7j" path="res://scenes/ui/ShopSlot.tscn" id="2_n6fgy"]
+[ext_resource type="Script" path="res://plugins/MaterialTheming/Scripts/PolygonInfo.cs" id="3_plkpf"]
+[ext_resource type="Material" uid="uid://b2mv00fv4xlp6" path="res://plugins/MaterialTheming/shaders/DecoratedPanelMaterial.tres" id="4_f836d"]
+[ext_resource type="Script" path="res://plugins/MaterialTheming/Scripts/StyleBoxDecorated.cs" id="5_7kmd2"]
+[ext_resource type="Texture2D" uid="uid://g4udnou87tl7" path="res://assets/ui/reroll_button/reroll_normal.png" id="6_cbwjn"]
+[ext_resource type="Script" path="res://logic/core/util/AutoFontSize.cs" id="6_wxjys"]
+[ext_resource type="Texture2D" uid="uid://bn67gp7g6v6j3" path="res://assets/ui/reroll_button/reroll_pressed.png" id="7_telri"]
+[ext_resource type="Texture2D" uid="uid://chrcgp3qvxnfp" path="res://assets/ui/reroll_button/reroll_hover.png" id="8_pwcnr"]
+[ext_resource type="Texture2D" uid="uid://cmkjbn4xestjx" path="res://assets/ui/reroll_button/reroll_disabled.png" id="9_q6ma6"]
+[ext_resource type="Texture2D" uid="uid://cqdkb311jheg1" path="res://assets/ui/gold_icon.png" id="11_pckjn"]
+[ext_resource type="Texture2D" uid="uid://1eorri1jd5pl" path="res://assets/ui/xp_button/xp_normal.png" id="11_y0ivd"]
+[ext_resource type="Texture2D" uid="uid://dkfhuhyumdbd" path="res://assets/ui/xp_button/xp_pressed.png" id="12_usqtp"]
+[ext_resource type="Texture2D" uid="uid://cni5x6bh4w4xk" path="res://assets/ui/xp_button/xp_hover.png" id="13_ejs5o"]
+[ext_resource type="Texture2D" uid="uid://8g0egsep2stg" path="res://assets/ui/xp_button/xp_disabled.png" id="14_xl7uc"]
+
+[sub_resource type="Resource" id="Resource_o4wv2"]
+script = ExtResource("3_plkpf")
+BackgroundColor = Color(0.105882, 0.2, 0.266667, 1)
+BorderColor = Color(0.0627451, 0.117647, 0.156863, 1)
+BorderThickness = 6.0
+PolygonPoints = PackedVector2Array(0.1, 0, 0.9, 0, 1, 1, 0, 1)
+
+[sub_resource type="StyleBox" id="StyleBox_qlybo"]
+resource_local_to_scene = false
+resource_name = ""
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+script = ExtResource("5_7kmd2")
+UseOutlineRectBorderPattern = true
+Animated = false
+Duration = 1.0
+HighlightColor = Color(0, 0, 0, 0)
+Loop = true
+Mode = 0
+Material = ExtResource("4_f836d")
+BackgroundMode = 2
+BackgroundRelativeRect = Rect2(0, 0, 0, 0)
+BackgroundColor = Color(1, 1, 1, 1)
+BackgroundPolygon = SubResource("Resource_o4wv2")
+RelativeContentMargins = true
+AdditionalContentMarginLeft = 4.0
+AdditionalContentMarginTop = 4.0
+AdditionalContentMarginRight = 4.0
+AdditionalContentMarginBottom = 4.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3hw7j"]
+bg_color = Color(0, 0, 0, 0.454)
+
+[node name="ShopUI" type="Control" node_paths=PackedStringArray("RerollButton", "XpButton", "GoldLabel", "ShopSlotContainer")]
+layout_mode = 3
+anchor_left = 0.2
+anchor_top = 0.8
+anchor_right = 0.8
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+script = ExtResource("1_yngk1")
+RerollButton = NodePath("StylizedPanel/ContentHolder/ShopControls/RerollButton")
+XpButton = NodePath("StylizedPanel/ContentHolder/ShopControls/XPButton")
+GoldLabel = NodePath("StylizedPanel/ContentHolder/ShopControls/GoldCounter/GoldLabel")
+ShopSlotContainer = NodePath("StylizedPanel/ContentHolder/ShopSlots")
+ShopSlotScene = ExtResource("2_n6fgy")
+
+[node name="StylizedPanel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = 6.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBox_qlybo")
+
+[node name="ContentHolder" type="Control" parent="StylizedPanel"]
+layout_mode = 1
+anchor_left = 0.11
+anchor_top = 0.04
+anchor_right = 0.89
+anchor_bottom = 0.96
+offset_left = 6.0
+offset_top = 6.0
+offset_right = -6.0
+offset_bottom = -6.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ShopControls" type="VBoxContainer" parent="StylizedPanel/ContentHolder"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.2
+anchor_bottom = 1.0
+offset_bottom = -0.0519791
+
+[node name="RerollButton" type="TextureButton" parent="StylizedPanel/ContentHolder/ShopControls"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("6_cbwjn")
+texture_pressed = ExtResource("7_telri")
+texture_hover = ExtResource("8_pwcnr")
+texture_disabled = ExtResource("9_q6ma6")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="RerollText" type="Label" parent="StylizedPanel/ContentHolder/ShopControls/RerollButton"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.1
+anchor_top = 0.1
+anchor_right = 0.5
+anchor_bottom = 0.5
+theme_override_font_sizes/font_size = 10
+text = "Reroll"
+
+[node name="AutoFontSize" type="Node" parent="StylizedPanel/ContentHolder/ShopControls/RerollButton/RerollText"]
+script = ExtResource("6_wxjys")
+
+[node name="RerollCostText" type="Label" parent="StylizedPanel/ContentHolder/ShopControls/RerollButton"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.1
+anchor_top = 0.5
+anchor_right = 0.3
+anchor_bottom = 0.9
+theme_override_font_sizes/font_size = 10
+text = "2"
+horizontal_alignment = 2
+
+[node name="AutoFontSize" type="Node" parent="StylizedPanel/ContentHolder/ShopControls/RerollButton/RerollCostText"]
+script = ExtResource("6_wxjys")
+
+[node name="RerollGoldIcon" type="TextureRect" parent="StylizedPanel/ContentHolder/ShopControls/RerollButton"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.31
+anchor_top = 0.575
+anchor_right = 0.5
+anchor_bottom = 0.75
+texture = ExtResource("11_pckjn")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="XPButton" type="TextureButton" parent="StylizedPanel/ContentHolder/ShopControls"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("11_y0ivd")
+texture_pressed = ExtResource("12_usqtp")
+texture_hover = ExtResource("13_ejs5o")
+texture_disabled = ExtResource("14_xl7uc")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="XPText" type="Label" parent="StylizedPanel/ContentHolder/ShopControls/XPButton"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.1
+anchor_top = 0.1
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -1.23978e-05
+offset_right = 0.0399895
+theme_override_font_sizes/font_size = 10
+text = "Buy XP"
+
+[node name="AutoFontSize" type="Node" parent="StylizedPanel/ContentHolder/ShopControls/XPButton/XPText"]
+script = ExtResource("6_wxjys")
+
+[node name="XPCostText" type="Label" parent="StylizedPanel/ContentHolder/ShopControls/XPButton"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.1
+anchor_top = 0.5
+anchor_right = 0.3
+anchor_bottom = 0.9
+offset_left = -1.23978e-05
+offset_right = 0.0399895
+theme_override_font_sizes/font_size = 10
+text = "4	"
+horizontal_alignment = 2
+
+[node name="AutoFontSize" type="Node" parent="StylizedPanel/ContentHolder/ShopControls/XPButton/XPCostText"]
+script = ExtResource("6_wxjys")
+
+[node name="XPGoldIcon" type="TextureRect" parent="StylizedPanel/ContentHolder/ShopControls/XPButton"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.31
+anchor_top = 0.575
+anchor_right = 0.5
+anchor_bottom = 0.75
+offset_left = 1.14441e-05
+offset_right = 1.14441e-05
+texture = ExtResource("11_pckjn")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="GoldCounter" type="HBoxContainer" parent="StylizedPanel/ContentHolder/ShopControls"]
+layout_mode = 2
+
+[node name="GoldLabel" type="Label" parent="StylizedPanel/ContentHolder/ShopControls/GoldCounter"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 10
+text = "n/a"
+horizontal_alignment = 2
+
+[node name="AutoFontSize" type="Node" parent="StylizedPanel/ContentHolder/ShopControls/GoldCounter/GoldLabel"]
+script = ExtResource("6_wxjys")
+
+[node name="GoldIcon" type="TextureRect" parent="StylizedPanel/ContentHolder/ShopControls/GoldCounter"]
+layout_mode = 2
+texture = ExtResource("11_pckjn")
+expand_mode = 3
+stretch_mode = 4
+
+[node name="Separator" type="HBoxContainer" parent="StylizedPanel/ContentHolder"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.2
+anchor_right = 0.22
+anchor_bottom = 1.0
+offset_top = -4.0
+offset_bottom = 4.0
+alignment = 1
+
+[node name="Line" type="Panel" parent="StylizedPanel/ContentHolder/Separator"]
+custom_minimum_size = Vector2(2, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_3hw7j")
+
+[node name="ShopSlots" type="HBoxContainer" parent="StylizedPanel/ContentHolder"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.22
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+alignment = 1

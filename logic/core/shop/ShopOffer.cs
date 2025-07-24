@@ -1,14 +1,29 @@
 using System.Collections.Generic;
 using Godot;
+using MPAutoChess.logic.core.networking;
+using MPAutoChess.logic.core.placement;
 using MPAutoChess.logic.core.player;
 using MPAutoChess.logic.core.unit;
+using ProtoBuf;
 using UnitType = MPAutoChess.logic.core.unit.UnitType;
 
 namespace MPAutoChess.logic.core.shop;
 
+[ProtoContract]
+[ProtoInclude(100, typeof(UnitOffer))]
 public abstract class ShopOffer {
-    
-    public bool Purchased { get; protected set; } = false;
+
+    private bool purchased = false;
+
+    [ProtoMember(1)]
+    public bool Purchased {
+        get => purchased;
+        protected set {
+            purchased = value;
+            if (ServerController.Instance.IsServer)
+                ServerController.Instance.OnShopChange(PlayerController.Current.Player.Shop);
+        }
+    }
     
     public abstract Texture2D GetTexture();
     
@@ -34,34 +49,37 @@ public abstract class ShopOffer {
     }
 }
 
+[ProtoContract]
 public abstract class GoldCostingOffer : ShopOffer {
 
     public override bool CanAfford() {
-        return PlayerController.Instance.CurrentPlayer.Gold >= GetCost();
+        return PlayerController.Current.Player.Gold >= GetCost();
     }
 
     public abstract int GetCost();
 
 }
 
+[ProtoContract]
 public class UnitOffer : GoldCostingOffer {
     
-    [Export] public Unit Unit { get; set; }
+    [Export] [ProtoMember(2)] public Unit Unit { get; set; }
     
     public override Texture2D GetTexture() {
         return Unit.Type.Icon;
     }
 
     public override bool IsEnabled() {
-        return PlayerController.Instance.CurrentPlayer.Gold >= Unit.Type.Cost;
+        return PlayerController.Current.Player.Gold >= Unit.Type.Cost;
     }
 
     public override bool TryPurchase() {
-        if (PlayerController.Instance.CurrentPlayer.TryPurchase(Unit)) {
-            Purchased = true;
-            return true;
-        }
-        return false;
+        SingleUnitSlot benchSlot = PlayerController.Current.Player.Bench.GetFirstFreeSlot();
+        GD.Print($"Trying to purchase unit {Unit.Type.ResourcePath} for {Unit.Type.Cost} gold, bench slot: {benchSlot?.GetPath() ?? "null"}");
+        if (benchSlot == null) return false;
+        bool success = PlayerController.Current.Player.TryPurchase(Unit.Type.Cost, () => benchSlot.AddUnit(Unit, Vector2.Zero));
+        if (success) Purchased = true;
+        return success;
     }
     
     public override void SerializeData(Dictionary<string, object> data) {

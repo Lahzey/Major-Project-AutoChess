@@ -1,0 +1,23 @@
+[gd_scene load_steps=5 format=3 uid="uid://dabn87xyhhe31"]
+
+[ext_resource type="Script" path="res://logic/core/unit/UnitInstance.cs" id="1_lswo4"]
+[ext_resource type="SpriteFrames" uid="uid://ctpas6cf6vnti" path="res://seasons/season0/units/warrior/warrior_sprite_frames.tres" id="2_rrdnn"]
+[ext_resource type="Script" path="res://seasons/season0/units/warrior/WarriorSpell.cs" id="3_furbf"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_okf2g"]
+radius = 0.5
+
+[node name="WarriorPrefab" type="CharacterBody2D"]
+script = ExtResource("1_lswo4")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_okf2g")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -0.08)
+scale = Vector2(0.04, 0.04)
+sprite_frames = ExtResource("2_rrdnn")
+animation = &"idle"
+
+[node name="WarriorSpell" type="Node" parent="."]
+script = ExtResource("3_furbf")

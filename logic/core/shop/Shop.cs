@@ -1,22 +1,36 @@
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
+using MPAutoChess.logic.core.networking;
 using MPAutoChess.logic.core.player;
 using MPAutoChess.logic.core.session;
 using MPAutoChess.logic.core.unit;
+using ProtoBuf;
 
 namespace MPAutoChess.logic.core.shop;
 
-public class Shop {
-    
-    public Player player { get; private set; }
+[ProtoContract]
+public class Shop : IIdentifiable {
+    public string Id { get; set; }
 
-    public int Size { get; set; } = 5;
+    [ProtoMember(1)] public int Size { get; set; } = 5;
 
     private List<ShopOffer> offers = new List<ShopOffer>();
+    [ProtoMember(2, OverwriteList = true)] private List<ShopOffer> Offers {
+        get => offers;
+        set {
+            offers = value;
+            OnChange();
+        }
+    }
+
+    public Shop() { } // For serialization only, do not use this constructor directly
     
-    public Shop(Player player) {
-        this.player = player;
+    public ShopOffer GetOfferAt(int index) {
+        if (index < 0 || index >= Offers.Count) {
+            return null;
+        }
+        return Offers[index];
     }
 
     public float[] GetNormalizedRarityOdds() {
@@ -43,11 +57,18 @@ public class Shop {
     }
     
     private void AddOffers(ShopOffer[] offers) {
-        this.offers.Clear();
-        this.offers.AddRange(offers);
+        Offers.Clear();
+        Offers.AddRange(offers);
+        OnChange();
+    }
 
-        if (PlayerController.Instance.CurrentPlayer == player) { // just to be sure, currently the server should only send shop rolls to the owning player
-            player.UI.ShopUI.AddOffers(offers);
+    private void OnChange() {
+        if (ServerController.Instance.IsServer) {
+            ServerController.Instance.OnShopChange(this); // forward to clients
+        } else {
+            if (PlayerController.Current?.Player.Shop == this) { // just to be sure, currently the server should only send shop rolls to the owning player
+                PlayerController.Current.Player.UI.ShopUI.AddOffers(Offers.ToArray());
+            }
         }
     }
 
@@ -62,4 +83,7 @@ public class Shop {
         return odds.Length - 1; // fallback (in case of rounding errors)
     }
 
+    public int IndexOf(ShopOffer offer) {
+        return Offers.IndexOf(offer);
+    }
 }

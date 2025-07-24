@@ -1,11 +1,11 @@
 [gd_scene load_steps=8 format=3 uid="uid://dyquuipmd6w7j"]
 
 [ext_resource type="Script" path="res://logic/core/shop/ShopSlot.cs" id="1_fmqg4"]
-[ext_resource type="Texture2D" uid="uid://cg8w7tua6ut6d" path="res://assets/ui/common_border.png" id="2_psirm"]
-[ext_resource type="Texture2D" uid="uid://bltndhyqfhs2l" path="res://assets/ui/uncommon_border.png" id="3_243c0"]
-[ext_resource type="Texture2D" uid="uid://cgkg0jtkdwk6f" path="res://assets/ui/rare_border.png" id="4_05mur"]
-[ext_resource type="Texture2D" uid="uid://dbjr5lvvxe1a5" path="res://assets/ui/epic_border.png" id="5_uyu73"]
-[ext_resource type="Texture2D" uid="uid://dew7kx2q8t874" path="res://assets/ui/legendary_border.png" id="6_1r7k7"]
+[ext_resource type="Texture2D" uid="uid://cg8w7tua6ut6d" path="res://assets/ui/shop_slot_borders/common_border.png" id="2_psirm"]
+[ext_resource type="Texture2D" uid="uid://bltndhyqfhs2l" path="res://assets/ui/shop_slot_borders/uncommon_border.png" id="3_243c0"]
+[ext_resource type="Texture2D" uid="uid://cgkg0jtkdwk6f" path="res://assets/ui/shop_slot_borders/rare_border.png" id="4_05mur"]
+[ext_resource type="Texture2D" uid="uid://dbjr5lvvxe1a5" path="res://assets/ui/shop_slot_borders/epic_border.png" id="5_uyu73"]
+[ext_resource type="Texture2D" uid="uid://dew7kx2q8t874" path="res://assets/ui/shop_slot_borders/legendary_border.png" id="6_1r7k7"]
 [ext_resource type="Texture2D" uid="uid://uv15gyjx8dmh" path="res://icon.svg" id="7_te3qs"]
 
 [node name="ShopSlot" type="Control" node_paths=PackedStringArray("BuyButton", "Texture")]
@@ -16,11 +16,11 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_fmqg4")
-rarity_border/Special = ExtResource("2_psirm")
-rarity_border/Common = ExtResource("2_psirm")
+rarity_border/SPECIAL = ExtResource("2_psirm")
+rarity_border/COMMON = ExtResource("2_psirm")
 rarity_border/Uncommon = ExtResource("3_243c0")
-rarity_border/Rare = ExtResource("4_05mur")
-rarity_border/Epic = ExtResource("5_uyu73")
+rarity_border/RARE = ExtResource("4_05mur")
+rarity_border/EPIC = ExtResource("5_uyu73")
 rarity_border/Legendary = ExtResource("6_1r7k7")
 BuyButton = NodePath("BuyButton")
 Texture = NodePath("AspectRatioContainer/Control/Texture")

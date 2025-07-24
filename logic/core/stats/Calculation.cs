@@ -1,20 +1,26 @@
 using System.Collections.Generic;
+using MPAutoChess.logic.core.networking;
+using ProtoBuf;
 
 namespace MPAutoChess.logic.core.stats;
 
-public class Calculation {
+[ProtoContract]
+public class Calculation : IIdentifiable {
+    public string Id { get; set; }
 
-    private Value baseValue;
-    public Value BaseValue { get => BaseValue; set { baseValue = value; Invalidate(); } }
+    [ProtoMember(1)] private Value baseValue;
+    public Value BaseValue { get => baseValue; set { baseValue = value; Invalidate(); } }
     
-    private List<Value> preMults = new List<Value>();
-    private List<string> preMultIds = new List<string>();
+    [ProtoMember(2)] private List<Value> preMults = new List<Value>();
+    [ProtoMember(3)] private List<string> preMultIds = new List<string>();
     
-    private List<Value> adds = new List<Value>();
-    private List<string> addIds = new List<string>();
+    [ProtoMember(4)] private List<Value> adds = new List<Value>();
+    [ProtoMember(5)] private List<string> addIds = new List<string>();
     
-    private List<Value> postMults = new List<Value>();
-    private List<string> postMultIds = new List<string>();
+    [ProtoMember(6)] private List<Value> postMults = new List<Value>();
+    [ProtoMember(7)] private List<string> postMultIds = new List<string>();
+    
+    public Calculation() {} // empty constructor for MessagePack serialization
     
     public Calculation(float baseValue) {
         BaseValue = new ConstantValue(baseValue);
@@ -67,5 +73,29 @@ public class Calculation {
     private void Invalidate() {
         
     }
-    
+
+    public Calculation Clone() {
+        Calculation clone = new Calculation(baseValue.Clone());
+        
+        foreach (Value preMult in preMults) {
+            clone.preMults.Add(preMult.Clone());
+        }
+        clone.preMultIds = new List<string>(preMultIds);
+        
+        foreach (Value add in adds) {
+            clone.adds.Add(add.Clone());
+        }
+        clone.addIds = new List<string>(addIds);
+        
+        foreach (Value postMult in postMults) {
+            clone.postMults.Add(postMult.Clone());
+        }
+        clone.postMultIds = new List<string>(postMultIds);
+        
+        return clone;
+    }
+
+    public override string ToString() {
+        return $"Base: {BaseValue}\nPreMults: [{string.Join(", ", preMults)}]\nAdds: [{string.Join(", ", adds)}]\nPostMults: [{string.Join(", ", postMults)}]";
+    }
 }

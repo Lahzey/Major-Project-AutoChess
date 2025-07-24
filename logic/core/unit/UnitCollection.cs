@@ -1,8 +1,9 @@
 using Godot;
+using ProtoBuf;
 
 namespace MPAutoChess.logic.core.unit;
 
-[GlobalClass]
+[GlobalClass, ProtoContract]
 public partial class UnitCollection : Resource {
     
     [Export] public UnitType[] CommonUnits { get; set; }

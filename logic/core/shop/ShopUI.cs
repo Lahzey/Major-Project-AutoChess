@@ -5,24 +5,13 @@ using MPAutoChess.logic.core.player;
 
 namespace MPAutoChess.logic.core.shop;
 
-[Tool]
 public partial class ShopUI : Control {
     
-    [Export] public Button RerollButton { get; set; }
-    [Export] public Button XpButton { get; set; }
+    [Export] public BaseButton RerollButton { get; set; }
+    [Export] public BaseButton XpButton { get; set; }
     [Export] public Label GoldLabel { get; set; }
     [Export] public Container ShopSlotContainer { get; set; }
     [Export] public PackedScene ShopSlotScene { get; set; }
-    
-    // to test how it will look in the editor
-    private uint debugSlotCount = 0;
-    [Export(PropertyHint.Range, "0,20")] public uint DebugSlotCount {
-        get => debugSlotCount;
-        set {
-            debugSlotCount = Math.Min(value, 20); // arrays cannot hold uint max value, or even int max value, this should be more than enough
-            if (Engine.IsEditorHint()) AddOffers(new ShopOffer[debugSlotCount]);
-        }
-    }
 
     private ShopSlot[] ShopSlots;
 
@@ -34,11 +23,12 @@ public partial class ShopUI : Control {
             }
         }
         ShopSlots = slots.ToArray();
-        RerollButton.Pressed += () => PlayerController.Instance.RerollShop(); // () => instead of adding the method directly to ensure Instance reference is checked each time
+        RerollButton.Pressed += () => PlayerController.Current.RerollShop(); // () => instead of adding the method directly to ensure Instance reference is checked each time
+        XpButton.Pressed += () => PlayerController.Current.BuyXp();
     }
 
     public override void _Process(double delta) {
-        GoldLabel.Text = PlayerController.Instance?.CurrentPlayer?.Gold.ToString() ?? "n/a";
+        GoldLabel.Text = PlayerController.Current?.Player?.Gold.ToString() ?? "n/a";
     }
     
     public void AddOffers(ShopOffer[] offers) {

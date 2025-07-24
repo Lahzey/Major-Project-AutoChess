@@ -1,0 +1,23 @@
+[gd_scene load_steps=5 format=3 uid="uid://beg1lu503cw25"]
+
+[ext_resource type="Script" path="res://logic/core/unit/UnitInstance.cs" id="1_f1q5u"]
+[ext_resource type="SpriteFrames" uid="uid://bfraoes44vwkf" path="res://seasons/season0/units/summoner/summoner_sprite_frames.tres" id="2_gc3tt"]
+[ext_resource type="Script" path="res://seasons/season0/units/summoner/SummonerSpell.cs" id="3_87h83"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_t4383"]
+radius = 0.5
+
+[node name="SummonerPrefab" type="CharacterBody2D"]
+script = ExtResource("1_f1q5u")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_t4383")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -0.08)
+scale = Vector2(0.04, 0.04)
+sprite_frames = ExtResource("2_gc3tt")
+animation = &"idle"
+
+[node name="SummonerSpell" type="Node" parent="."]
+script = ExtResource("3_87h83")

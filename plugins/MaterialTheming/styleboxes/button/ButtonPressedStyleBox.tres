@@ -7,7 +7,7 @@
 [sub_resource type="Resource" id="Resource_ch2ii"]
 script = ExtResource("1_qe635")
 BackgroundColor = Color(0.105882, 0.2, 0.266667, 1)
-BorderColor = Color(0.309804, 0.427451, 0.509804, 1)
+BorderColor = Color(0.537255, 0.384314, 0.25098, 1)
 BorderThickness = 6.0
 PolygonPoints = PackedVector2Array(0, 0, 1, 0, 1, 1, 0, 1)
 
@@ -20,8 +20,8 @@ content_margin_right = 10.0
 content_margin_bottom = 8.0
 script = ExtResource("1_8l5f8")
 UseOutlineRectBorderPattern = true
-Animated = true
-Duration = 0.25
+Animated = false
+Duration = 0.2
 HighlightColor = Color(0.537255, 0.384314, 0.25098, 1)
 Loop = false
 Mode = 0
