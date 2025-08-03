@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://dky1nwaq1f6uq"]
+
+[ext_resource type="Texture2D" uid="uid://balnxlit0he5v" path="res://assets/items/forgehammer.jpg" id="1_cireh"]
+[ext_resource type="Resource" uid="uid://oll2le0iflsv" path="res://assets/items/components/metal_plate.tres" id="1_hbjwn"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_jpnej"]
+[ext_resource type="Resource" uid="uid://c7tf56toxso2w" path="res://assets/items/components/sharp_blade.tres" id="2_kxmv4"]
+
+[resource]
+script = ExtResource("1_jpnej")
+Name = "Forgehammer"
+Category = 1
+Description = ""
+Icon = ExtResource("1_cireh")
+CraftedFromA = ExtResource("1_hbjwn")
+CraftedFromB = ExtResource("2_kxmv4")
+Stats = null

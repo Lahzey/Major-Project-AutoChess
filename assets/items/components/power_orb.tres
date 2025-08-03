@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://cqcj6ce28vc1b"]
+
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="1_1dlgt"]
+[ext_resource type="Texture2D" uid="uid://cjxyi4v60vvhe" path="res://assets/items/components/power_orb.jpg" id="1_d0p68"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_l0e6t"]
+
+[sub_resource type="Resource" id="Resource_l3nr8"]
+script = ExtResource("1_1dlgt")
+StatType = "Magic"
+StatValue = 10.0
+
+[resource]
+script = ExtResource("1_l0e6t")
+Name = "Power Orb"
+Category = 0
+Description = "[color=gray][i]A crafting component that can be turned into various magic boosting items.[/i][/color]"
+Icon = ExtResource("1_d0p68")
+Stats = Array[Object]([SubResource("Resource_l3nr8")])

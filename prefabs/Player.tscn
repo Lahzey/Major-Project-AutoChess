@@ -1,7 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://bpvjg64gxvyjj"]
+[gd_scene load_steps=4 format=3 uid="uid://bpvjg64gxvyjj"]
 
 [ext_resource type="Script" path="res://logic/core/player/Player.cs" id="1_gu5bn"]
-[ext_resource type="PackedScene" uid="uid://c2fryil7qt0qx" path="res://scenes/ui/PlayerUI.tscn" id="2_f02px"]
 [ext_resource type="Script" path="res://addons/scene_safe_multiplayer/scene_safe_mp_synchronizer.gd" id="3_nttpw"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_km36y"]
@@ -15,15 +14,8 @@ properties/2/path = NodePath(".:Gold")
 properties/2/spawn = true
 properties/2/replication_mode = 2
 
-[node name="Player" type="Node" node_paths=PackedStringArray("UI")]
+[node name="Player" type="Node2D"]
 script = ExtResource("1_gu5bn")
-UI = NodePath("CanvasLayer/PlayerUI")
-
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
-
-[node name="PlayerUI" parent="CanvasLayer" instance=ExtResource("2_f02px")]
-size_flags_horizontal = 3
-size_flags_vertical = 3
 
 [node name="SceneSafeMpSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_km36y")

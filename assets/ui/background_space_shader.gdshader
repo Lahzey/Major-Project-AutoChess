@@ -18,7 +18,7 @@ vec2 rand2(vec2 p) {
 
 void fragment() {
 	vec2 uv = FRAGCOORD.xy * min(SCREEN_PIXEL_SIZE.x, SCREEN_PIXEL_SIZE.y);
-	
+
 	// Convert UV to star grid coordinates
 	vec2 cell_pos = floor(uv * 100.0);
 	vec2 local_uv = fract(uv * 100.0);
@@ -28,7 +28,7 @@ void fragment() {
 	float red_mod = pow(sin(FRAGCOORD.x * FRAGCOORD.y * 3.5) * 0.5 + 0.5, colorful_chance);
 	float green_mod = pow(sin(FRAGCOORD.x * FRAGCOORD.y * 1.2) * 0.5 + 0.5, colorful_chance);
 	float blue_mod = pow(sin(FRAGCOORD.x * FRAGCOORD.y * 7.8) * 0.5 + 0.5, colorful_chance);
-	
+
 	vec4 color = background_color;
 
 	if (star_chance < density) {

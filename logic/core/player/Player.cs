@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Godot;
 using MPAutoChess.logic.core.environment;
 using MPAutoChess.logic.core.events;
+using MPAutoChess.logic.core.item;
 using MPAutoChess.logic.core.networking;
 using MPAutoChess.logic.core.placement;
 using MPAutoChess.logic.core.session;
@@ -14,41 +15,44 @@ using ProtoBuf;
 namespace MPAutoChess.logic.core.player;
 
 [ProtoContract]
-public partial class Player : Node {
+public partial class Player : Node2D {
 
-    [ProtoMember(1)] public Account Account { get; set; }
+    [ProtoMember(1)] public Account Account { get; private set; }
 
-    [Export] [ProtoMember(2)] public int Health { get; private set; } = 1000;
+    [Export] [ProtoMember(2)] public int Health { get; set; } = 1000;
 
     [Export] [ProtoMember(3)] public int Experience { get; set; } = 0;
 
     [Export] [ProtoMember(4)] public int Gold { get; set; } = 100;
     
-    [ProtoMember(5)] public Shop Shop { get; private set; } = new Shop();
+    [ProtoMember(5)] public Shop Shop { get; private set; }
+    
+    [ProtoMember(6)] public Inventory Inventory { get; private set; } = new Inventory(10);
 
-    [ProtoMember(6)] public ArenaType ArenaType { get; private set; }
-    
-    [ProtoMember(7)] public Arena Arena { get; private set; }
-    
-    [Export] public PlayerUI UI { get; private set; }
-    
-    public Board Board { get; private set; }
-    public Bench Bench { get; private set; }
+    private Arena _arena;
+    [ProtoMember(8)]
+    public Arena Arena {
+        get => _arena;
+        private set {
+            _arena = value;
+            _arena.Board.Player = this;
+            _arena.Bench.Player = this;
+        }
+    }
+
+    public Board Board => Arena.Board;
+    public Bench Bench => Arena.Bench;
     
     public Calculation BoardSize { get; private set; } = new Calculation(5);
 
-    public Player() { }
+    public Player() {
+        Shop = new Shop(this);
+    }
 
-    public void Initialize(Account account) {
+    public void SetAccount(Account account) {
         Account = account;
-        ArenaType = Account.GetSelectedArenaType();
-        Arena = ResourceLoader.Load<PackedScene>(ArenaType.GetPath()).Instantiate<Arena>();
+        Arena = ResourceLoader.Load<PackedScene>(Account.GetSelectedArenaType().GetPath()).Instantiate<Arena>();
         AddChild(Arena);
-        
-        Board = Arena.Board;
-        Bench = Arena.Bench;
-        Board.Player = this;
-        Bench.Player = this;
     }
 
     public override void _Ready() {

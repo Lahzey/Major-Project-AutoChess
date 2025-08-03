@@ -17,7 +17,7 @@ shape = SubResource("CircleShape2D_okf2g")
 position = Vector2(0, -0.08)
 scale = Vector2(0.04, 0.04)
 sprite_frames = ExtResource("2_rrdnn")
-animation = &"idle"
+animation = &"walk"
 
 [node name="WarriorSpell" type="Node" parent="."]
 script = ExtResource("3_furbf")

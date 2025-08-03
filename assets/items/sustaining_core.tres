@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://dfypccjlp7bs2"]
+
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_lfd01"]
+[ext_resource type="Resource" uid="uid://d1vnu8i30ujxb" path="res://assets/items/components/lard.tres" id="1_y0ynu"]
+[ext_resource type="Resource" uid="uid://cvyfbw5oepnmu" path="res://assets/items/components/bandages.tres" id="2_euk2l"]
+[ext_resource type="Texture2D" uid="uid://b4wx7kx62qll1" path="res://assets/items/sustaining_core.jpg" id="3_x5bpl"]
+
+[resource]
+script = ExtResource("1_lfd01")
+Name = "Sustaining Core"
+Category = 1
+Description = ""
+Icon = ExtResource("3_x5bpl")
+CraftedFromA = ExtResource("1_y0ynu")
+CraftedFromB = ExtResource("2_euk2l")
+Stats = null

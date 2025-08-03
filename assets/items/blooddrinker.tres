@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://n6m26e0olmv3"]
+
+[ext_resource type="Resource" uid="uid://cvyfbw5oepnmu" path="res://assets/items/components/bandages.tres" id="1_dnr8n"]
+[ext_resource type="Texture2D" uid="uid://c7dpdclhcqwxe" path="res://assets/items/blooddrinker.jpg" id="1_kqwx3"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_qcih4"]
+[ext_resource type="Resource" uid="uid://bcj4yay71ptoa" path="res://assets/items/components/leather_handle.tres" id="2_4mocx"]
+
+[resource]
+script = ExtResource("1_qcih4")
+Name = "Blooddrinker"
+Category = 1
+Description = ""
+Icon = ExtResource("1_kqwx3")
+CraftedFromA = ExtResource("1_dnr8n")
+CraftedFromB = ExtResource("2_4mocx")
+Stats = null

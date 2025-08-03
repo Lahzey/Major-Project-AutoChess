@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://cfdqda6760ukn"]
+
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_4u3xg"]
+[ext_resource type="Resource" uid="uid://cdr5pd15av0vo" path="res://assets/items/components/soft_padding.tres" id="1_jf37t"]
+[ext_resource type="Resource" uid="uid://cqcj6ce28vc1b" path="res://assets/items/components/power_orb.tres" id="2_1hbw1"]
+[ext_resource type="Texture2D" uid="uid://c3l62i4g1baau" path="res://assets/items/stillheart.jpg" id="3_bs1q1"]
+
+[resource]
+script = ExtResource("1_4u3xg")
+Name = "Stillheart"
+Category = 1
+Description = ""
+Icon = ExtResource("3_bs1q1")
+CraftedFromA = ExtResource("1_jf37t")
+CraftedFromB = ExtResource("2_1hbw1")
+Stats = null

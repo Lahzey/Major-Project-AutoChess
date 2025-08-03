@@ -1,3 +1,4 @@
+using MPAutoChess.logic.core.item;
 using MPAutoChess.logic.core.unit;
 using MPAutoChess.seasons.season0;
 using ProtoBuf;
@@ -9,5 +10,7 @@ namespace MPAutoChess.logic.core;
 public abstract class Season {
     
     public abstract UnitCollection GetUnits();
+    
+    public abstract ItemConfig GetItemConfig();
     
 }

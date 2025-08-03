@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://cj77buh7ashpe"]
+
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_53jn1"]
+[ext_resource type="Resource" uid="uid://bcj4yay71ptoa" path="res://assets/items/components/leather_handle.tres" id="1_vb2k3"]
+[ext_resource type="Resource" uid="uid://pys1hufuwj3k" path="res://assets/items/components/glass_shard.tres" id="2_q40vx"]
+[ext_resource type="Texture2D" uid="uid://b17wjm6nh5tx5" path="res://assets/items/riptide.jpg" id="3_my3fy"]
+
+[resource]
+script = ExtResource("1_53jn1")
+Name = "Riptide"
+Category = 1
+Description = ""
+Icon = ExtResource("3_my3fy")
+CraftedFromA = ExtResource("1_vb2k3")
+CraftedFromB = ExtResource("2_q40vx")
+Stats = null

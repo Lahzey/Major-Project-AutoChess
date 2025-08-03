@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://b7pyt8648sisn"]
+
+[ext_resource type="Resource" uid="uid://d1vnu8i30ujxb" path="res://assets/items/components/lard.tres" id="1_5kpms"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_hq62g"]
+[ext_resource type="Resource" uid="uid://cqcj6ce28vc1b" path="res://assets/items/components/power_orb.tres" id="2_6wm3j"]
+[ext_resource type="Texture2D" uid="uid://xm7d7evppj2y" path="res://assets/items/guardstone.jpg" id="3_ylp0j"]
+
+[resource]
+script = ExtResource("1_hq62g")
+Name = "Guardstone"
+Category = 1
+Description = ""
+Icon = ExtResource("3_ylp0j")
+CraftedFromA = ExtResource("1_5kpms")
+CraftedFromB = ExtResource("2_6wm3j")
+Stats = null

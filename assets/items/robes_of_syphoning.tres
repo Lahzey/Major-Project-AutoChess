@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://dpcewijfs0lto"]
+
+[ext_resource type="Resource" uid="uid://d1vnu8i30ujxb" path="res://assets/items/components/lard.tres" id="1_4mfa6"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_67iaq"]
+[ext_resource type="Resource" uid="uid://cj6b31eh3cniv" path="res://assets/items/components/magical_fabric.tres" id="2_jfmkp"]
+[ext_resource type="Texture2D" uid="uid://c0f2d41vlev80" path="res://assets/items/robes_of_syphoning.jpg" id="3_v2yoe"]
+
+[resource]
+script = ExtResource("1_67iaq")
+Name = "Robes of Syphoning"
+Category = 1
+Description = ""
+Icon = ExtResource("3_v2yoe")
+CraftedFromA = ExtResource("1_4mfa6")
+CraftedFromB = ExtResource("2_jfmkp")
+Stats = null

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=4 format=3 uid="uid://dgb7bitkkd4mm"]
+
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_eq8pl"]
+[ext_resource type="Resource" uid="uid://bcj4yay71ptoa" path="res://assets/items/components/leather_handle.tres" id="1_k7mlk"]
+[ext_resource type="Texture2D" uid="uid://cw1gjc8fc31t1" path="res://assets/items/whipvine.jpg" id="2_dtkr8"]
+
+[resource]
+script = ExtResource("1_eq8pl")
+Name = "Whipvine"
+Category = 1
+Description = ""
+Icon = ExtResource("2_dtkr8")
+CraftedFromA = ExtResource("1_k7mlk")
+CraftedFromB = ExtResource("1_k7mlk")
+Stats = null

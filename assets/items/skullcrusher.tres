@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://mkr1hq7fl58v"]
+
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_0cra3"]
+[ext_resource type="Resource" uid="uid://c7tf56toxso2w" path="res://assets/items/components/sharp_blade.tres" id="1_763ab"]
+[ext_resource type="Resource" uid="uid://pys1hufuwj3k" path="res://assets/items/components/glass_shard.tres" id="2_rj0oy"]
+[ext_resource type="Texture2D" uid="uid://dd5wgdx8b3iuv" path="res://assets/items/skullcrusher.jpg" id="3_n1gk0"]
+
+[resource]
+script = ExtResource("1_0cra3")
+Name = "Skullcrusher"
+Category = 1
+Description = ""
+Icon = ExtResource("3_n1gk0")
+CraftedFromA = ExtResource("1_763ab")
+CraftedFromB = ExtResource("2_rj0oy")
+Stats = null

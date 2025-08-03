@@ -1,15 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Diagnostics;
 using System.Linq;
 using Godot;
 using MPAutoChess.logic.core.player;
 using MPAutoChess.logic.core.session;
-using MPAutoChess.logic.core.shop;
-using MPAutoChess.logic.core.util;
 using MPAutoChess.logic.menu;
+using MPAutoChess.logic.util;
 using MPAutoChess.seasons.season0;
-using ProtoBuf;
 
 namespace MPAutoChess.logic.core.networking;
 
@@ -32,6 +30,8 @@ public partial class ServerController : Node {
     public GameSession GameSession { get; private set; }
 
     public static ServerController Instance { get; private set; }
+    
+    private double accumulatedTime = 0.0;
 
     public override void _EnterTree() {
         if (Instance == null) Instance = this;
@@ -51,17 +51,29 @@ public partial class ServerController : Node {
         IsServer = OS.HasFeature("dedicated_server");
         CallDeferred(IsServer ? MethodName.SetupServer : MethodName.SetupClient);
     }
+    
+    private int GetPeerIdFor(Player player) {
+        return peerIdToPlayer.FirstOrDefault(kvp => kvp.Value == player).Key;
+    }
 
     private void SetupServer() {
         GD.Print("Setting up server...");
         
+        PlayerUI.Instance.QueueFree();
+        
         ENetMultiplayerPeer serverPeer = new ENetMultiplayerPeer();
         serverPeer.CreateServer(SERVER_PORT);
         GetTree().GetMultiplayer().MultiplayerPeer = serverPeer;
+            
+        string[] args = OS.GetCmdlineArgs();
+        
+        string? gameModeArg = args.FirstOrDefault(arg => arg.StartsWith("mode="));
+        if (gameModeArg == null) throw new ArgumentException("No game mode argument found in command line arguments. Expected format: mode=GameModeName");
+        string gameModeString = gameModeArg.Substring("mode=".Length);
+        GameMode gameMode = GameMode.GetByName(gameModeString);
         
         // read the secret codes of players that are passed via command line arguments
         // the format is: players=accountId:secretCode,accountId:secretCode,...
-        string[] args = OS.GetCmdlineArgs();
         string? playersArg = args.FirstOrDefault(arg => arg.StartsWith("players="));
         if (playersArg == null) throw new ArgumentException("No players argument found in command line arguments. Expected format: players=accountId:secretCode,accountId:secretCode,...");
         string playersString = playersArg.Substring("players=".Length);
@@ -76,19 +88,19 @@ public partial class ServerController : Node {
                 throw new ArgumentException($"Invalid account ID: {parts[0]}");
             }
             Player player = PlayerScene.Instantiate<Player>();
-            player.Name = $"Player{i}";
-            player.Initialize(Account.FindById(accountId));
+            player.SetAccount(Account.FindById(accountId));
             PlayerController controller = new PlayerController(player);
+            controller.Name = $"Player{i}Controller";
             player.AddChild(controller);
+            player.Position = new Vector2(i * 1000, 0); // make sure arenas are spaced out (how far does not matter)
             Players[i] = player;
             accountIdToPlayer[accountId] = player;
             secretToPlayer[parts[1]] = player;
             readyPlayers[player] = false;
-            GameSession.AddChild(player);
         }
         
-        GameSession.Initialize(new Season0(), new EchoMode(), Players); // TODO: read season and mode from command line arguments
-        GD.Print("Game session initialized with " + Players.Length + " players.");
+        GameSession.Initialize(new Season0(), gameMode, Players); // TODO: read season and mode from command line arguments
+        GD.Print("Game session initialized with " + Players.Length + " players.");  
     }
 
     private void SetupClient() {
@@ -98,8 +110,13 @@ public partial class ServerController : Node {
         clientPeer.CreateClient(SERVER_IP, SERVER_PORT);
         GetTree().GetMultiplayer().MultiplayerPeer = clientPeer;
         clientPeer.PeerConnected += (id) => {
-            GD.Print("Connected to server with peer ID: " + id);
-            CallDeferred(Node.MethodName.Rpc, MethodName.Connect, "secret"); // TODO: load secret code
+            NodeExtensions.ServerPeerId = id;
+            GD.Print($"Connected to server with peer ID: {id}. Is server: {GetTree().GetMultiplayer().IsServer()}.");
+            Error error = this.RpcToServer(MethodName.Connect, Account.GetCurrent().SecretKey);
+            GD.Print("Called Connect RPC on server : " + error);
+            if (error != Error.Ok) {
+                GD.PrintErr("Failed to call Connect RPC on server: " + error);
+            }
         };
         GD.Print("Client setup complete");
     }
@@ -108,6 +125,8 @@ public partial class ServerController : Node {
     private void Connect(string playerSecret) {
         if (!IsServer) throw new InvalidOperationException("Connect can only be called on the server.");
         
+        GD.Print("Received connection request with secret: " + playerSecret);
+        
         if (!secretToPlayer.TryGetValue(playerSecret, out Player player)) {
             GD.PrintErr("Player with secret " + playerSecret + " not found.");
             return;
@@ -115,50 +134,44 @@ public partial class ServerController : Node {
         GD.Print("Connection request from player: " + player.Name);
         int senderId = Multiplayer.GetRemoteSenderId();
         peerIdToPlayer[senderId] = player;
+        
         byte[] serializedGameSession = SerializerExtensions.Serialize(GameSession);
-        CallDeferred(Node.MethodName.Rpc, MethodName.TransferGameSession, Players.Select(p => p.Account.Id).ToArray(), serializedGameSession);
+        RpcId(Multiplayer.GetRemoteSenderId(), MethodName.TransferGameSession, serializedGameSession);
     }
     
     [Rpc(MultiplayerApi.RpcMode.Authority)]
-    private async void TransferGameSession(long[] accountIds, byte[] serializedGameSession) {
+    private async void TransferGameSession(byte[] serializedGameSession) {
         if (IsServer) throw new InvalidOperationException("TransferGameSession can only be called on the client.");
         
         LoadingScreen.Instance.SetStage(LoadingStage.LOADING_GAME);
-        
-        // Prepare Player instances so Serializer can deserialize into them
-        Players = new Player[accountIds.Length];
-        for (int i = 0; i < accountIds.Length; i++) {
-            Player player = PlayerScene.Instantiate<Player>();
-            player.Initialize(Account.FindById(accountIds[i]));
-            player.Name = $"Player{i}";
-            Players[i] = player;
-            GameSession.AddChild(player);
-        }
         
         await ToSignal(GetTree().CreateTimer(1), SceneTreeTimer.SignalName.Timeout); // give the engine time to initialize the GameSession and player nodes, so we can find and deserialize into the properly
         
         GameSession receivedGameSession = SerializerExtensions.Deserialize<GameSession>(serializedGameSession);
         if (receivedGameSession != GameSession) {
-            GD.PrintErr("Deserialized GameSession does not match the current instance, this should not happen!");
+            GD.PrintErr("GameSession was not deserialized into current instance, this should not happen!");
             GameSession = receivedGameSession; // fallback to the deserialized instance
         }
         
         // // create PlayerController for local player
-        foreach (Player player in GameSession.Players) {
+        for (int i = 0; i < GameSession.Players.Length; i++) {
+            Player player = GameSession.Players[i];
             if (!player.Account.Equals(Account.GetCurrent())) continue;
-            
+            GD.Print($"{System.Environment.ProcessId}: [{Account.GetCurrent().Id}] Creating player controller for player {player.Account.Id} at {player.Position}.");
+
             PlayerController controller = new PlayerController(player);
+            controller.Name = $"Player{i}Controller";
             player.AddChild(controller);
-            GD.Print("PlayerController created for local player.");
+            PlayerUI.Instance.SetPlayer(player);
             break;
         }
 
-        Rpc(MethodName.Ready);
+        this.RpcToServer(MethodName.Loaded);
         LoadingScreen.Instance.SetStage(LoadingStage.WAITING_FOR_PLAYERS);
     }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
-    public void Ready() {
+    public void Loaded() {
         if (!IsServer) throw new InvalidOperationException("Ready can only be called on the server.");
 
         Player player = peerIdToPlayer.GetValueOrDefault(Multiplayer.GetRemoteSenderId());
@@ -182,31 +195,54 @@ public partial class ServerController : Node {
         LoadingScreen.Instance.SetStage(LoadingStage.STARTED);
     }
 
-    public void OnShopChange(Shop shop) {
-        if (!IsServer) throw new InvalidOperationException("OnShopChange can only be called on the server.");
-        
-        int targetPeerId = 0;
-        foreach (KeyValuePair<int, Player> keyValuePair in peerIdToPlayer) {
-            if (keyValuePair.Value.Shop == shop) {
-                targetPeerId = keyValuePair.Key;
-                break;
-            }
+    public void OnChange(IIdentifiable identifiable, Player? viewableBy = null) {
+        if (!IsServer) return;
+
+        // TODO: collect all changes in a frame and send them in one RPC call (only really useful once reference tracking is fixed with a different or custom serializer)
+        if (viewableBy == null) {
+            Rpc(MethodName.TransferIdentifiable, SerializerExtensions.Serialize(identifiable), identifiable.GetType().AssemblyQualifiedName);
+        } else {
+            RpcId(GetPeerIdFor(viewableBy), MethodName.TransferIdentifiable, SerializerExtensions.Serialize(identifiable), identifiable.GetType().AssemblyQualifiedName);
         }
-        if (targetPeerId == 0) {
-            GD.PrintErr("Shop seems to not be owned by any player.");
+    }
+    
+    public void OnChange(Node node, Player? viewableBy = null) {
+        if (!IsServer) return;
+
+        // TODO: collect all changes in a frame and send them in one RPC call (only really useful once reference tracking is fixed with a different or custom serializer)
+        if (viewableBy == null) {
+            Rpc(MethodName.TransferNode, SerializerExtensions.Serialize(node), node.GetType().AssemblyQualifiedName);
+        } else {
+            RpcId(GetPeerIdFor(viewableBy), MethodName.TransferNode, SerializerExtensions.Serialize(node), node.GetType().AssemblyQualifiedName);
+        }
+    }
+    
+    [Rpc(MultiplayerApi.RpcMode.Authority)]
+    public void TransferIdentifiable(byte[] serializedIdentifiable, string typeName) {
+        if (IsServer) throw new InvalidOperationException("TransferIdentifiable can only be called on the client.");
+        
+        Type type = typeName != null ? Type.GetType(typeName) : null;
+        if (type == null) {
+            GD.PrintErr($"TransferIdentifiable received invalid type name '{typeName}', cannot deserialize identifiable.");
             return;
         }
-
-        RpcId(targetPeerId, MethodName.TransferShop, SerializerExtensions.Serialize(shop));
+        
+        SerializerExtensions.Deserialize<IIdentifiable>(serializedIdentifiable, type);
+        // that already does it, IdentifiableSurrogate takes care of the merging
     }
 
     [Rpc(MultiplayerApi.RpcMode.Authority)]
-    private void TransferShop(byte[] serializedShop) {
-        if (IsServer) throw new InvalidOperationException("TransferShop can only be called on the client.");
+    public void TransferNode(byte[] serializedNode, string typeName) {
+        if (IsServer) throw new InvalidOperationException("TransferNode can only be called on the client.");
         
-        Shop transferredShop = SerializerExtensions.Deserialize<Shop>(serializedShop);
-        if (transferredShop != PlayerController.Current.Player.Shop) // Shop is Identifiable, so deserialize should merge into the existing instance
-            GD.PrintErr($"Received shop does not match the current player's shop, this should not happen! Received: {transferredShop.Id} | Present: {PlayerController.Current.Player.Shop.Id}");
+        Type type = typeName != null ? Type.GetType(typeName) : null;
+        if (type == null) {
+            GD.PrintErr($"TransferNode received invalid type name '{typeName}', cannot deserialize node.");
+            return;
+        }
+        
+        SerializerExtensions.Deserialize<Node>(serializedNode, type);
+        // that already does it, NodeDataSurrogate takes care of the merging
     }
     
     public void RunInContext(Action action, PlayerController? controller = null) {

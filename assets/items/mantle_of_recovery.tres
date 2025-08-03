@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://p67ek7bqu1uk"]
+
+[ext_resource type="Resource" uid="uid://cvyfbw5oepnmu" path="res://assets/items/components/bandages.tres" id="1_05onr"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_dol3r"]
+[ext_resource type="Resource" uid="uid://cj6b31eh3cniv" path="res://assets/items/components/magical_fabric.tres" id="2_qowcb"]
+[ext_resource type="Texture2D" uid="uid://ckxqv8k5v627o" path="res://assets/items/mantle_of_recovery.jpg" id="3_yshft"]
+
+[resource]
+script = ExtResource("1_dol3r")
+Name = "Mantle of Recovery"
+Category = 1
+Description = ""
+Icon = ExtResource("3_yshft")
+CraftedFromA = ExtResource("1_05onr")
+CraftedFromB = ExtResource("2_qowcb")
+Stats = null

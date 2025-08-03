@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=4 format=3 uid="uid://cwyf5vpnv773d"]
+
+[ext_resource type="Resource" uid="uid://pys1hufuwj3k" path="res://assets/items/components/glass_shard.tres" id="1_8ihj4"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_ta67d"]
+[ext_resource type="Texture2D" uid="uid://71gxb5y5ah68" path="res://assets/items/serrated_disk.jpg" id="2_m2qvh"]
+
+[resource]
+script = ExtResource("1_ta67d")
+Name = "Serrated Disk"
+Category = 1
+Description = ""
+Icon = ExtResource("2_m2qvh")
+CraftedFromA = ExtResource("1_8ihj4")
+CraftedFromB = ExtResource("1_8ihj4")
+Stats = null

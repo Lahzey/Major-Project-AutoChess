@@ -8,7 +8,7 @@ public partial class ConstantValue : Value {
     
     [ProtoMember(1)] private float value;
 
-    private ConstantValue() { } // for ProtoBuf serialization
+    public ConstantValue() { } // for ProtoBuf serialization
     
     public ConstantValue(float value) {
         this.value = value;

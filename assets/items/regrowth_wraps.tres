@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=4 format=3 uid="uid://il444dtabisx"]
+
+[ext_resource type="Resource" uid="uid://cvyfbw5oepnmu" path="res://assets/items/components/bandages.tres" id="1_ewun8"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_mlngj"]
+[ext_resource type="Texture2D" uid="uid://cmmvd4p2xo2ua" path="res://assets/items/regrowth_wraps.jpg" id="2_b3pq0"]
+
+[resource]
+script = ExtResource("1_mlngj")
+Name = "Regrowth Wraps"
+Category = 1
+Description = ""
+Icon = ExtResource("2_b3pq0")
+CraftedFromA = ExtResource("1_ewun8")
+CraftedFromB = ExtResource("1_ewun8")
+Stats = null

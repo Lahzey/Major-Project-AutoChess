@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://cdr5pd15av0vo"]
+
+[ext_resource type="Texture2D" uid="uid://bk65rua0fey0p" path="res://assets/items/components/soft_padding.jpg" id="1_ol3tn"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="1_r8ktu"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_v21ne"]
+
+[sub_resource type="Resource" id="Resource_fi4xm"]
+script = ExtResource("1_r8ktu")
+StatType = "Tenacity"
+StatValue = 0.1
+
+[resource]
+script = ExtResource("1_v21ne")
+Name = "Soft Padding"
+Category = 0
+Description = "[color=gray][i]A crafting component that can be turned into various items that protect their holder from crowd control.[/i][/color]"
+Icon = ExtResource("1_ol3tn")
+Stats = Array[Object]([SubResource("Resource_fi4xm")])

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://i70bm5py63r5"]
+
+[ext_resource type="Resource" uid="uid://cdr5pd15av0vo" path="res://assets/items/components/soft_padding.tres" id="1_jm2c4"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_mt0q6"]
+[ext_resource type="Texture2D" uid="uid://dd46nqpsx2fgi" path="res://assets/items/gnashmaw.jpg" id="1_tnhy7"]
+[ext_resource type="Resource" uid="uid://c7tf56toxso2w" path="res://assets/items/components/sharp_blade.tres" id="2_ct7r5"]
+
+[resource]
+script = ExtResource("1_mt0q6")
+Name = "Gnashmaw"
+Category = 1
+Description = ""
+Icon = ExtResource("1_tnhy7")
+CraftedFromA = ExtResource("1_jm2c4")
+CraftedFromB = ExtResource("2_ct7r5")
+Stats = Array[Object]([])

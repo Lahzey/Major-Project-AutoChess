@@ -1,5 +1,6 @@
 using System;
 using Godot;
+using MPAutoChess.logic.core.item;
 using MPAutoChess.logic.core.networking;
 using MPAutoChess.logic.core.player;
 using MPAutoChess.logic.core.unit;
@@ -30,43 +31,32 @@ public partial class GameSession : Node {
         Season = season;
         Mode = gameMode;
         Players = players;
+        for (int i = 0; i < Players.Length; i++) {
+            Player player = Players[i];
+            player.Name = $"Player{i + 1}";
+            AddChild(player);
+        }
+        Mode.Name = "GameMode";
+        AddChild(Mode);
         UnitPool.Initialize(season);
     }
 
     public void Start() {
         Started = true;
+        Mode.Start();
     }
 
     public override void _PhysicsProcess(double delta) {
         if (!Started) return;
+        
         Mode.Tick(delta);
     }
 
     public bool IsInCombat(Player player) {
         return false; // TODO
     }
-}
 
-[ProtoContract]
-public partial class NodeTest : Node {
-    public string Id { get; set; }
-    
-    [ProtoMember(1)] public Player Child { get; set; }
-    [ProtoMember(2)] public int Value { get; set; }
-
-    public static NodeTest Create() {
-        NodeTest test = new NodeTest();
-        test.Child = new Player();
-        test.Child.Account = new Account(1, "TestPlayer");
-        test.Child.Gold = 99999;
-        test.Child.Name = "TestPlayer";
-        test.Value = 50;
-        ServerController.Instance.AddChild(test);
-        test.AddChild(test.Child);
-        return test;
-    }
-
-    public override string ToString() {
-        return $"NodeTest[Value={Value} | Gold={Child?.Gold.ToString() ?? "null"}]";
+    public ItemConfig GetItemConfig() {
+        return Season.GetItemConfig();
     }
 }

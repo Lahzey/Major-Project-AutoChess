@@ -7,6 +7,10 @@ namespace MPAutoChess.logic.core.placement;
 
 [ProtoContract]
 public partial class Bench : Node {
+
+    [Export] public Node SlotContainer { get; set; }
+    
+    [ProtoMember(1)] private List<SingleUnitSlot> slots = new List<SingleUnitSlot>();
     
     private Player player;
     public Player Player {
@@ -18,10 +22,6 @@ public partial class Bench : Node {
             }
         }
     }
-
-    [Export] public Node SlotContainer { get; set; }
-    
-    [ProtoMember(1)] private List<SingleUnitSlot> slots = new List<SingleUnitSlot>();
 
     public override void _Ready() {
         slots.Clear();

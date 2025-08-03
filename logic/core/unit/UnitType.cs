@@ -22,6 +22,7 @@ public partial class UnitType : Resource {
     [Export] public float Strength { get; set; } = 50;
     [Export] public float AttackSpeed { get; set; } = 0.75f;
     [Export] public float Range { get; set; } = 1f;
+    [Export] public float MovementSpeed { get; set; } = 1f;
     [ExportCategory("Assets")]
     [Export] public PackedScene UnitInstancePrefab { get; set; }
     [Export] public Texture2D Icon { get; set; }

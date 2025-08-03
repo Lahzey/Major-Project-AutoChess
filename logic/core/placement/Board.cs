@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using Godot;
 using MPAutoChess.logic.core.events;
 using MPAutoChess.logic.core.networking;
 using MPAutoChess.logic.core.player;
 using MPAutoChess.logic.core.unit;
-using MPAutoChess.logic.core.util;
+using MPAutoChess.logic.util;
 using ProtoBuf;
 using Vector2 = Godot.Vector2;
 
@@ -140,16 +139,19 @@ public partial class Board : UnitContainer {
     }
 
     private void OnDragStart(Unit unit) {
+        if (PlayerController.Current.Player != Player) return;
         GridTexture.Visible = true;
     }
 
     private void OnDragProcess(Unit unit, IUnitDropTarget target, Vector2 mousePosition) {
+        if (PlayerController.Current.Player != Player) return;
         mousePosition = ConvertToPlacement(mousePosition, unit);
         Vector4 highlightRange = target == this ? new Vector4(mousePosition.X, mousePosition.Y, mousePosition.X + unit.GetSize().X, mousePosition.Y + unit.GetSize().Y) : Vector4.Zero;
         ((ShaderMaterial) GridTexture.Material).SetShaderParameter("highlight_range", highlightRange);
     }
 
     private void OnDragEnd(Unit unit) {
+        if (PlayerController.Current.Player != Player) return;
         GridTexture.Visible = false;
     }
 

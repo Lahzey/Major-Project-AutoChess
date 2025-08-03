@@ -1,16 +1,23 @@
 using System;
+using MPAutoChess.logic.core.networking;
+using ProtoBuf;
 
 namespace MPAutoChess.logic.core.item;
 
-public class Inventory {
+[ProtoContract]
+public class Inventory : IIdentifiable {
+    public string Id { get; set; }
+    
     public int Size => itemSlots.Length;
 
-    public bool AutoExpand { get; set; }
-    public bool AutoShrink { get; set; }
-    public int ExpansionInterval { get; set; }
+    [ProtoMember(1)] public bool AutoExpand { get; set; } = true;
+    [ProtoMember(2)] public bool AutoShrink { get; set; } = true;
+    [ProtoMember(4)]  public int ExpansionInterval { get; set; } = 10;
 
-    private int minSize;
-    private ItemSlot[] itemSlots;
+    [ProtoMember(5)] private int minSize;
+    [ProtoMember(6)] private ItemSlot[] itemSlots;
+    
+    public Inventory() {} // for ProtoBuf serialization
 
     public Inventory(int initialSize) {
         minSize = initialSize;
@@ -33,6 +40,7 @@ public class Inventory {
         if (!AutoExpand) return false;
         int interval = Math.Max(ExpansionInterval, 1);
         Resize(Size + interval);
+        ServerController.Instance.OnChange(this);
         return true;
     }
 
@@ -90,6 +98,7 @@ public class Inventory {
         }
         
         itemSlots = newSlots;
+        ServerController.Instance.OnChange(this);
     }
 
     public bool AddItem(Item item, bool allowExpansion = true) {
@@ -97,6 +106,7 @@ public class Inventory {
             ItemSlot slot = itemSlots[i];
             if (slot.GetItem() != null) continue;
             slot.SetItem(item);
+            ServerController.Instance.OnChange(this);
             return true;
         }
         if (!allowExpansion) return false;
@@ -117,6 +127,7 @@ public class Inventory {
         if (index >= Size) throw new IndexOutOfRangeException();
         Item? oldItem = itemSlots[index].GetItem();
         itemSlots[index].SetItem(item);
+        ServerController.Instance.OnChange(this);
         return oldItem;
     }
 }

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://bfpxlgrpuaowy"]
+
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_tfoax"]
+[ext_resource type="Resource" uid="uid://cj6b31eh3cniv" path="res://assets/items/components/magical_fabric.tres" id="1_vwvxd"]
+[ext_resource type="Resource" uid="uid://cqcj6ce28vc1b" path="res://assets/items/components/power_orb.tres" id="2_po0ab"]
+[ext_resource type="Texture2D" uid="uid://bfdvt378a57ao" path="res://assets/items/witchfire.jpg" id="3_q0gp2"]
+
+[resource]
+script = ExtResource("1_tfoax")
+Name = "Witchfire"
+Category = 1
+Description = ""
+Icon = ExtResource("3_q0gp2")
+CraftedFromA = ExtResource("1_vwvxd")
+CraftedFromB = ExtResource("2_po0ab")
+Stats = null

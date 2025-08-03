@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://dep5mx5ydgevr"]
+
+[ext_resource type="Resource" uid="uid://d1vnu8i30ujxb" path="res://assets/items/components/lard.tres" id="1_1vwjm"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_x8c0w"]
+[ext_resource type="Resource" uid="uid://pys1hufuwj3k" path="res://assets/items/components/glass_shard.tres" id="2_jvkxu"]
+[ext_resource type="Texture2D" uid="uid://dh765up54pvik" path="res://assets/items/hoarders_pot.jpg" id="3_pyc81"]
+
+[resource]
+script = ExtResource("1_x8c0w")
+Name = "Hoarders Pot"
+Category = 1
+Description = ""
+Icon = ExtResource("3_pyc81")
+CraftedFromA = ExtResource("1_1vwjm")
+CraftedFromB = ExtResource("2_jvkxu")
+Stats = null

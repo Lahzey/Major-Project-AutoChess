@@ -1,0 +1,62 @@
+[gd_scene load_steps=3 format=3 uid="uid://lju3v1271bt0"]
+
+[ext_resource type="Script" path="res://logic/core/item/UnitOverlayUI.cs" id="1_mr0fy"]
+[ext_resource type="PackedScene" uid="uid://b6pkrbya2n61" path="res://ui/ResourceBar.tscn" id="2_oyqs7"]
+
+[node name="UnitOverlayUI" type="Control" node_paths=PackedStringArray("HealthBar", "ManaBar", "IconsContainer", "IconsSpacer")]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 100.0
+offset_bottom = 130.0
+mouse_default_cursor_shape = 2
+script = ExtResource("1_mr0fy")
+HealthBar = NodePath("VBoxContainer/HealthBars/HealthBar")
+ManaBar = NodePath("VBoxContainer/HealthBars/ManaBar")
+IconsContainer = NodePath("VBoxContainer/ItemIcons")
+IconsSpacer = NodePath("VBoxContainer/ItemIconsSpacer")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 2
+
+[node name="ItemIconsSpacer" type="Control" parent="VBoxContainer"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 20.0
+mouse_filter = 1
+
+[node name="HealthBars" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 20.0
+theme_override_constants/separation = 1
+
+[node name="HealthBar" parent="VBoxContainer/HealthBars" instance=ExtResource("2_oyqs7")]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 3.0
+mouse_filter = 1
+
+[node name="ManaBar" parent="VBoxContainer/HealthBars" instance=ExtResource("2_oyqs7")]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 1
+
+[node name="ItemIcons" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 20.0
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="UnitSpacing" type="Control" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 90.0
+mouse_filter = 1

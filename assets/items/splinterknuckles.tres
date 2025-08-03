@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://cwqyggiuxs2ou"]
+
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_hni4t"]
+[ext_resource type="Resource" uid="uid://cvyfbw5oepnmu" path="res://assets/items/components/bandages.tres" id="1_qracq"]
+[ext_resource type="Resource" uid="uid://pys1hufuwj3k" path="res://assets/items/components/glass_shard.tres" id="2_4gcie"]
+[ext_resource type="Texture2D" uid="uid://i0717ekte80f" path="res://assets/items/splinterknuckles.jpg" id="3_hqt74"]
+
+[resource]
+script = ExtResource("1_hni4t")
+Name = "Splinterknuckles"
+Category = 1
+Description = ""
+Icon = ExtResource("3_hqt74")
+CraftedFromA = ExtResource("1_qracq")
+CraftedFromB = ExtResource("2_4gcie")
+Stats = null

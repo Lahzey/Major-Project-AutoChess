@@ -58,9 +58,9 @@ void vertex() {
 
 void fragment() {
 	float noise = sampleNoise(FRAGCOORD.xy);
-	
+
 	vec4 backgroundColor = COLOR * vec4(noise, noise, noise, 1.0);
-	
+
 	float animationProgress = getAnimationProgress();
 	float effectIntensity;
 	switch (animation_mode) {
@@ -74,11 +74,11 @@ void fragment() {
 			effectIntensity = getRadialFillEffect(UV, animationProgress);
 			break;
 	}
-	
+
 	vec4 borderColor = animated ? lerp(COLOR, highlight_color, effectIntensity) : COLOR;
-	
+
 	float foregroundOrEffect = custom.r;
 	float backgroundOrBorder = custom.g;
-	
+
 	COLOR = lerp(COLOR, lerp(backgroundColor, borderColor, backgroundOrBorder), foregroundOrEffect);
 }

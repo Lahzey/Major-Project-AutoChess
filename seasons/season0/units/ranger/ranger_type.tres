@@ -6,7 +6,7 @@
 
 [resource]
 script = ExtResource("3_eet88")
-Name = ""
+Name = "Ranger"
 SlotsNeeded = 1
 Size = Vector2(2, 2)
 Cost = 2
@@ -19,5 +19,6 @@ Aegis = 10.0
 Strength = 50.0
 AttackSpeed = 0.75
 Range = 1.0
+MovementSpeed = 1.0
 UnitInstancePrefab = ExtResource("2_wl7u2")
 Icon = ExtResource("1_cic5s")

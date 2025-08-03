@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://cnn5wrohb6e8l"]
+
+[ext_resource type="Resource" uid="uid://cvyfbw5oepnmu" path="res://assets/items/components/bandages.tres" id="1_j5tol"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_mx34j"]
+[ext_resource type="Resource" uid="uid://cdr5pd15av0vo" path="res://assets/items/components/soft_padding.tres" id="2_ndrhs"]
+[ext_resource type="Texture2D" uid="uid://bemkymvqguqa4" path="res://assets/items/living_helmet.jpg" id="3_v2iix"]
+
+[resource]
+script = ExtResource("1_mx34j")
+Name = "Living Helmet"
+Category = 1
+Description = ""
+Icon = ExtResource("3_v2iix")
+CraftedFromA = ExtResource("1_j5tol")
+CraftedFromB = ExtResource("2_ndrhs")
+Stats = null

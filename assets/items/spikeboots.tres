@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://cfod51pfn5syv"]
+
+[ext_resource type="Resource" uid="uid://oll2le0iflsv" path="res://assets/items/components/metal_plate.tres" id="1_7kvg0"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_wji88"]
+[ext_resource type="Resource" uid="uid://pys1hufuwj3k" path="res://assets/items/components/glass_shard.tres" id="2_0hqa6"]
+[ext_resource type="Texture2D" uid="uid://csg8w77g4cdbo" path="res://assets/items/spikeboots.jpg" id="3_g0x2p"]
+
+[resource]
+script = ExtResource("1_wji88")
+Name = "Spikeboots"
+Category = 1
+Description = ""
+Icon = ExtResource("3_g0x2p")
+CraftedFromA = ExtResource("1_7kvg0")
+CraftedFromB = ExtResource("2_0hqa6")
+Stats = null

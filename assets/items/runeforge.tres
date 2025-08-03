@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://buix3c8hiib8b"]
+
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_4fuvc"]
+[ext_resource type="Resource" uid="uid://oll2le0iflsv" path="res://assets/items/components/metal_plate.tres" id="1_d35wg"]
+[ext_resource type="Resource" uid="uid://cqcj6ce28vc1b" path="res://assets/items/components/power_orb.tres" id="2_ryeql"]
+[ext_resource type="Texture2D" uid="uid://cx7us3vjtokrq" path="res://assets/items/runeforge.jpg" id="3_aljmx"]
+
+[resource]
+script = ExtResource("1_4fuvc")
+Name = "Runeforge"
+Category = 1
+Description = ""
+Icon = ExtResource("3_aljmx")
+CraftedFromA = ExtResource("1_d35wg")
+CraftedFromB = ExtResource("2_ryeql")
+Stats = null

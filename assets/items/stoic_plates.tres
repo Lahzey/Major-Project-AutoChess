@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://c80s8pbtdykbl"]
+
+[ext_resource type="Resource" uid="uid://d1vnu8i30ujxb" path="res://assets/items/components/lard.tres" id="1_0te5r"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_dp565"]
+[ext_resource type="Resource" uid="uid://cdr5pd15av0vo" path="res://assets/items/components/soft_padding.tres" id="2_xsuw7"]
+[ext_resource type="Texture2D" uid="uid://cvcijmdik3187" path="res://assets/items/stoic_plates.jpg" id="3_0me1e"]
+
+[resource]
+script = ExtResource("1_dp565")
+Name = "Stoic Plates"
+Category = 1
+Description = ""
+Icon = ExtResource("3_0me1e")
+CraftedFromA = ExtResource("1_0te5r")
+CraftedFromB = ExtResource("2_xsuw7")
+Stats = null

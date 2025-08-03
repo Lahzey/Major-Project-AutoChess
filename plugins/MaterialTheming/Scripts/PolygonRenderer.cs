@@ -39,6 +39,14 @@ public class PolygonRenderer {
         Vector2 borderOffset = new Vector2(polygon.BorderThickness, polygon.BorderThickness);
         Rect2 backgroundRect = new Rect2(bounds.Position + borderOffset, bounds.Size - borderOffset*2);
         
+        if (backgroundRect.Size.X < 0 || backgroundRect.Size.Y < 0) {
+            return surfaceTool;
+        }
+        
+        // If X or Y size is exactly zero, make it very small but not zero to avoid math issues
+        if (backgroundRect.Size.X == 0) backgroundRect.Size = new Vector2(0.001f, backgroundRect.Size.Y);
+        if (backgroundRect.Size.Y == 0) backgroundRect.Size = new Vector2(backgroundRect.Size.X, 0.001f);
+        
         // calculate sizes of fixed width sides in polygon (anything outside the 0-1 range, sort of like a NinePatchRect)
         Vector2 min = Vector2.Zero;
         Vector2 max = Vector2.One;
@@ -69,7 +77,6 @@ public class PolygonRenderer {
         }
 
         for (int i = 0; i < edges.Length; i++) {
-            // if (i != 1) continue;
             int nextI = (i + 1) % edges.Length;
             PrecomputedEdge current = edges[i];
             PrecomputedEdge next = edges[nextI];

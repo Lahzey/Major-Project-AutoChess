@@ -17,7 +17,7 @@ shape = SubResource("CircleShape2D_o4pqj")
 position = Vector2(0, -0.08)
 scale = Vector2(0.04, 0.04)
 sprite_frames = ExtResource("2_hj5oo")
-animation = &"cast"
+animation = &"idle"
 
 [node name="RangerSpell" type="Node" parent="."]
 script = ExtResource("3_rtdpn")

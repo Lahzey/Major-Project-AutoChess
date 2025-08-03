@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://dtsi7qtbvl3b5"]
+
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_3gvde"]
+[ext_resource type="Resource" uid="uid://d1vnu8i30ujxb" path="res://assets/items/components/lard.tres" id="1_w8tlh"]
+[ext_resource type="Resource" uid="uid://bcj4yay71ptoa" path="res://assets/items/components/leather_handle.tres" id="2_amo54"]
+[ext_resource type="Texture2D" uid="uid://dftnoeh0eb158" path="res://assets/items/pocked_crossbow.jpg" id="3_siswb"]
+
+[resource]
+script = ExtResource("1_3gvde")
+Name = "Pocket Crossbow"
+Category = 1
+Description = ""
+Icon = ExtResource("3_siswb")
+CraftedFromA = ExtResource("1_w8tlh")
+CraftedFromB = ExtResource("2_amo54")
+Stats = null

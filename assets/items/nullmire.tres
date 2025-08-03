@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://buvlgsdipo0ao"]
+
+[ext_resource type="Texture2D" uid="uid://b70iya44tn5s5" path="res://assets/items/nullmire.jpg" id="1_jlxcq"]
+[ext_resource type="Resource" uid="uid://cj6b31eh3cniv" path="res://assets/items/components/magical_fabric.tres" id="1_p2mdg"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_ucfqw"]
+[ext_resource type="Resource" uid="uid://cdr5pd15av0vo" path="res://assets/items/components/soft_padding.tres" id="2_a5ls0"]
+
+[resource]
+script = ExtResource("1_ucfqw")
+Name = "Nullmire"
+Category = 1
+Description = ""
+Icon = ExtResource("1_jlxcq")
+CraftedFromA = ExtResource("1_p2mdg")
+CraftedFromB = ExtResource("2_a5ls0")
+Stats = null

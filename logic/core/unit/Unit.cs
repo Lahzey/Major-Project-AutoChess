@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using Godot;
 using MPAutoChess.logic.core.events;
+using MPAutoChess.logic.core.item;
 using MPAutoChess.logic.core.networking;
 using MPAutoChess.logic.core.placement;
+using MPAutoChess.logic.core.session;
 using MPAutoChess.logic.core.stats;
 using ProtoBuf;
 
@@ -11,6 +13,10 @@ namespace MPAutoChess.logic.core.unit;
 
 [ProtoContract]
 public class Unit : IIdentifiable {
+    private const string ITEM_STAT_NAME = "Item Stats";
+    private const int DEFAULT_MAX_ITEM_COUNT = 3;
+    private int unitInstanceCounter = 0;
+    
     public string Id { get; set; }
     
     [ProtoMember(1)] public Stats Stats { get; private set; } = new Stats();
@@ -23,6 +29,8 @@ public class Unit : IIdentifiable {
     
     [ProtoMember(4)] private List<Unit> mergedCopies = new List<Unit>(); // keeping a reference of merged copies to prevent them from destructing and returning to the pool
 
+    [ProtoMember(5)] public List<Item> EquippedItems { get; private set; } = new List<Item>();
+
     private UnitPool pool;
 
     private UnitInstance passiveInstance;
@@ -34,26 +42,49 @@ public class Unit : IIdentifiable {
         this.pool = pool;
         SetBaseStatsFromType();
     }
-
-    private void SetBaseStatsFromType() {
-        float levelFactor = 1f + (Level - 1) * 0.5f; // TODO dynamic scaling factor for health and strength individually
-        Stats.GetCalculation(StatType.WIDTH).BaseValue = new ConstantValue(Type.Size.X);
-        Stats.GetCalculation(StatType.HEIGHT).BaseValue = new ConstantValue(Type.Size.Y);
-        Stats.GetCalculation(StatType.MAX_HEALTH).BaseValue = new ConstantValue(Type.MaxHealth * levelFactor);
-        Stats.GetCalculation(StatType.MAX_MANA).BaseValue = new ConstantValue(Type.MaxMana);
-        Stats.GetCalculation(StatType.STARTING_MANA).BaseValue = new ConstantValue(Type.StartingMana);
-        Stats.GetCalculation(StatType.ARMOR).BaseValue = new ConstantValue(Type.Armor);
-        Stats.GetCalculation(StatType.AEGIS).BaseValue = new ConstantValue(Type.Aegis);
-        Stats.GetCalculation(StatType.STRENGTH).BaseValue = new ConstantValue(Type.Strength * levelFactor);
-        Stats.GetCalculation(StatType.ATTACK_SPEED).BaseValue = new ConstantValue(Type.AttackSpeed);
-        Stats.GetCalculation(StatType.RANGE).BaseValue = new ConstantValue(Type.Range);
-        Stats.GetCalculation(StatType.MAGIC).BaseValue = new ConstantValue(0);
-        GD.Print("Base health now " + Stats.GetValue(StatType.MAX_HEALTH) + " for unit type " + Type.Name + " at level " + Level);
-    }
     
     ~Unit() {
         pool?.ReturnUnit(Type);
-        passiveInstance?.Dispose();
+        passiveInstance?.QueueFree();
+    }
+
+    private void SetBaseStatsFromType() {
+        float levelFactor = 1f + (Level - 1) * 0.5f; // TODO dynamic scaling factor for health and strength individually
+        Stats.GetCalculation(StatType.WIDTH).BaseValue = Type.Size.X;
+        Stats.GetCalculation(StatType.HEIGHT).BaseValue = Type.Size.Y;
+        Stats.GetCalculation(StatType.MAX_HEALTH).BaseValue = Type.MaxHealth * levelFactor;
+        Stats.GetCalculation(StatType.MAX_MANA).BaseValue = Type.MaxMana;
+        Stats.GetCalculation(StatType.STARTING_MANA).BaseValue = Type.StartingMana;
+        Stats.GetCalculation(StatType.ARMOR).BaseValue = Type.Armor;
+        Stats.GetCalculation(StatType.AEGIS).BaseValue = Type.Aegis;
+        Stats.GetCalculation(StatType.STRENGTH).BaseValue = Type.Strength * levelFactor;
+        Stats.GetCalculation(StatType.ATTACK_SPEED).BaseValue = Type.AttackSpeed;
+        Stats.GetCalculation(StatType.RANGE).BaseValue = Type.Range;
+        Stats.GetCalculation(StatType.MOVEMENT_SPEED).BaseValue = Type.MovementSpeed;
+        Stats.GetCalculation(StatType.MAGIC).BaseValue = 0;
+    }
+
+    private void ApplyItemStats() {
+        Dictionary<StatType, float> itemStats = new Dictionary<StatType, float>();
+        foreach (Item item in EquippedItems) {
+            foreach (StatValue stat in item.Type.Stats) {
+                if (itemStats.ContainsKey(stat.Type)) {
+                    itemStats[stat.Type] += item.GetStat(stat.Type);
+                } else {
+                    itemStats[stat.Type] = item.GetStat(stat.Type);
+                }
+            }
+        }
+        
+        // clear previous item stats
+        foreach (StatType statType in Stats.Types) {
+            Stats.GetCalculation(statType).RemoveFlat(ITEM_STAT_NAME);
+        }
+        
+        // add new item stats
+        foreach ((StatType statType, float value) in itemStats) {
+            if (value != 0) Stats.GetCalculation(statType).AddFlat(value, ITEM_STAT_NAME);
+        }
     }
 
     public float GetStatValue(StatType statType) {
@@ -76,7 +107,7 @@ public class Unit : IIdentifiable {
             
             // keep a reference to the merged copy to prevent it from being destructed (which returns it to the pool)
             mergedCopies.Add(copy);
-            copy.passiveInstance.Dispose(); // dispose the passive instance here already (to save memory), since destructor will not be called until this unit is destructed
+            copy.passiveInstance.QueueFree(); // dispose the passive instance here already (to save memory), since destructor will not be called until this unit is destructed
             copy.passiveInstance = null;
             // TODO instead of disposing immediately, play a merge animation and then dispose the instance
 
@@ -89,7 +120,7 @@ public class Unit : IIdentifiable {
                         StackMode.SUM => currentStacks + copyStacks,
                         _ => throw new ArgumentOutOfRangeException(stackableStatType.stackMode + " is an unsupported stack mode")
                     };
-                    Stats.GetCalculation(statType).BaseValue = new ConstantValue(newStacks);
+                    Stats.GetCalculation(statType).BaseValue = newStacks;
                 }
             }
         }
@@ -100,11 +131,31 @@ public class Unit : IIdentifiable {
         GD.Print("Leveled up unit: " + Type.Name + " to level " + Level);
         EventManager.INSTANCE.NotifyAfter(levelUpEvent);
     }
+    
+    public bool EquipItem(Item item) {
+        if (EquippedItems.Count >= DEFAULT_MAX_ITEM_COUNT) {
+            GD.PrintErr("Cannot equip more than " + DEFAULT_MAX_ITEM_COUNT + " items to a unit");
+            return false;
+        }
+        EquippedItems.Add(item);
+        ApplyItemStats();
+        ServerController.Instance.OnChange(this);
+        return true;
+    }
+
+    public void ReplaceItem(Item craftedFrom, Item item) {
+        int index = EquippedItems.IndexOf(craftedFrom);
+        if (index == -1) throw new ArgumentException("Item to replace not found in equipped items.", nameof(craftedFrom));
+        EquippedItems[index] = item;
+        ApplyItemStats();
+        ServerController.Instance.OnChange(this);
+    }
 
     public UnitInstance CreateInstance(bool isCombatInstance) {
         UnitInstance instance = Type.UnitInstancePrefab.Instantiate<UnitInstance>();
         instance.Unit = this;
         instance.IsCombatInstance = false;
+        instance.Name = $"{Type.Name}@{Id}_Instance{unitInstanceCounter++}";
         return instance;
     }
     
@@ -113,5 +164,18 @@ public class Unit : IIdentifiable {
             passiveInstance = CreateInstance(false);
         }
         return passiveInstance;
+    }
+
+    public ItemType? GetCraftingTargetWith(Item item, out Item craftedFrom) {
+        foreach (Item equippedItem in EquippedItems) {
+            ItemType? resultingItem = GameSession.Instance.GetItemConfig().GetRecipeFor(item.Type, equippedItem.Type);
+            if (resultingItem != null) {
+                craftedFrom = equippedItem;
+                return resultingItem;
+            }
+        }
+
+        craftedFrom = null;
+        return null;
     }
 }

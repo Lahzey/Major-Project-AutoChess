@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
@@ -19,12 +20,18 @@ public class Shop : IIdentifiable {
     [ProtoMember(2, OverwriteList = true)] private List<ShopOffer> Offers {
         get => offers;
         set {
-            offers = value;
+            offers = value ?? new List<ShopOffer>();
             OnChange();
         }
     }
 
-    public Shop() { } // For serialization only, do not use this constructor directly
+    public Player Player { get; private set; }
+
+    public Shop() { } // For Protobuf serialization
+
+    public Shop(Player player) {
+        Player = player;
+    }
     
     public ShopOffer GetOfferAt(int index) {
         if (index < 0 || index >= Offers.Count) {
@@ -63,12 +70,15 @@ public class Shop : IIdentifiable {
     }
 
     private void OnChange() {
-        if (ServerController.Instance.IsServer) {
-            ServerController.Instance.OnShopChange(this); // forward to clients
-        } else {
+        if (!ServerController.Instance.IsServer) {
             if (PlayerController.Current?.Player.Shop == this) { // just to be sure, currently the server should only send shop rolls to the owning player
-                PlayerController.Current.Player.UI.ShopUI.AddOffers(Offers.ToArray());
+                if (PlayerUI.Instance == null) throw new InvalidOperationException("PlayerUI is not initialized, cannot update shop offers.");
+                else if (PlayerUI.Instance.Shop == null) throw new InvalidOperationException("PlayerUI.Shop is not initialized, cannot update shop offers.");
+                else if (Offers == null) throw new InvalidOperationException("Offers is null, cannot update shop offers.");
+                PlayerUI.Instance.Shop.SetOffers(Offers.ToArray());
             }
+        } else {
+            ServerController.Instance.OnChange(this, Player); // forward to clients
         }
     }
 

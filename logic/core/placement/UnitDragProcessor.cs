@@ -2,7 +2,7 @@ using System;
 using Godot;
 using MPAutoChess.logic.core.player;
 using MPAutoChess.logic.core.unit;
-using MPAutoChess.logic.core.util;
+using MPAutoChess.logic.util;
 
 namespace MPAutoChess.logic.core.placement;
 

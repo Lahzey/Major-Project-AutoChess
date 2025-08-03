@@ -31,7 +31,7 @@ public partial class ShopUI : Control {
         GoldLabel.Text = PlayerController.Current?.Player?.Gold.ToString() ?? "n/a";
     }
     
-    public void AddOffers(ShopOffer[] offers) {
+    public void SetOffers(ShopOffer[] offers) {
         List<ShopSlot> slots = new List<ShopSlot>();
         foreach (Node child in ShopSlotContainer.GetChildren()) {
             if (child is ShopSlot slot) {

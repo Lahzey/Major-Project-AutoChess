@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://cst46armv2smd"]
+
+[ext_resource type="Texture2D" uid="uid://dsv1oas340pch" path="res://assets/items/hexspike.jpg" id="1_4qcxt"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_bsjwr"]
+[ext_resource type="Resource" uid="uid://cj6b31eh3cniv" path="res://assets/items/components/magical_fabric.tres" id="1_xqmhh"]
+[ext_resource type="Resource" uid="uid://c7tf56toxso2w" path="res://assets/items/components/sharp_blade.tres" id="2_068jq"]
+
+[resource]
+script = ExtResource("1_bsjwr")
+Name = "Hexspike"
+Category = 1
+Description = ""
+Icon = ExtResource("1_4qcxt")
+CraftedFromA = ExtResource("1_xqmhh")
+CraftedFromB = ExtResource("2_068jq")
+Stats = null

@@ -21,7 +21,7 @@ public partial class CameraController : Node {
     public void Cover(Rect2 bounds) {
         toCover = bounds;
         
-        GD.Print($"Trying to cover {toCover} within view bounds {viewBounds}");
+        GD.Print($"{System.Environment.ProcessId}: Trying to cover {toCover} within view bounds {viewBounds}");
         
         Camera2D camera = GetViewport().GetCamera2D();
         if (camera == null)

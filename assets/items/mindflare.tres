@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=4 format=3 uid="uid://bf7qkqbq0nsa1"]
+
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_dq5vp"]
+[ext_resource type="Resource" uid="uid://cqcj6ce28vc1b" path="res://assets/items/components/power_orb.tres" id="1_v6rjm"]
+[ext_resource type="Texture2D" uid="uid://ctg33xdi7t50" path="res://assets/items/mindflare.jpg" id="2_d2h1r"]
+
+[resource]
+script = ExtResource("1_dq5vp")
+Name = "Mindflare"
+Category = 1
+Description = ""
+Icon = ExtResource("2_d2h1r")
+CraftedFromA = ExtResource("1_v6rjm")
+CraftedFromB = ExtResource("1_v6rjm")
+Stats = null

@@ -1,7 +1,6 @@
 using System;
-using System.Collections.Generic;
 using Godot;
-using MPAutoChess.logic.core.placement;
+using MPAutoChess.logic.util;
 using ProtoBuf;
 
 namespace MPAutoChess.logic.core.networking;
@@ -18,24 +17,27 @@ public class NodeDataSurrogate<T> : MergeSurrogateBase<T> where T : Node, new() 
     }
 
     protected override T GetDeserializationTarget() {
-        Node existingNode = ServerController.Instance.GameSession.GetNode(nodePath);
+        if (string.IsNullOrEmpty(nodePath)) {
+            if (ServerController.Instance.GameSession is T gameSession) return gameSession;
+            else throw new ArgumentException($"Failed to deserialize {typeof(T)}. Node with empty path must always be a GameSession.");
+        }
+        
+        Node existingNode = ServerController.Instance.GameSession.GetNodeOrNull(nodePath);
         if (existingNode == null) {
-            PackedScene packedScene = packedScenePath != null && packedScenePath.Length > 0 ? ResourceLoader.Load<PackedScene>(packedScenePath) : null;
-            GD.PrintErr($"Deserialized Node at path {nodePath} does not exist in the scene tree. New instance was created from {(packedScene == null ? "constructor" : packedScenePath)} to prevent crash, but it is highly recommended to have an instance ready for merging.");
-            return (T) GetEmptyConstructor().Invoke(Array.Empty<object>());
+            throw new InvalidOperationException($"Failed to deserialize {typeof(T)}. Could not find node at path '{nodePath}'.");
         }
         
         if (existingNode is not T existing) {
-            throw new ArgumentException("Path mismatch: Node at path " + nodePath + " already exists as a different type: " + existingNode.GetType() + " instead of " + typeof(T));
+            throw new ArgumentException($"Failed to deserialize {typeof(T)}. Node at path '{nodePath}' is of type {existingNode.GetType()}.");
         }
+        GD.Print("Using existing " + typeof(T) + " at path '" + nodePath + "'.");
         return existing;
     }
     
     public static implicit operator T(NodeDataSurrogate<T> surrogate) {
         if (surrogate == null) return null;
-        if (surrogate.nodePath == null) throw new ArgumentException($"Failed to deserialize {typeof(T)}: NodeDataSurrogate must have an nodePath set.");
 
-        GD.Print($"Deserialized {typeof(T)} from\n    " + surrogate.data.ToString().Replace("\n", "\n    "));
+        // GD.Print($"Deserialized {typeof(T)} from\n    " + surrogate.data.ToString().Replace("\n", "\n    "));
         
         return surrogate.FromMirror(surrogate.data);
     }
@@ -43,10 +45,17 @@ public class NodeDataSurrogate<T> : MergeSurrogateBase<T> where T : Node, new() 
     public static implicit operator NodeDataSurrogate<T>(T obj) {
         if (obj == null) return null;
         
-        NodePath path = ServerController.Instance.GameSession.GetPathTo(obj);
-        if (path == null || path.IsEmpty) throw new ArgumentException("Failed to serialize node of type " + obj.GetType() + " because it is not attached to a parent node.");
+        string path;
+        if (obj == ServerController.Instance.GameSession) {
+            path = null;
+        } else if (ServerController.Instance.GameSession.IsAncestorOf(obj)) {
+            path = ServerController.Instance.GameSession.GetPathTo(obj);
+            NodeStructure.RegisterNode(path.Split('/'));
+        } else {
+            throw new ArgumentException($"Failed to serialize {typeof(T)}. Node must be a child of the GameSession or the GameSession itself.");
+        }
         
-        GD.Print("Using NodeDataSurrogate for " + typeof(T) + "(" + obj.GetType() + ") at path " + path);
+        // GD.Print("Using NodeDataSurrogate for " + typeof(T) + "(" + obj.GetType() + ") at path '" + path + "' with packed scene path '" + obj.SceneFilePath + "'.");
         
         var result = new NodeDataSurrogate<T> {
             nodePath = path,
@@ -54,7 +63,7 @@ public class NodeDataSurrogate<T> : MergeSurrogateBase<T> where T : Node, new() 
             data = ToMirror(obj)
         };
 
-        GD.Print($"Serialized {typeof(T)} as\n    " + result.data.ToString().Replace("\n", "\n    "));
+        // GD.Print($"Serialized {typeof(T)} as\n    " + result.data.ToString().Replace("\n", "\n    "));
         
         return result;
     }

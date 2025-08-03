@@ -1,20 +1,68 @@
+using System;
+using System.Collections.Generic;
 using Godot;
+using MPAutoChess.logic.core.combat;
+using MPAutoChess.logic.core.networking;
+using MPAutoChess.logic.core.player;
 using ProtoBuf;
 
 namespace MPAutoChess.logic.core.session;
 
 [ProtoContract]
-public class EchoMode : GameMode {
-    public override void CreateUserInterface(Node2D parent) {
-        
-    }
+public partial class EchoMode : GameMode {
+    
+    private List<Player> readyPlayers = new List<Player>();
+    
     public override void Tick(double delta) {
         
     }
-    public override int GetPhase() {
+
+    public override double GetRoundTime() {
+        return double.PositiveInfinity;
+    }
+
+    protected override GamePhase GetNextPhase() {
+        int nextPhaseIndex = GetCurrentPhaseIndex() + 1;
+        if (nextPhaseIndex % 2 == 0) {
+            return LootPhase.Random();
+        } else {
+            return new EchoCombatPhase();
+        }
+    }
+
+    public void RequestNextRound() {
+        if (!ServerController.Instance.IsServer) throw new InvalidOperationException("RequestNextRound can only be called on the server.");
+
+        Player player = PlayerController.Current.Player;
+        if (!readyPlayers.Contains(player)) {
+            readyPlayers.Add(player);
+        }
+
+        if (readyPlayers.Count == GameSession.Instance.Players.Length) {
+            AdvancePhase();
+        }
+    }
+}
+
+[ProtoContract]
+public partial class EchoCombatPhase : GamePhase {
+    
+    public override string GetName(Player forPlayer) {
+        return "Combat against Echo";
+    }
+    public override int GetPowerLevel() {
         return 0;
     }
-    public override string GetPhaseName() {
-        return "";
+
+    public override void Start() {
+        
+    }
+
+    public override bool IsFinished() {
+        return false;
+    }
+
+    public override void End() {
+        
     }
 }

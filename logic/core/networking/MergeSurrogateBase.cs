@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using Godot;
 using ProtoBuf;
 using ProtoBuf.Meta;
 
@@ -75,6 +76,8 @@ public abstract class MergeSurrogateBase<T> where T : new() {
         foreach (KeyValuePair<int, PropertyInfo> propertyEntry in GetProperties()) {
             genericTypes.Add(propertyEntry.Value.PropertyType);
         }
+
+        if (genericTypes.Count == 0) return;
         
         wrapperType = genericTypes.Count switch {
             1 => typeof(TypeMirror<>).MakeGenericType(genericTypes.ToArray()),
@@ -84,7 +87,8 @@ public abstract class MergeSurrogateBase<T> where T : new() {
             5 => typeof(TypeMirror<,,,,>).MakeGenericType(genericTypes.ToArray()),
             6 => typeof(TypeMirror<,,,,,>).MakeGenericType(genericTypes.ToArray()),
             7 => typeof(TypeMirror<,,,,,,>).MakeGenericType(genericTypes.ToArray()),
-            _ => throw new NotSupportedException("GenericWrapper for more than 4 types is not supported.")
+            8 => typeof(TypeMirror<,,,,,,,>).MakeGenericType(genericTypes.ToArray()),
+                _ => throw new NotSupportedException($"GenericWrapper for more than 8 types is not supported, but {typeof(T)} has {genericTypes.Count}.")
         };
 
         RuntimeTypeModel.Default[typeof(TypeMirror)].AddSubType(TypeMirror.SubTypeFieldNumber++, wrapperType);
@@ -118,6 +122,7 @@ public abstract class MergeSurrogateBase<T> where T : new() {
     protected T? FromMirror(TypeMirror clone) {
         if (clone == null) return default;
         T target = GetDeserializationTarget();
+        if (clone.tags == null) return target; // protobuf wil convert empty arrays to null
         for (int i = 0; i < clone.tags.Length; i++) {
             int tag = clone.tags[i];
             object value = clone.Get(i);
@@ -138,7 +143,9 @@ public abstract class MergeSurrogateBase<T> where T : new() {
 
     private object HandleOverwriteListFlag(T target, Type memberType, object memberValue, object value, int tag) {
         if (!overwriteListFlags[tag] && memberType.IsAssignableTo(typeof(ICollection))) {
-            if (memberType.IsAssignableTo(typeof(IList))) {
+            if (memberType.IsArray) {
+                return value ?? Activator.CreateInstance(memberType);
+            } else if (memberType.IsAssignableTo(typeof(IList))) {
                 IList memberList = (IList) memberValue;
                 if (memberList == null) return value;
                 WriteToList(memberList, value);
@@ -409,5 +416,47 @@ public class TypeMirror<T1, T2, T3, T4, T5, T6, T7> : TypeMirror {
     
     public override string ToString() {
         return $"{typeof(T1).Name}: {value1}\n{typeof(T2).Name}: {value2}\n{typeof(T3).Name}: {value3}\n{typeof(T4).Name}: {value4}\n{typeof(T5).Name}: {value5}\n{typeof(T6).Name}: {value6}\n{typeof(T7).Name}: {value7}";
+    }
+}
+
+[ProtoContract]
+public class TypeMirror<T1, T2, T3, T4, T5, T6, T7, T8> : TypeMirror {
+    [ProtoMember(1)] public T1 value1;
+    [ProtoMember(2)] public T2 value2;
+    [ProtoMember(3)] public T3 value3;
+    [ProtoMember(4)] public T4 value4;
+    [ProtoMember(5)] public T5 value5;
+    [ProtoMember(6)] public T6 value6;
+    [ProtoMember(7)] public T7 value7;
+    [ProtoMember(8)] public T8 value8;
+    
+    public override void Set(params object[] values) {
+        if (values.Length != 8) throw new ArgumentException("GenericWrapper<T1, T2, T3, T4, T5, T6, T7, T8> expects exactly eight values.");
+        value1 = (T1) values[0];
+        value2 = (T2) values[1];
+        value3 = (T3) values[2];
+        value4 = (T4) values[3];
+        value5 = (T5) values[4];
+        value6 = (T6) values[5];
+        value7 = (T7) values[6];
+        value8 = (T8) values[7];
+    }
+    
+    public override object Get(int index) {
+        return index switch {
+            0 => value1,
+            1 => value2,
+            2 => value3,
+            3 => value4,
+            4 => value5,
+            5 => value6,
+            6 => value7,
+            7 => value8,
+            _ => throw new ArgumentOutOfRangeException(nameof(index), "GenericWrapper<T1, T2, T3, T4, T5, T6, T7, T8> only has eight values at indices 0 to 7.")
+        };
+    }
+    
+    public override string ToString() {
+        return $"{typeof(T1).Name}: {value1}\n{typeof(T2).Name}: {value2}\n{typeof(T3).Name}: {value3}\n{typeof(T4).Name}: {value4}\n{typeof(T5).Name}: {value5}\n{typeof(T6).Name}: {value6}\n{typeof(T7).Name}: {value7}\n{typeof(T8).Name}: {value8}";
     }
 }

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://c7umrayerwj0m"]
+
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_pofl4"]
+[ext_resource type="Resource" uid="uid://oll2le0iflsv" path="res://assets/items/components/metal_plate.tres" id="1_t7ia7"]
+[ext_resource type="Texture2D" uid="uid://baxf26rvnth55" path="res://assets/items/absorbsion_guard.jpg" id="1_yc1hs"]
+[ext_resource type="Resource" uid="uid://cdr5pd15av0vo" path="res://assets/items/components/soft_padding.tres" id="2_oooxc"]
+
+[resource]
+script = ExtResource("1_pofl4")
+Name = "Absorbsion Guard"
+Category = 1
+Description = ""
+Icon = ExtResource("1_yc1hs")
+CraftedFromA = ExtResource("1_t7ia7")
+CraftedFromB = ExtResource("2_oooxc")
+Stats = Array[Object]([])

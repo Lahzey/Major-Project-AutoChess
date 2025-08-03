@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://bhkpgatcjv5pr"]
+
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_c1pku"]
+[ext_resource type="Resource" uid="uid://cdr5pd15av0vo" path="res://assets/items/components/soft_padding.tres" id="1_yc5jk"]
+[ext_resource type="Resource" uid="uid://pys1hufuwj3k" path="res://assets/items/components/glass_shard.tres" id="2_yekyj"]
+[ext_resource type="Texture2D" uid="uid://bl0r8lk3g746c" path="res://assets/items/pillowknife.jpg" id="3_rpiua"]
+
+[resource]
+script = ExtResource("1_c1pku")
+Name = "Pillowknife"
+Category = 1
+Description = ""
+Icon = ExtResource("3_rpiua")
+CraftedFromA = ExtResource("1_yc5jk")
+CraftedFromB = ExtResource("2_yekyj")
+Stats = null

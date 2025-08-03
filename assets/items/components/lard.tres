@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://d1vnu8i30ujxb"]
+
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_61cnj"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="1_ld77o"]
+[ext_resource type="Texture2D" uid="uid://cbfskvdseoi1k" path="res://assets/items/components/lard.jpg" id="1_pxddh"]
+
+[sub_resource type="Resource" id="Resource_tbl1j"]
+script = ExtResource("1_ld77o")
+StatType = "Max Health"
+StatValue = 100.0
+
+[resource]
+script = ExtResource("1_61cnj")
+Name = "Lard"
+Category = 0
+Description = "[color=gray][i]A crafting component that can be turned into various defensive items.[/i][/color]"
+Icon = ExtResource("1_pxddh")
+Stats = Array[Object]([SubResource("Resource_tbl1j")])

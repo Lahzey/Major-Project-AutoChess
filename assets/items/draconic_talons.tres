@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://4ybjdmy0v56u"]
+
+[ext_resource type="Resource" uid="uid://cj6b31eh3cniv" path="res://assets/items/components/magical_fabric.tres" id="1_icgwk"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_ndoud"]
+[ext_resource type="Resource" uid="uid://pys1hufuwj3k" path="res://assets/items/components/glass_shard.tres" id="2_3on36"]
+[ext_resource type="Texture2D" uid="uid://dct7l16p666dy" path="res://assets/items/draconic_talons.jpg" id="3_rvxu6"]
+
+[resource]
+script = ExtResource("1_ndoud")
+Name = "Draconic Talons"
+Category = 1
+Description = ""
+Icon = ExtResource("3_rvxu6")
+CraftedFromA = ExtResource("1_icgwk")
+CraftedFromB = ExtResource("2_3on36")
+Stats = null

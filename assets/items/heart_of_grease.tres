@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=6 format=3 uid="uid://bi4uk13wn5qqw"]
+
+[ext_resource type="Resource" uid="uid://d1vnu8i30ujxb" path="res://assets/items/components/lard.tres" id="1_8j62p"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_pvcq6"]
+[ext_resource type="Texture2D" uid="uid://dp3e3b6qcc7tg" path="res://assets/items/heart_of_grease.jpg" id="2_fgwi7"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="3_qls5i"]
+
+[sub_resource type="Resource" id="Resource_omk2b"]
+script = ExtResource("3_qls5i")
+StatType = "Max Health"
+StatValue = 1000.0
+
+[resource]
+script = ExtResource("1_pvcq6")
+Name = "Heart of Grease"
+Category = 1
+Description = ""
+Icon = ExtResource("2_fgwi7")
+CraftedFromA = ExtResource("1_8j62p")
+CraftedFromB = ExtResource("1_8j62p")
+Stats = Array[Object]([SubResource("Resource_omk2b")])

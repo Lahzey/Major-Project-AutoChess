@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://ci6q74hcc5yyu"]
+
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_dynru"]
+[ext_resource type="Resource" uid="uid://cj6b31eh3cniv" path="res://assets/items/components/magical_fabric.tres" id="1_oh53x"]
+[ext_resource type="Resource" uid="uid://bcj4yay71ptoa" path="res://assets/items/components/leather_handle.tres" id="2_0uonm"]
+[ext_resource type="Texture2D" uid="uid://nlynjhcc6o5q" path="res://assets/items/silkfang.jpg" id="3_8giih"]
+
+[resource]
+script = ExtResource("1_dynru")
+Name = "Silkfang"
+Category = 1
+Description = ""
+Icon = ExtResource("3_8giih")
+CraftedFromA = ExtResource("1_oh53x")
+CraftedFromB = ExtResource("2_0uonm")
+Stats = null

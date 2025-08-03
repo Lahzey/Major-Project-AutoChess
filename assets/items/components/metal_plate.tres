@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://oll2le0iflsv"]
+
+[ext_resource type="Texture2D" uid="uid://b6eioemt5csbk" path="res://assets/items/components/metal_plate.jpg" id="1_a3tsy"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_aqgjy"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="1_byxl8"]
+
+[sub_resource type="Resource" id="Resource_vthoo"]
+script = ExtResource("1_byxl8")
+StatType = "Armor"
+StatValue = 10.0
+
+[resource]
+script = ExtResource("1_aqgjy")
+Name = "Metal Plate"
+Category = 0
+Description = "[color=gray][i]A crafting component that can be turned into various items that provide protection from physical attacks.[/i][/color]"
+Icon = ExtResource("1_a3tsy")
+Stats = Array[Object]([SubResource("Resource_vthoo")])

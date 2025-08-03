@@ -5,7 +5,7 @@ using MPAutoChess.logic.core.events;
 using MPAutoChess.logic.core.networking;
 using MPAutoChess.logic.core.player;
 using MPAutoChess.logic.core.unit;
-using MPAutoChess.logic.core.util;
+using MPAutoChess.logic.util;
 using ProtoBuf;
 using PlayerController = MPAutoChess.logic.core.player.PlayerController;
 
@@ -44,7 +44,6 @@ public partial class SingleUnitSlot : UnitContainer {
         PlayerController.Current.OnDragStart += OnDragStart;
         PlayerController.Current.OnDragProcess += OnDragProcess;
         PlayerController.Current.OnDragEnd += OnDragEnd;
-        GD.Print("Added callbacks to " + PlayerController.Current);
     }
     
     public override void _ExitTree() {
@@ -115,11 +114,9 @@ public partial class SingleUnitSlot : UnitContainer {
             UnitInstance unitInstance = Unit.GetOrCreatePassiveInstance();
             if (unitInstance.GetParent() == null) {
                 AddChild(unitInstance);
-                GD.Print("   Added child " + unitInstance.GetPath());
                 unitInstance.Visible = true;
             } else if (unitInstance.GetParent() != this) {
                 unitInstance.Reparent(this);
-                GD.Print("   Reparented child" + unitInstance.GetPath());
             }
             unitInstance.Position = Vector2.Zero;
         }

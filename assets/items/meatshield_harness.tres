@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://dril22g8uk0uy"]
+
+[ext_resource type="Texture2D" uid="uid://5jg6qcuavhe" path="res://assets/items/meatshield_harness.jpg" id="1_bqynd"]
+[ext_resource type="Resource" uid="uid://d1vnu8i30ujxb" path="res://assets/items/components/lard.tres" id="1_ij2q2"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_v8svx"]
+[ext_resource type="Resource" uid="uid://oll2le0iflsv" path="res://assets/items/components/metal_plate.tres" id="2_t25i4"]
+
+[resource]
+script = ExtResource("1_v8svx")
+Name = "Meatshield Harness"
+Category = 1
+Description = ""
+Icon = ExtResource("1_bqynd")
+CraftedFromA = ExtResource("1_ij2q2")
+CraftedFromB = ExtResource("2_t25i4")
+Stats = null

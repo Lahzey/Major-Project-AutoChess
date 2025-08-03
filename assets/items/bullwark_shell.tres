@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=4 format=3 uid="uid://coetvkf4ctpq7"]
+
+[ext_resource type="Texture2D" uid="uid://c7uh8xwqphhck" path="res://assets/items/bullwark_shell.jpg" id="1_cilaq"]
+[ext_resource type="Resource" uid="uid://oll2le0iflsv" path="res://assets/items/components/metal_plate.tres" id="1_df7ir"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_ecqyb"]
+
+[resource]
+script = ExtResource("1_ecqyb")
+Name = "Bullwark Shell"
+Category = 1
+Description = ""
+Icon = ExtResource("1_cilaq")
+CraftedFromA = ExtResource("1_df7ir")
+CraftedFromB = ExtResource("1_df7ir")
+Stats = null

@@ -1,0 +1,27 @@
+[gd_scene load_steps=4 format=3 uid="uid://b6pkrbya2n61"]
+
+[ext_resource type="Script" path="res://logic/core/unit/ResourceBar.cs" id="1_6wsrh"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ce7ps"]
+bg_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wjjew"]
+bg_color = Color(0.553, 0, 0, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[node name="ResourceBar" type="ProgressBar"]
+offset_right = 100.0
+offset_bottom = 15.0
+theme_override_styles/background = SubResource("StyleBoxFlat_ce7ps")
+theme_override_styles/fill = SubResource("StyleBoxFlat_wjjew")
+max_value = 5000.0
+value = 2500.0
+show_percentage = false
+script = ExtResource("1_6wsrh")

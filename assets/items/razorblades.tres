@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=6 format=3 uid="uid://b5fw1jouj7mx3"]
+
+[ext_resource type="Resource" uid="uid://c7tf56toxso2w" path="res://assets/items/components/sharp_blade.tres" id="1_doc4t"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_kuorp"]
+[ext_resource type="Texture2D" uid="uid://djbpj1qpuofd3" path="res://assets/items/razorblades.jpg" id="2_i40s4"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="3_v3tuo"]
+
+[sub_resource type="Resource" id="Resource_b1dio"]
+script = ExtResource("3_v3tuo")
+StatType = "Strength"
+StatValue = 50.0
+
+[resource]
+script = ExtResource("1_kuorp")
+Name = "Razorblades"
+Category = 1
+Description = ""
+Icon = ExtResource("2_i40s4")
+CraftedFromA = ExtResource("1_doc4t")
+CraftedFromB = ExtResource("1_doc4t")
+Stats = Array[Object]([SubResource("Resource_b1dio")])

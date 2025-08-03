@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://b6drv4chw4xy0"]
+
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_esj2d"]
+[ext_resource type="Resource" uid="uid://cqcj6ce28vc1b" path="res://assets/items/components/power_orb.tres" id="1_s6bcj"]
+[ext_resource type="Resource" uid="uid://pys1hufuwj3k" path="res://assets/items/components/glass_shard.tres" id="2_aa4it"]
+[ext_resource type="Texture2D" uid="uid://djgm1o0hkntyj" path="res://assets/items/shattered_orb.jpg" id="3_i1cis"]
+
+[resource]
+script = ExtResource("1_esj2d")
+Name = "Shattered Orb"
+Category = 1
+Description = ""
+Icon = ExtResource("3_i1cis")
+CraftedFromA = ExtResource("1_s6bcj")
+CraftedFromB = ExtResource("2_aa4it")
+Stats = null

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://bcj4yay71ptoa"]
+
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="1_3hfg6"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_r8esc"]
+[ext_resource type="Texture2D" uid="uid://7103mwwn008q" path="res://assets/items/components/leather_handle.jpg" id="1_xkedr"]
+
+[sub_resource type="Resource" id="Resource_fxt4e"]
+script = ExtResource("1_3hfg6")
+StatType = "Bonus Attack Speed"
+StatValue = 0.1
+
+[resource]
+script = ExtResource("1_r8esc")
+Name = "Leather Handle"
+Category = 0
+Description = "[color=gray][i]A crafting component that can be turned into various attack speed items.[/i][/color]"
+Icon = ExtResource("1_xkedr")
+Stats = Array[Object]([SubResource("Resource_fxt4e")])

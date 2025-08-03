@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://4t2t36j6luwn"]
+
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_etykn"]
+[ext_resource type="Resource" uid="uid://oll2le0iflsv" path="res://assets/items/components/metal_plate.tres" id="1_tfi2t"]
+[ext_resource type="Resource" uid="uid://cj6b31eh3cniv" path="res://assets/items/components/magical_fabric.tres" id="2_jmuof"]
+[ext_resource type="Texture2D" uid="uid://5harxxh8co25" path="res://assets/items/winters_ward.jpg" id="3_vbhit"]
+
+[resource]
+script = ExtResource("1_etykn")
+Name = "Winters Ward"
+Category = 1
+Description = ""
+Icon = ExtResource("3_vbhit")
+CraftedFromA = ExtResource("1_tfi2t")
+CraftedFromB = ExtResource("2_jmuof")
+Stats = null

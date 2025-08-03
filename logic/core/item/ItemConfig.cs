@@ -1,4 +1,7 @@
+using System.Collections.Generic;
+using System.Linq;
 using Godot;
+using MPAutoChess.logic.core.session;
 
 namespace MPAutoChess.logic.core.item;
 
@@ -14,6 +17,13 @@ public partial class ItemConfig : Resource {
         }
 
         return null;
+    }
+
+    public ItemType GetRandomItemType(ItemCategory category) {
+        IEnumerable<ItemType> filteredTypes = ItemTypes.Where(type => type.Category == category);
+        int count = filteredTypes.Count();
+        int randomIndex = GameSession.Instance.Random.Next(count);
+        return filteredTypes.ElementAt(randomIndex);
     }
     
 }

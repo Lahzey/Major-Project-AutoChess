@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://bkeefyf8eylio"]
+
+[ext_resource type="Resource" uid="uid://c7tf56toxso2w" path="res://assets/items/components/sharp_blade.tres" id="1_5l3ji"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_tkh6i"]
+[ext_resource type="Resource" uid="uid://cqcj6ce28vc1b" path="res://assets/items/components/power_orb.tres" id="2_talwb"]
+[ext_resource type="Texture2D" uid="uid://b3crletrcukf7" path="res://assets/items/fanlight.jpg" id="3_8ye6s"]
+
+[resource]
+script = ExtResource("1_tkh6i")
+Name = "Fanlight"
+Category = 1
+Description = ""
+Icon = ExtResource("3_8ye6s")
+CraftedFromA = ExtResource("1_5l3ji")
+CraftedFromB = ExtResource("2_talwb")
+Stats = null

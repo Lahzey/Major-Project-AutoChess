@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://rv2blbxsqmpq"]
+
+[ext_resource type="Resource" uid="uid://bcj4yay71ptoa" path="res://assets/items/components/leather_handle.tres" id="1_cp5r1"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_tho4j"]
+[ext_resource type="Resource" uid="uid://cqcj6ce28vc1b" path="res://assets/items/components/power_orb.tres" id="2_1tiqk"]
+[ext_resource type="Texture2D" uid="uid://ctorgj0uo1hu4" path="res://assets/items/stormleash.jpg" id="3_t02e5"]
+
+[resource]
+script = ExtResource("1_tho4j")
+Name = "Stormleash"
+Category = 1
+Description = ""
+Icon = ExtResource("3_t02e5")
+CraftedFromA = ExtResource("1_cp5r1")
+CraftedFromB = ExtResource("2_1tiqk")
+Stats = null

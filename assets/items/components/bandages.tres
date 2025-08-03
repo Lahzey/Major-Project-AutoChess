@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://cvyfbw5oepnmu"]
+
+[ext_resource type="Texture2D" uid="uid://cww38lla1iu4c" path="res://assets/items/components/bandages.jpg" id="1_2e1ji"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="1_fjco3"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_tphdq"]
+
+[sub_resource type="Resource" id="Resource_5n67c"]
+script = ExtResource("1_fjco3")
+StatType = "Health Regeneration"
+StatValue = 10.0
+
+[resource]
+script = ExtResource("1_tphdq")
+Name = "Bandages"
+Category = 0
+Description = "[color=gray][i]A crafting component that can be turned into various healing items.[/i][/color]"
+Icon = ExtResource("1_2e1ji")
+Stats = Array[Object]([SubResource("Resource_5n67c")])

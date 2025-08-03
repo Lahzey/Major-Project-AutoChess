@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://bwrgmav5wju2d"]
+
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_i5f6w"]
+[ext_resource type="Resource" uid="uid://cvyfbw5oepnmu" path="res://assets/items/components/bandages.tres" id="1_wpaya"]
+[ext_resource type="Resource" uid="uid://cqcj6ce28vc1b" path="res://assets/items/components/power_orb.tres" id="2_64p36"]
+[ext_resource type="Texture2D" uid="uid://b1jma6pdhxxgo" path="res://assets/items/spirit_mender.jpg" id="3_htu3k"]
+
+[resource]
+script = ExtResource("1_i5f6w")
+Name = "Spirit Menders"
+Category = 1
+Description = ""
+Icon = ExtResource("3_htu3k")
+CraftedFromA = ExtResource("1_wpaya")
+CraftedFromB = ExtResource("2_64p36")
+Stats = null
