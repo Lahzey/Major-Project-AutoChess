@@ -20,7 +20,7 @@ public abstract class ShopOffer {
         get => purchased;
         protected set {
             purchased = value;
-            if (ServerController.Instance.IsServer) ServerController.Instance.OnChange(PlayerController.Current.Player.Shop, PlayerController.Current.Player);
+            if (ServerController.Instance.IsServer) ServerController.Instance.PublishChange(PlayerController.Current.Player.Shop, PlayerController.Current.Player);
         }
     }
     

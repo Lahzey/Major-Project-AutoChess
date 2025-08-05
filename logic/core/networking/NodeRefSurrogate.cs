@@ -1,5 +1,6 @@
 using System;
 using Godot;
+using MPAutoChess.logic.util;
 using ProtoBuf;
 
 namespace MPAutoChess.logic.core.networking;
@@ -11,9 +12,8 @@ public class NodeRefSurrogate<T> where T : Node {
 
     public static implicit operator T?(NodeRefSurrogate<T> surrogate) {
         if (surrogate == null) return null;
-        if (surrogate.nodePath == null) throw new ArgumentException("NodeRefSurrogate must have an nodePath set.");
-        
-        Node existingNode = ServerController.Instance.GameSession.GetNodeOrNull(surrogate.nodePath);
+
+        Node existingNode = SerializerExtensions.FindNode(surrogate.nodePath);
         if (existingNode == null) {
             throw new ArgumentException($"Failed to deserialize {typeof(T)}. NodeRefSurrogate could not find node at path: {surrogate.nodePath}.");
         } else if (existingNode is T existing) {
@@ -27,7 +27,7 @@ public class NodeRefSurrogate<T> where T : Node {
         if (obj == null) return null;
         if (obj.GetParent() == null) throw new ArgumentException($"Failed to serialize {typeof(T)}. Cannot serialize Nodes that are not part of the scene tree.");
         GD.Print("Using NodeRefSurrogate for " + typeof(T) + "(" + obj.GetType() + ")");
-        return new  NodeRefSurrogate<T> { nodePath = ServerController.Instance.GameSession.GetPathTo(obj) };
+        return new  NodeRefSurrogate<T> { nodePath = SerializerExtensions.GetNodePath(obj) };
     }
 
 }

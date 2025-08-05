@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using Godot;
 using MPAutoChess.logic.core.combat;
 using MPAutoChess.logic.core.environment;
@@ -11,9 +13,16 @@ namespace MPAutoChess.logic.core.session;
 [ProtoContract]
 public partial class CombatPhase : GamePhase {
 
-    private Dictionary<Player, Combat> combats = new Dictionary<Player, Combat>();
+    [ProtoMember(1)] private List<Combat> combats = new List<Combat>();
+    [ProtoMember(2)] private Dictionary<long, int> playerCombatIndices = new Dictionary<long, int>();
 
-    public virtual void CreateCombats() {
+    public CombatPhase() { } // for Protobuf serialization
+
+    public CombatPhase(IEnumerable<Player> participants) {
+        CreateCombats(participants);
+    }
+
+    public void CreateCombats(IEnumerable<Player> players) {
         if (GameSession.Instance.Players.Length <= 1) {
             throw new System.InvalidOperationException("Cannot create combats with less than 2 players.");
         }
@@ -21,21 +30,25 @@ public partial class CombatPhase : GamePhase {
         for (int i = 0; i < GameSession.Instance.Players.Length; i+=2) {
             Player playerA = GameSession.Instance.Players[i];
             Player playerB = GameSession.Instance.Players[(i + 1) % GameSession.Instance.Players.Length];
+            int combatIndex = combats.Count;
+            bool isCloneFight = (i + 1) >= GameSession.Instance.Players.Length;
+            
             Combat combat = new Combat();
-            combat.Prepare(playerA, playerB);
+            combat.Prepare(playerA, playerB, isCloneFight);
             AddChild(combat);
-            combat.GlobalPosition = playerA.Arena.Board.GlobalPosition + new Vector2(playerA.Arena.Board.Columns * 0.5f, 0);
+            combat.GlobalPosition = playerA.Arena.Board.GlobalPosition;
+            
+            combat.Name = "Combat" + combatIndex;
+            combats.Add(combat);
             
             // map players to their respective combat
-            combats.Add(playerA, combat);
-            if (i+1 < GameSession.Instance.Players.Length) { // if count is odd the last player fights a clone of the first player
-                combats.Add(playerB, combat);
-            }
+            playerCombatIndices.Add(playerA.Account.Id, combatIndex);
+            if (!isCloneFight) playerCombatIndices.Add(playerB.Account.Id, combatIndex);
         }
     }
 
-    public override string GetName(Player forPlayer) {
-        Combat combat = combats[forPlayer];
+    public override string GetTitle(Player forPlayer) {
+        Combat combat = combats[playerCombatIndices[forPlayer.Account.Id]];
         Player otherPlayer = combat.PlayerA == forPlayer ? combat.PlayerB : combat.PlayerA;
         return $"Combat against {otherPlayer.Account.Name}";
     }
@@ -45,11 +58,20 @@ public partial class CombatPhase : GamePhase {
     }
     
     public override void Start() {
-        CreateCombats();
+        foreach (Combat combat in combats) {
+            combat.Start();
+        }
         if (ServerController.Instance.IsServer) return;
         
+        new Thread(() => {
+            Thread.Sleep(500);
+            CallDeferred(MethodName.SetupLocal);
+        }).Start();
+    }
+
+    private void SetupLocal() {
         SetBoardsVisible(false);
-        Combat playerCombat = combats[PlayerController.Current.Player];
+        Combat playerCombat = combats[playerCombatIndices[PlayerController.Current.Player.Account.Id]];
         CameraController.Instance.Cover(playerCombat.GlobalBounds);
     }
 
@@ -58,11 +80,11 @@ public partial class CombatPhase : GamePhase {
     }
 
     public override void End() {
-        if (ServerController.Instance.IsServer) return;
-        
-        SetBoardsVisible(false);
-        Arena arena = PlayerController.Current.Player.Arena;
-        CameraController.Instance.Cover(new Rect2(arena.GlobalPosition, arena.ArenaSize));
+        if (!ServerController.Instance.IsServer) {
+            SetBoardsVisible(false);
+            Arena arena = PlayerController.Current.Player.Arena;
+            CameraController.Instance.Cover(new Rect2(arena.GlobalPosition, arena.ArenaSize));
+        }
     }
 
     private void SetBoardsVisible(bool visible) {

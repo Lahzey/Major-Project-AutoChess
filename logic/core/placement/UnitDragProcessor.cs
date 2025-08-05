@@ -3,6 +3,7 @@ using Godot;
 using MPAutoChess.logic.core.player;
 using MPAutoChess.logic.core.unit;
 using MPAutoChess.logic.util;
+using Environment = System.Environment;
 
 namespace MPAutoChess.logic.core.placement;
 
@@ -13,7 +14,7 @@ public class UnitDragProcessor {
     public UnitInstance UnitInstance { get; private set; }
     public Vector2 DragStartPosition { get; private set; }
     public Vector2 OriginalUnitPosition { get; private set; }
-    public DateTime DragStartTime { get; private set; }
+    public long DragStartTime { get; private set; }
     
     public IUnitDropTarget? HoveredDropTarget { get; private set; }
     public Vector2 CurrentMousePosition { get; private set; }
@@ -22,7 +23,7 @@ public class UnitDragProcessor {
         UnitInstance = unitInstance;
         DragStartPosition = unitInstance.GetViewport().GetCamera2D().GetGlobalMousePosition();;
         OriginalUnitPosition = unitInstance.GlobalPosition;
-        DragStartTime = DateTime.Now;
+        DragStartTime = Environment.TickCount64;
         CurrentMousePosition = DragStartPosition;
         Running = true;
     }

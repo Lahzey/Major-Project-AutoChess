@@ -40,7 +40,7 @@ public class Inventory : IIdentifiable {
         if (!AutoExpand) return false;
         int interval = Math.Max(ExpansionInterval, 1);
         Resize(Size + interval);
-        ServerController.Instance.OnChange(this);
+        ServerController.Instance.PublishChange(this);
         return true;
     }
 
@@ -98,7 +98,7 @@ public class Inventory : IIdentifiable {
         }
         
         itemSlots = newSlots;
-        ServerController.Instance.OnChange(this);
+        ServerController.Instance.PublishChange(this);
     }
 
     public bool AddItem(Item item, bool allowExpansion = true) {
@@ -106,7 +106,7 @@ public class Inventory : IIdentifiable {
             ItemSlot slot = itemSlots[i];
             if (slot.GetItem() != null) continue;
             slot.SetItem(item);
-            ServerController.Instance.OnChange(this);
+            ServerController.Instance.PublishChange(this);
             return true;
         }
         if (!allowExpansion) return false;
@@ -127,7 +127,7 @@ public class Inventory : IIdentifiable {
         if (index >= Size) throw new IndexOutOfRangeException();
         Item? oldItem = itemSlots[index].GetItem();
         itemSlots[index].SetItem(item);
-        ServerController.Instance.OnChange(this);
+        ServerController.Instance.PublishChange(this);
         return oldItem;
     }
 }

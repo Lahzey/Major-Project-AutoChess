@@ -10,13 +10,17 @@ namespace MPAutoChess.logic.core.session;
 [ProtoInclude(102, typeof(EchoCombatPhase))]
 public abstract partial class GamePhase : Node {
 
-    public abstract string GetName(Player forPlayer);
+    public double RemainingTime { get; set; }
+
+    public abstract string GetTitle(Player forPlayer);
 
     public abstract int GetPowerLevel();
 
     public abstract void Start();
 
-    public abstract bool IsFinished();
+    public virtual bool IsFinished() {
+        return RemainingTime <= 0;
+    }
 
     public abstract void End();
 

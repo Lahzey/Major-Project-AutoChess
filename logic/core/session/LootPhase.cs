@@ -27,7 +27,6 @@ public partial class LootPhase : GamePhase {
     
     private LootPhaseUI lootPhaseUI;
     private List<long> completedPlayers = new List<long>(); // used to track which players have completed the loot phase
-    private double countdownToEnd = GameSession.Instance.Mode.GetRoundTime();
 
     public static LootPhase Random() {
         LootPhase lootPhase = new LootPhase();
@@ -43,13 +42,11 @@ public partial class LootPhase : GamePhase {
     }
 
     public override void _Process(double delta) {
-        if (!ServerController.Instance.IsServer) return;
-        
-        countdownToEnd -= delta;
+        RemainingTime -= delta;
     }
 
-    public override string GetName(Player forPlayer) {
-        return "Choose some loot:";
+    public override string GetTitle(Player forPlayer) {
+        return "Loot";
     }
     
     public override int GetPowerLevel() {
@@ -69,11 +66,7 @@ public partial class LootPhase : GamePhase {
             lootPhaseUI.AddLootOption(option.GetTexture(), option.GetName(), option.GetDescription(), chooseCallback, option.IsEnabledFunc());
         }
 
-        PlayerUI.Instance.EncounterControls.AddChild(lootPhaseUI);
-    }
-
-    public override bool IsFinished() {
-        return countdownToEnd <= 0;
+        PlayerUI.Instance.GamePhaseControls.SetPhaseControls(lootPhaseUI);
     }
 
     public void ChooseLootOption(int index, bool respond) {
@@ -94,15 +87,15 @@ public partial class LootPhase : GamePhase {
         
         completedPlayers.Add(player.Account.Id);
         if (completedPlayers.Count == options.Count) {
-            countdownToEnd = Math.Min(countdownToEnd, ALL_COMPLETE_COUNTDOWN);
+            RemainingTime = Math.Min(RemainingTime, ALL_COMPLETE_COUNTDOWN);
         }
     }
 
     [Rpc(MultiplayerApi.RpcMode.Authority)]
     public void AfterLootChoose() {
         if (ServerController.Instance.IsServer) throw new InvalidOperationException("AfterLootChoose can only be called on the client.");
-        lootPhaseUI.TitleLabel.Text = "Waiting for other players to choose loot...";
         lootPhaseUI.LootOptionsContainer.SetVisible(false);
+        lootPhaseUI.TitleLabel.Text = "Waiting for other players...";
     }
     
     public override void End() {
@@ -122,6 +115,7 @@ public partial class LootPhase : GamePhase {
             }
         } else {
             lootPhaseUI.QueueFree();
+            lootPhaseUI = null;
         }
     }
 }
@@ -243,7 +237,7 @@ public class ItemOffer : LootOption {
         
         // for testing
         PlayerController.Current.Player.Inventory.AddItem(new Item(GD.Load<ItemType>("res://assets/items/heart_of_grease.tres")));
-        ItemType test = GameSession.Instance.GetItemConfig().GetRandomItemType(ItemCategory.COMPONENT);
-        PlayerController.Current.Player.Inventory.AddItem(new Item(test));
+        PlayerController.Current.Player.Inventory.AddItem(new Item(GameSession.Instance.GetItemConfig().GetRandomItemType(ItemCategory.COMPONENT)));
+        PlayerController.Current.Player.Inventory.AddItem(new Item(GameSession.Instance.GetItemConfig().GetRandomItemType(ItemCategory.COMPONENT)));
     }
 }

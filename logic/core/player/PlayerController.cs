@@ -9,6 +9,7 @@ using MPAutoChess.logic.core.session;
 using MPAutoChess.logic.core.shop;
 using MPAutoChess.logic.core.unit;
 using MPAutoChess.logic.util;
+using Environment = System.Environment;
 using UnitInstance = MPAutoChess.logic.core.unit.UnitInstance;
 
 namespace MPAutoChess.logic.core.player;
@@ -79,9 +80,9 @@ public partial class PlayerController : Node {
                 dragProcessor.Complete();
             }
         } else if(dragProcessor.Running) {
-            // Mouse up within 100 ms of mouse down: click to pickup -> click to drop (select and place)
-            // Mouse up after 100 ms of mouse down:  mouse down to pickup -> mouse up to drop (drag to destination)
-            if ((dragProcessor.DragStartTime - DateTime.Now).TotalMilliseconds > 100) {
+            // Mouse up within 250 ms of mouse down: click to pickup -> click to drop (select and place)
+            // Mouse up after 250 ms of mouse down:  mouse down to pickup -> mouse up to drop (drag to destination)
+            if ((Environment.TickCount64 - dragProcessor.DragStartTime) > 250) {
                 OnDragEnd?.Invoke(dragProcessor.UnitInstance.Unit);
                 dragProcessor.Complete();
             }
@@ -146,7 +147,8 @@ public partial class PlayerController : Node {
                 return;
             }
             if (unit.Container.GetPlayer() != Player || dropTarget.GetPlayer() != Player) {
-                throw new InvalidOperationException($"Unit or drop target not owned by current player. Unit Owner: {unit.Container.GetPlayer()?.Account.Id.ToString() ?? "null"} | Drop Target Owner: {dropTarget.GetPlayer()?.Account.Id.ToString() ?? "null"} | Current: {Player.Account.Id}");
+                GD.PrintErr($"Unit or drop target not owned by current player. Unit Owner: {unit.Container.GetPlayer()?.Account.Id.ToString() ?? "null"} | Drop Target Owner: {dropTarget.GetPlayer()?.Account.Id.ToString() ?? "null"} | Current: {Player.Account.Id}");
+                return;
             }
             dropTarget.OnUnitDrop(unit, placement);
         }, this);

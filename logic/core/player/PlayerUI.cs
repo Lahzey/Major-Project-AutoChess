@@ -1,6 +1,7 @@
 using System;
 using Godot;
 using MPAutoChess.logic.core.item;
+using MPAutoChess.logic.core.session;
 using MPAutoChess.logic.core.shop;
 
 namespace MPAutoChess.logic.core.player;
@@ -12,7 +13,7 @@ public partial class PlayerUI : Control {
     [Export] public Control FreeSpace { get; set; }
     [Export] public ShopUI Shop { get; set; }
     [Export] public InventoryPanel Inventory { get; set; }
-    [Export] public Control EncounterControls { get; set; }
+    [Export] public GamePhaseControls GamePhaseControls { get; set; }
 
     public override void _EnterTree() {
         Instance = this;

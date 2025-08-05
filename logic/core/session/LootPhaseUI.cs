@@ -4,7 +4,7 @@ using Godot;
 
 namespace MPAutoChess.logic.core.session;
 
-public partial class LootPhaseUI : VBoxContainer {
+public partial class LootPhaseUI : Control {
     
     [Export] public Label TitleLabel { get; set; }
     [Export] public Container LootOptionsContainer { get; set; }

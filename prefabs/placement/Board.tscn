@@ -5,23 +5,23 @@
 [ext_resource type="Texture2D" uid="uid://bon5pix2ghl2" path="res://assets/white.png" id="3_pmvq4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ilu51"]
-size = Vector2(16, 6)
+size = Vector2(20, 6)
 
 [node name="Board" type="Area2D" node_paths=PackedStringArray("GridTexture")]
 collision_layer = 2
 collision_mask = 0
 script = ExtResource("1_cp2je")
 GridTexture = NodePath("GridTexture")
-Columns = 16
+Columns = 20
 Rows = 6
 
 [node name="GridTexture" type="Sprite2D" parent="."]
 material = ExtResource("2_bdh65")
-position = Vector2(8, 3)
-scale = Vector2(16, 6)
+position = Vector2(10, 3)
+scale = Vector2(20, 6)
 texture = ExtResource("3_pmvq4")
 region_rect = Rect2(0, 0, 16, 8)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(8, 3)
+position = Vector2(10, 3)
 shape = SubResource("RectangleShape2D_ilu51")

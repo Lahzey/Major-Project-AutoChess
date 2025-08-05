@@ -140,12 +140,10 @@ public partial class ServerController : Node {
     }
     
     [Rpc(MultiplayerApi.RpcMode.Authority)]
-    private async void TransferGameSession(byte[] serializedGameSession) {
+    private void TransferGameSession(byte[] serializedGameSession) {
         if (IsServer) throw new InvalidOperationException("TransferGameSession can only be called on the client.");
         
         LoadingScreen.Instance.SetStage(LoadingStage.LOADING_GAME);
-        
-        await ToSignal(GetTree().CreateTimer(1), SceneTreeTimer.SignalName.Timeout); // give the engine time to initialize the GameSession and player nodes, so we can find and deserialize into the properly
         
         GameSession receivedGameSession = SerializerExtensions.Deserialize<GameSession>(serializedGameSession);
         if (receivedGameSession != GameSession) {
@@ -195,25 +193,25 @@ public partial class ServerController : Node {
         LoadingScreen.Instance.SetStage(LoadingStage.STARTED);
     }
 
-    public void OnChange(IIdentifiable identifiable, Player? viewableBy = null) {
+    public void PublishChange(IIdentifiable changedIdentifiable, Player? viewableBy = null) {
         if (!IsServer) return;
 
         // TODO: collect all changes in a frame and send them in one RPC call (only really useful once reference tracking is fixed with a different or custom serializer)
         if (viewableBy == null) {
-            Rpc(MethodName.TransferIdentifiable, SerializerExtensions.Serialize(identifiable), identifiable.GetType().AssemblyQualifiedName);
+            Rpc(MethodName.TransferIdentifiable, SerializerExtensions.Serialize(changedIdentifiable), changedIdentifiable.GetType().AssemblyQualifiedName);
         } else {
-            RpcId(GetPeerIdFor(viewableBy), MethodName.TransferIdentifiable, SerializerExtensions.Serialize(identifiable), identifiable.GetType().AssemblyQualifiedName);
+            RpcId(GetPeerIdFor(viewableBy), MethodName.TransferIdentifiable, SerializerExtensions.Serialize(changedIdentifiable), changedIdentifiable.GetType().AssemblyQualifiedName);
         }
     }
     
-    public void OnChange(Node node, Player? viewableBy = null) {
+    public void PublishChange(Node changedNode, Player? viewableBy = null) {
         if (!IsServer) return;
 
         // TODO: collect all changes in a frame and send them in one RPC call (only really useful once reference tracking is fixed with a different or custom serializer)
         if (viewableBy == null) {
-            Rpc(MethodName.TransferNode, SerializerExtensions.Serialize(node), node.GetType().AssemblyQualifiedName);
+            Rpc(MethodName.TransferNode, SerializerExtensions.Serialize(changedNode), changedNode.GetType().AssemblyQualifiedName);
         } else {
-            RpcId(GetPeerIdFor(viewableBy), MethodName.TransferNode, SerializerExtensions.Serialize(node), node.GetType().AssemblyQualifiedName);
+            RpcId(GetPeerIdFor(viewableBy), MethodName.TransferNode, SerializerExtensions.Serialize(changedNode), changedNode.GetType().AssemblyQualifiedName);
         }
     }
     

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -48,6 +49,7 @@ public static class SerializerExtensions {
         int length = BitConverter.ToInt32(data, 0);
         using MemoryStream headerStream = new MemoryStream(data, sizeof(int), length);
         NodeStructure root = Serializer.Deserialize<NodeStructure>(headerStream);
+        NodeStructure.root = root;
         root.EnsureCreated(null);
         stopwatch.Stop();
         GD.Print($"Deserialized NodeStructure in {stopwatch.ElapsedMilliseconds}ms, size: {length + sizeof(int)} bytes");
@@ -57,10 +59,26 @@ public static class SerializerExtensions {
         using MemoryStream contentStream = new MemoryStream(data, length + sizeof(int), data.Length - length - sizeof(int));
         T result = type != null ? (T) Serializer.Deserialize(type, contentStream) : Serializer.Deserialize<T>(contentStream);
         stopwatch.Stop();
-        GD.Print($"Deserialized {typeof(T).Name} in {stopwatch.ElapsedMilliseconds}ms, size: {data.Length - length - sizeof(int)} bytes");
+        GD.Print($"Deserialized {type?.Name ?? typeof(T).Name} in {stopwatch.ElapsedMilliseconds}ms, size: {data.Length - length - sizeof(int)} bytes");
+        
+        NodeQueue.AddToSceneTree();
         return result;
     }
-    
+
+    public static string GetNodePath(Node node) {
+        if (node == ServerController.Instance.GameSession) {
+            return null;
+        } else if (ServerController.Instance.GameSession.IsAncestorOf(node)) {
+            return ServerController.Instance.GameSession.GetPathTo(node);
+        } else {
+            throw new ArgumentException($"Cannot get node path of {node.GetType()} at {node.GetPath()}. Node must be a child of the GameSession or the GameSession itself.", nameof(node));
+        }
+    }
+
+    public static Node FindNode(string path) {
+        if (path == null) return ServerController.Instance.GameSession;
+        return ServerController.Instance.GameSession.GetNodeOrNull(path) ?? NodeQueue.Find(path);
+    }
 }
 
 [ProtoContract]
@@ -75,6 +93,8 @@ public class NodeStructure {
     [ProtoMember(3)] public string packedScenePath;
     [ProtoMember(4)] public Transform2D transform;
     [ProtoMember(5)] public List<NodeStructure> children = new List<NodeStructure>();
+
+    private string fullPath;
 
     public static void InitializeRoot() {
         root = new NodeStructure {
@@ -117,16 +137,16 @@ public class NodeStructure {
             if (node == null) {
                 PackedScene createFrom = string.IsNullOrEmpty(packedScenePath) ? null : ResourceLoader.Load<PackedScene>(packedScenePath);
                 node = createFrom != null ? createFrom.Instantiate() : (Node) GetEmptyConstructor(nodeType).Invoke(Array.Empty<object>());
-                GD.Print($"Created {nodeType} with name '{nodeName}' under parent {parent.GetType()} at '{ServerController.Instance.GameSession.GetPathTo(parent)}' with packed scene '{packedScenePath}'.");
-                parent.AddChild(node);
                 node.Name = nodeName;
                 if (node is Node2D node2D) node2D.Transform = transform;
+                NodeQueue.Add(node, parent, fullPath);
             }
         } else {
             node = ServerController.Instance.GameSession;
         }
         
         foreach (NodeStructure child in children) {
+            child.fullPath = fullPath != null ? $"{fullPath}/{child.nodeName}" : child.nodeName;
             child.EnsureCreated(node);
         }
     }
@@ -146,5 +166,43 @@ public class NodeStructure {
 
     public override string ToString() {
         return ($"{nodeType}[{nodeName}] ({packedScenePath})\n" + string.Join("\n", children)).Replace("\n", "\n    ");
+    }
+}
+
+public static class NodeQueue {
+    private static List<Node> queue = new List<Node>();
+    private static List<Node> queueParents = new List<Node>();
+    private static Dictionary<string, Node> nodePaths = new Dictionary<string, Node>();
+
+    public static void Add(Node node, Node parent, string path) {
+        queue.Add(node);
+        queueParents.Add(parent);
+        nodePaths[path] = node;
+        GD.Print($"Added node {node.GetType()} at path {path} to queue.");
+    }
+
+    public static void AddToSceneTree() {
+        for (int i = 0; i < queue.Count; i++) {
+            Node node = queue[i];
+            Node parent = queueParents[i];
+            parent.AddChild(node);
+        }
+        queue.Clear();
+        queueParents.Clear();
+        nodePaths.Clear();
+    }
+
+    public static Node Find(string path) {
+        Node node = nodePaths.GetValueOrDefault(path);
+        if (node != null) return node;
+        
+        foreach (string nodePath in nodePaths.Keys) {
+            if (path.Contains(nodePath)) {
+                node = nodePaths[nodePath].GetNodeOrNull(path.Replace(nodePath + "/", ""));
+                if (node != null) return node;
+            }
+        }
+
+        return null;
     }
 }

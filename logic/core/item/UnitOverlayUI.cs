@@ -46,9 +46,12 @@ public partial class UnitOverlayUI : ItemDropTarget {
         ManaBar.Connect(UnitInstance, instance => instance.Stats.GetValue(StatType.MAX_MANA), instance => instance.CurrentMana);
         ManaBar.SetGaps(ResourceBar.NO_GAP, ResourceBar.NO_GAP);
         ManaBar.SetFillColor(ResourceBar.MANA_COLOR);
+        SetDefaultCursorShape(UnitInstance.IsCombatInstance ? CursorShape.Arrow : CursorShape.PointingHand);
     }
 
     public override void _Process(double delta) {
+        Visible = UnitInstance.IsVisibleInTree();
+        
         if (UnitInstance.Unit.EquippedItems.Count == 0) {
             IconsContainer.Visible = false;
             IconsSpacer.Visible = true;

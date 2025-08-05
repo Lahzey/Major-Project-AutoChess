@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" path="res://logic/core/environment/Arena.cs" id="1_qm1y1"]
 [ext_resource type="PackedScene" uid="uid://cj1ikyyt77nmw" path="res://prefabs/placement/Board.tscn" id="2_d0jws"]
+[ext_resource type="Texture2D" uid="uid://bmc1eb3barx23" path="res://prefabs/arenas/map.png" id="3_7j8o7"]
 [ext_resource type="PackedScene" uid="uid://cvu8csgnfw3cs" path="res://prefabs/placement/Bench.tscn" id="3_8u81s"]
-[ext_resource type="Texture2D" uid="uid://d3ooxsh8otlj1" path="res://prefabs/arenas/star_chart/star_chart.png" id="4_skien"]
 [ext_resource type="Texture2D" uid="uid://bon5pix2ghl2" path="res://assets/white.png" id="5_35plp"]
 
 [node name="Arena" type="Node2D" node_paths=PackedStringArray("Board", "Bench")]
@@ -20,12 +20,12 @@ texture = ExtResource("5_35plp")
 centered = false
 
 [node name="Background" type="Sprite2D" parent="."]
-position = Vector2(19.955, 10.265)
-scale = Vector2(0.0209269, 0.0202672)
-texture = ExtResource("4_skien")
+position = Vector2(19.98, 9.055)
+scale = Vector2(0.0625, 0.0625)
+texture = ExtResource("3_7j8o7")
 
 [node name="Board" parent="." instance=ExtResource("2_d0jws")]
-position = Vector2(12, 9)
+position = Vector2(10, 9)
 
 [node name="Bench" parent="." instance=ExtResource("3_8u81s")]
 position = Vector2(20, 17)

@@ -1,22 +1,27 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
+using MPAutoChess.logic.core.networking;
 using MPAutoChess.logic.core.placement;
 using MPAutoChess.logic.core.player;
 using MPAutoChess.logic.core.stats;
 using MPAutoChess.logic.core.unit;
+using ProtoBuf;
 
 namespace MPAutoChess.logic.core.combat;
 
+[ProtoContract]
 public partial class Combat : Node2D {
-    private const float NAVIGATION_GRID_SCALE = 0.25f;
+    public const float NAVIGATION_GRID_SCALE = 0.25f;
     private const double TIME_UNTIL_START = 3.0; // seconds until combat starts after preparation
 
-    public Rect2 CombatArea { get; private set; }
-    public Player PlayerA { get; private set; }
-    public Player PlayerB { get; private set; }
-    public List<UnitInstance> TeamA { get; private set; } = new List<UnitInstance>();
-    public List<UnitInstance> TeamB { get; private set; } = new List<UnitInstance>();
+    [ProtoMember(1)] public Rect2 CombatArea { get; private set; }
+    [ProtoMember(2)] public Player PlayerA { get; private set; }
+    [ProtoMember(3)] public Player PlayerB { get; private set; }
+    [ProtoMember(4)] public bool IsCloneFight { get; private set; }
+    [ProtoMember(5)] public List<UnitInstance> TeamA { get; private set; } = new List<UnitInstance>();
+    [ProtoMember(6)] public List<UnitInstance> TeamB { get; private set; } = new List<UnitInstance>();
     
     // Units without a valid target always look for the shortest path to an enemy.
     // Each process, one unit per team which is still walking its path will recalculate its path.
@@ -24,13 +29,16 @@ public partial class Combat : Node2D {
     private int teamAUnitProcessingIndex = 0;
     private int teamBUnitProcessingIndex = 0;
 
-    public double CombatTime { get; private set; } = -TIME_UNTIL_START;
+    // these properties will only matter when reconnecting during a combat
+    [ProtoMember(7)] public double CombatTime { get; private set; } = -TIME_UNTIL_START;
+    [ProtoMember(8)] public bool Running { get; private set; } = false;
 
-    public Rect2 GlobalBounds => new Rect2(CombatArea.Position + GlobalPosition, CombatArea.Size);
+    public Rect2 GlobalBounds => new Rect2(GlobalPosition + CombatArea.Position, CombatArea.Size);
 
-    public void Prepare(Player playerA, Player playerB) {
+    public void Prepare(Player playerA, Player playerB, bool isCloneFight) {
         PlayerA = playerA;
         PlayerB = playerB;
+        IsCloneFight = isCloneFight;
         
         foreach (Unit unit in playerA.Board.GetUnits()) {
             UnitInstance unitInstance = CreateUnitInstance(unit, playerA.Board.GetPlacement(unit), true);
@@ -42,8 +50,8 @@ public partial class Combat : Node2D {
             TeamB.Add(unitInstance);
         }
 
-        Vector2 combatSize = new Vector2(playerA.Board.Columns + playerB.Board.Columns, playerA.Board.Rows + playerB.Board.Rows);
-        CombatArea = new Rect2(combatSize * -0.5f, combatSize);
+        Vector2 combatSize = new Vector2(playerA.Board.Columns, playerA.Board.Rows + playerB.Board.Rows);
+        CombatArea = new Rect2(new Vector2(0f, combatSize.Y * -0.5f), combatSize);
         if (!PathFinder.IsValidBounds(CombatArea, NAVIGATION_GRID_SCALE)) {
             throw new ArgumentException($"CombatArea {CombatArea} is not valid for pathfinding with grid scale {NAVIGATION_GRID_SCALE}. Decrease size or increase grid scale.");
         }
@@ -62,7 +70,13 @@ public partial class Combat : Node2D {
         return unitInstance;
     }
 
-    public override void _Process(double delta) {
+    public void Start() {
+        Running = true;
+    }
+
+    public override void _PhysicsProcess(double delta) {
+        if (!Running) return;
+        
         CombatTime += delta;
         if (CombatTime < 0) return;
         
@@ -77,11 +91,14 @@ public partial class Combat : Node2D {
         bool hasProcessed = false;
         for (int i = 0; i < units.Count; i++) {
             UnitInstance unitInstance = units[i];
-            bool shouldProcess = processingIndex == i && !hasProcessed;
+            if (!unitInstance.IsAlive()) continue;
+            
+            bool shouldProcess = ServerController.Instance.IsServer && processingIndex == i && !hasProcessed;
             if (shouldProcess) processingIndex++;
+            if (processingIndex >= units.Count) processingIndex = 0; // reset index for next process cycle
 
             if (!unitInstance.HasTarget()) {
-                SelectNewTarget(unitInstance, teamA);
+                if (ServerController.Instance.IsServer) SelectNewTarget(unitInstance, teamA);
             } else if (!unitInstance.CanReachTarget()) {
                 if (shouldProcess) {
                     SelectNewTarget(unitInstance, teamA);
@@ -108,6 +125,11 @@ public partial class Combat : Node2D {
                 closestSquaredDistance = squaredDistance;
                 closestEnemy = enemy;
             }
+        }
+
+        if (closestEnemy == null) {// no enemies left
+            if (unitInstance.CurrentTarget != null) unitInstance.SetTarget(null);
+            return; // TODO: finish combat
         }
 
         if (closestSquaredDistance <= range * range) {
@@ -141,16 +163,15 @@ public partial class Combat : Node2D {
 }
 
 public class IsWalkableCache {
-    private List<Vector2I> gridPositions;
-    private List<int> gridRadii;
-    private Dictionary<int, bool> walkableCache;
+    private List<Vector2I> gridPositions = new List<Vector2I>();
+    private List<int> gridRadii = new List<int>();
+    private Dictionary<int, bool> walkableCache = new Dictionary<int, bool>();
     private float activeGridRadius;
 
     public IsWalkableCache(List<UnitInstance> teamA, List<UnitInstance> teamB, float gridScale, UnitInstance activeUnit) {
         float oneOverGridScale = 1f / gridScale;
         AddUnits(teamA, oneOverGridScale, activeUnit);
         AddUnits(teamB, oneOverGridScale, activeUnit);
-        walkableCache = new Dictionary<int, bool>();
         activeGridRadius = Mathf.RoundToInt(Mathf.Max(activeUnit.GetSize().X, activeUnit.GetSize().Y) * 0.5f * oneOverGridScale);
     }
 

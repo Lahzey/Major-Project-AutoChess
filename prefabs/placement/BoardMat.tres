@@ -15,6 +15,6 @@ shader_parameter/normal_color = Color(0.190762, 0.190762, 0.190762, 1)
 shader_parameter/highlight_color = Color(0, 0.347909, 0.588206, 1)
 shader_parameter/highlight_shrink = 1.25
 shader_parameter/highlight_range = Vector4(0, 0, 1, 1)
-shader_parameter/columns = 16
+shader_parameter/columns = 20
 shader_parameter/rows = 6
 shader_parameter/edge_curve = SubResource("CurveTexture_gbpcv")

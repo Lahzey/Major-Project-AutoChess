@@ -78,7 +78,7 @@ public class Shop : IIdentifiable {
                 PlayerUI.Instance.Shop.SetOffers(Offers.ToArray());
             }
         } else {
-            ServerController.Instance.OnChange(this, Player); // forward to clients
+            ServerController.Instance.PublishChange(this, Player); // forward to clients
         }
     }
 

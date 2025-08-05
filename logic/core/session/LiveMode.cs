@@ -15,11 +15,11 @@ public partial class LiveMode : GameMode {
         if (nextPhaseIndex % 2 == 0) {
             return LootPhase.Random();
         } else {
-            return new CombatPhase();
+            return new CombatPhase(GameSession.Instance.Players);
         }
     }
     
-    public override double GetRoundTime() {
+    public override double GetDefaultPhaseTime() {
         return 60.0;
     }
 }

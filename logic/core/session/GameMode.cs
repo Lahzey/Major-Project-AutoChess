@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Godot;
 using MPAutoChess.logic.core.networking;
+using MPAutoChess.logic.core.player;
 using MPAutoChess.logic.util;
 using ProtoBuf;
 
@@ -25,7 +26,7 @@ public abstract partial class GameMode : Node {
     
     public abstract void Tick(double delta);
     protected abstract GamePhase GetNextPhase();
-    public abstract double GetRoundTime();
+    public abstract double GetDefaultPhaseTime();
 
     public virtual void Start() {
         if (ServerController.Instance.IsServer) AdvancePhase();
@@ -52,13 +53,17 @@ public abstract partial class GameMode : Node {
         
         phases.Add(phase);
         PowerLevel += phase.GetPowerLevel();
-        phase.Start();
+        phase.RemainingTime = GetDefaultPhaseTime();
 
         if (ServerController.Instance.IsServer) {
             phase.Name = $"Phase{phases.Count}";
             AddChild(phase);
             Rpc(MethodName.TriggerStartPhase, SerializerExtensions.Serialize(phase));
+        } else {
+            PlayerUI.Instance.GamePhaseControls.SetPhaseControls(null);
         }
+        
+        phase.Start();
     }
 
     [Rpc(MultiplayerApi.RpcMode.Authority)]

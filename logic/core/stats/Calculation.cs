@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using MPAutoChess.logic.core.networking;
 using ProtoBuf;
@@ -7,9 +8,17 @@ namespace MPAutoChess.logic.core.stats;
 [ProtoContract]
 public class Calculation : IIdentifiable {
     public string Id { get; set; }
+    
+    private bool autoSendChanges = false;
 
-    [ProtoMember(1)] private Value baseValue;
-    public Value BaseValue { get => baseValue; set { baseValue = value; Invalidate(); } }
+    private Value baseValue;
+    [ProtoMember(1)] public Value BaseValue {
+        get => baseValue;
+        set {
+            baseValue = value;
+            ValuesChanged();
+        }
+    }
     
     [ProtoMember(2)] private List<Value> preMultValues = new List<Value>();
     [ProtoMember(3)] private List<string> preMultIds = new List<string>();
@@ -24,10 +33,12 @@ public class Calculation : IIdentifiable {
     
     public Calculation(float baseValue) {
         BaseValue = baseValue;
+        ValuesChanged();
     }
     
     public Calculation(Value baseValue) {
         BaseValue = baseValue;
+        ValuesChanged();
     }
     
     public float Evaluate() {
@@ -57,7 +68,7 @@ public class Calculation : IIdentifiable {
             preMultValues.Add(value);
             preMultIds.Add(id);
         }
-        Invalidate();
+        ValuesChanged();
     }
 
     public Value? GetPreMult(string id) {
@@ -73,7 +84,7 @@ public class Calculation : IIdentifiable {
         if (index == -1) return false;
         preMultValues.RemoveAt(index);
         preMultIds.RemoveAt(index);
-        Invalidate();
+        ValuesChanged();
         return true;
     }
     
@@ -85,7 +96,7 @@ public class Calculation : IIdentifiable {
             flatValues.Add(value);
             flatIds.Add(id);
         }
-        Invalidate();
+        ValuesChanged();
     }
     
     public Value? GetFlat(string id) {
@@ -101,13 +112,21 @@ public class Calculation : IIdentifiable {
         if (index == -1) return false;
         flatValues.RemoveAt(index);
         flatIds.RemoveAt(index);
-        Invalidate();
+        ValuesChanged();
         return true;
     }
 
 
-    private void Invalidate() {
-        
+    private void ValuesChanged() {
+        if (autoSendChanges) {
+            ServerController.Instance.PublishChange(this);
+        }
+    }
+    
+    public void SetAutoSendChanges(bool autoSend) {
+        if (!ServerController.Instance.IsServer) return; // clients should never send changes, their information is not trusted
+        if (autoSend == autoSendChanges) return;
+        autoSendChanges = autoSend;
     }
 
     public Calculation Clone() {

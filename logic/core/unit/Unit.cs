@@ -139,7 +139,7 @@ public class Unit : IIdentifiable {
         }
         EquippedItems.Add(item);
         ApplyItemStats();
-        ServerController.Instance.OnChange(this);
+        ServerController.Instance.PublishChange(this);
         return true;
     }
 
@@ -148,20 +148,34 @@ public class Unit : IIdentifiable {
         if (index == -1) throw new ArgumentException("Item to replace not found in equipped items.", nameof(craftedFrom));
         EquippedItems[index] = item;
         ApplyItemStats();
-        ServerController.Instance.OnChange(this);
+        ServerController.Instance.PublishChange(this);
     }
 
-    public UnitInstance CreateInstance(bool isCombatInstance) {
+    public UnitInstance CreateInstance(bool isCombatInstance, string name = null) {
+        if (name == null && !ServerController.Instance.IsServer) throw new InvalidOperationException("Unnamed unit instances can only be created on the server.");
+        
         UnitInstance instance = Type.UnitInstancePrefab.Instantiate<UnitInstance>();
         instance.Unit = this;
-        instance.IsCombatInstance = false;
-        instance.Name = $"{Type.Name}@{Id}_Instance{unitInstanceCounter++}";
+        instance.IsCombatInstance = isCombatInstance;
+        instance.Name = $"{Type.Name}@{Id}_Instance{name ?? (unitInstanceCounter++).ToString()}";
+        instance.CollisionLayer = isCombatInstance ? (uint) CollisionLayers.COMBAT_UNIT_INSTANCE : (uint) CollisionLayers.PASSIVE_UNIT_INSTANCE;
+
+        if (isCombatInstance) {
+            // SceneSafeMpSynchronizer synchronizer = new SceneSafeMpSynchronizer();
+            // instance.AddChild(synchronizer);
+            // synchronizer.RootPath = ".."; // parent which will be the UnitInstance itself
+            // synchronizer.ReplicationConfig = new SceneReplicationConfig();
+            // synchronizer.ReplicationConfig.AddProperty(".:" + Node2D.PropertyName.Position);
+            // synchronizer.ReplicationConfig.AddProperty(".:" + Node2D.PropertyName.Rotation);
+            // synchronizer.ReplicationConfig.AddProperty(".:" + Node2D.PropertyName.Scale);
+        }
+        
         return instance;
     }
     
     public UnitInstance GetOrCreatePassiveInstance() {
         if (passiveInstance == null) {
-            passiveInstance = CreateInstance(false);
+            passiveInstance = CreateInstance(false, "PassiveInstance");
         }
         return passiveInstance;
     }

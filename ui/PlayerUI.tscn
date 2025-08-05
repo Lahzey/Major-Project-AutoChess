@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://c2fryil7qt0qx"]
+[gd_scene load_steps=16 format=3 uid="uid://c2fryil7qt0qx"]
 
 [ext_resource type="Script" path="res://logic/core/player/PlayerUI.cs" id="1_gfa4k"]
 [ext_resource type="Script" path="res://logic/menu/WorldControls.cs" id="2_f4nfe"]
@@ -6,8 +6,77 @@
 [ext_resource type="Script" path="res://logic/core/player/ViewBounds.cs" id="3_mh5rr"]
 [ext_resource type="PackedScene" uid="uid://dc6pkfnhwi4qo" path="res://ui/InventoryPanel.tscn" id="4_qij4o"]
 [ext_resource type="PackedScene" uid="uid://b20qdtptl1g83" path="res://ui/ItemTooltip.tscn" id="5_jl212"]
+[ext_resource type="Script" path="res://logic/core/session/GamePhaseControls.cs" id="6_lur83"]
+[ext_resource type="Script" path="res://plugins/MaterialTheming/Scripts/PolygonInfo.cs" id="6_yluh8"]
+[ext_resource type="Material" uid="uid://b2mv00fv4xlp6" path="res://plugins/MaterialTheming/shaders/DecoratedPanelMaterial.tres" id="7_ecxb7"]
+[ext_resource type="Script" path="res://plugins/MaterialTheming/Scripts/StyleBoxDecorated.cs" id="8_bjbxx"]
+[ext_resource type="Script" path="res://logic/util/AutoFontSize.cs" id="9_fv8je"]
 
-[node name="PlayerUI" type="Control" node_paths=PackedStringArray("FreeSpace", "Shop", "Inventory", "EncounterControls")]
+[sub_resource type="Resource" id="Resource_tmwpu"]
+script = ExtResource("6_yluh8")
+BackgroundColor = Color(0.105882, 0.2, 0.266667, 1)
+BorderColor = Color(0.0627451, 0.117647, 0.156863, 1)
+BorderThickness = 2.0
+PolygonPoints = PackedVector2Array(0, 0, 0.04, 0.66, 0.18, 0.66, 0.2, 1, 0.8, 1, 0.82, 0.66, 0.96, 0.66, 1, 0)
+
+[sub_resource type="StyleBox" id="StyleBox_m67xw"]
+resource_local_to_scene = false
+resource_name = ""
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+script = ExtResource("8_bjbxx")
+UseOutlineRectBorderPattern = true
+Animated = false
+Duration = 1.0
+HighlightColor = Color(0, 0, 0, 0)
+Loop = true
+Mode = 0
+Material = ExtResource("7_ecxb7")
+BackgroundMode = 2
+BackgroundRelativeRect = Rect2(0, 0, 0, 0)
+BackgroundColor = Color(1, 1, 1, 1)
+BackgroundPolygon = SubResource("Resource_tmwpu")
+RelativeContentMargins = true
+AdditionalContentMarginLeft = 0.0
+AdditionalContentMarginTop = 0.0
+AdditionalContentMarginRight = 0.0
+AdditionalContentMarginBottom = 0.0
+
+[sub_resource type="Resource" id="Resource_ial4v"]
+script = ExtResource("6_yluh8")
+BackgroundColor = Color(0.105882, 0.2, 0.266667, 1)
+BorderColor = Color(0.0627451, 0.117647, 0.156863, 1)
+BorderThickness = 2.0
+PolygonPoints = PackedVector2Array(0, 0, 0.04, 0.2, 0.18, 0.2, 0.2, 0.3, 0.2, 0.9, 0.22, 1, 0.78, 1, 0.8, 0.9, 0.8, 0.3, 0.82, 0.2, 0.96, 0.2, 1, 0)
+
+[sub_resource type="StyleBox" id="StyleBox_s1w56"]
+resource_local_to_scene = false
+resource_name = ""
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+script = ExtResource("8_bjbxx")
+UseOutlineRectBorderPattern = true
+Animated = false
+Duration = 1.0
+HighlightColor = Color(0, 0, 0, 0)
+Loop = true
+Mode = 0
+Material = ExtResource("7_ecxb7")
+BackgroundMode = 2
+BackgroundRelativeRect = Rect2(0, 0, 0, 0)
+BackgroundColor = Color(1, 1, 1, 1)
+BackgroundPolygon = SubResource("Resource_ial4v")
+RelativeContentMargins = true
+AdditionalContentMarginLeft = 0.0
+AdditionalContentMarginTop = 0.0
+AdditionalContentMarginRight = 0.0
+AdditionalContentMarginBottom = 0.0
+
+[node name="PlayerUI" type="Control" node_paths=PackedStringArray("FreeSpace", "Shop", "Inventory", "GamePhaseControls")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -18,7 +87,7 @@ script = ExtResource("1_gfa4k")
 FreeSpace = NodePath("ViewBounds")
 Shop = NodePath("Shop")
 Inventory = NodePath("Panel/InventoryPanel")
-EncounterControls = NodePath("EncounterControls")
+GamePhaseControls = NodePath("GamePhaseControls")
 
 [node name="WorldControls" type="Control" parent="."]
 layout_mode = 1
@@ -41,6 +110,100 @@ anchor_bottom = 0.8
 mouse_filter = 2
 script = ExtResource("3_mh5rr")
 
+[node name="GamePhaseControls" type="Control" parent="." node_paths=PackedStringArray("SmallControlsPanel", "LargeControlsPanel", "PastPhases", "FuturePhases", "PhaseTimer", "PhaseTitle", "PhaseSpecificControls")]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 0.35
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("6_lur83")
+SmallControlsPanel = NodePath("SmallControlsPanel")
+LargeControlsPanel = NodePath("LargeControlsPanel")
+PastPhases = NodePath("PastPhases")
+FuturePhases = NodePath("FuturePhases")
+PhaseTimer = NodePath("PhaseTimer")
+PhaseTitle = NodePath("PhaseTitle")
+PhaseSpecificControls = NodePath("PhaseSpecificControls")
+
+[node name="SmallControlsPanel" type="Panel" parent="GamePhaseControls"]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.314
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBox_m67xw")
+
+[node name="LargeControlsPanel" type="Panel" parent="GamePhaseControls"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBox_s1w56")
+
+[node name="PastPhases" type="HBoxContainer" parent="GamePhaseControls"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.05
+anchor_top = 0.04
+anchor_right = 0.35
+anchor_bottom = 0.17
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PhaseTimer" type="Label" parent="GamePhaseControls"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.314
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 13
+text = "30"
+horizontal_alignment = 1
+
+[node name="AutoFontSize" type="Node" parent="GamePhaseControls/PhaseTimer"]
+script = ExtResource("9_fv8je")
+SizeType = 2
+
+[node name="PhaseTitle" type="Label" parent="GamePhaseControls"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.314
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 23
+text = "Round Title"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AutoFontSize" type="Node" parent="GamePhaseControls/PhaseTitle"]
+script = ExtResource("9_fv8je")
+SizeType = 3
+
+[node name="FuturePhases" type="HBoxContainer" parent="GamePhaseControls"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.65
+anchor_top = 0.04
+anchor_right = 0.95
+anchor_bottom = 0.17
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PhaseSpecificControls" type="Control" parent="GamePhaseControls"]
+layout_mode = 1
+anchor_left = 0.22
+anchor_top = 0.314
+anchor_right = 0.78
+anchor_bottom = 0.94
+grow_horizontal = 2
+grow_vertical = 2
+
 [node name="Panel" type="PanelContainer" parent="."]
 layout_mode = 1
 anchors_preset = -1
@@ -51,13 +214,6 @@ grow_vertical = 2
 
 [node name="InventoryPanel" parent="Panel" instance=ExtResource("4_qij4o")]
 layout_mode = 2
-
-[node name="EncounterControls" type="Control" parent="."]
-layout_mode = 1
-anchor_left = 0.2
-anchor_top = 0.1
-anchor_right = 0.8
-anchor_bottom = 0.3
 
 [node name="ItemTooltipContainer" type="VBoxContainer" parent="."]
 layout_mode = 1

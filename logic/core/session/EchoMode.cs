@@ -17,7 +17,7 @@ public partial class EchoMode : GameMode {
         
     }
 
-    public override double GetRoundTime() {
+    public override double GetDefaultPhaseTime() {
         return double.PositiveInfinity;
     }
 
@@ -30,6 +30,7 @@ public partial class EchoMode : GameMode {
         }
     }
 
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
     public void RequestNextRound() {
         if (!ServerController.Instance.IsServer) throw new InvalidOperationException("RequestNextRound can only be called on the server.");
 
@@ -47,7 +48,7 @@ public partial class EchoMode : GameMode {
 [ProtoContract]
 public partial class EchoCombatPhase : GamePhase {
     
-    public override string GetName(Player forPlayer) {
+    public override string GetTitle(Player forPlayer) {
         return "Combat against Echo";
     }
     public override int GetPowerLevel() {
