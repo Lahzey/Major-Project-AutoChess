@@ -1,8 +1,14 @@
-[gd_resource type="Resource" script_class="UnitType" load_steps=4 format=3 uid="uid://cgg2wp7hi636j"]
+[gd_resource type="Resource" script_class="UnitType" load_steps=6 format=3 uid="uid://cgg2wp7hi636j"]
 
 [ext_resource type="Texture2D" uid="uid://62ercc1rk6mk" path="res://seasons/season0/units/mage/mage_icon.png" id="1_djwt3"]
 [ext_resource type="PackedScene" uid="uid://cdj41tcujebtk" path="res://seasons/season0/units/mage/mage_prefab.tscn" id="2_5xwtp"]
+[ext_resource type="Script" path="res://logic/core/unit/UnitRoleSet.cs" id="2_arro4"]
 [ext_resource type="Script" path="res://logic/core/unit/UnitType.cs" id="3_j4s4v"]
+
+[sub_resource type="Resource" id="Resource_utrlk"]
+script = ExtResource("2_arro4")
+"Role Count" = 1
+"Role 1" = "Placeholder (in MPAutoChess.seasons.season0.roles)"
 
 [resource]
 script = ExtResource("3_j4s4v")
@@ -11,6 +17,7 @@ SlotsNeeded = 1
 Size = Vector2(2, 2)
 Cost = 4
 Rarity = 4
+Roles = SubResource("Resource_utrlk")
 MaxHealth = 1000.0
 MaxMana = 100.0
 StartingMana = 100.0
@@ -19,5 +26,6 @@ Aegis = 10.0
 Strength = 50.0
 AttackSpeed = 0.75
 Range = 4.0
+MovementSpeed = 2.0
 UnitInstancePrefab = ExtResource("2_5xwtp")
 Icon = ExtResource("1_djwt3")

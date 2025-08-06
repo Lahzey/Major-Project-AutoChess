@@ -13,6 +13,7 @@ namespace MPAutoChess.logic.core.combat;
 
 [ProtoContract]
 public partial class Combat : Node2D {
+    public const int MIN_PLAYER_DAMAGE = 3;
     public const float NAVIGATION_GRID_SCALE = 0.25f;
     private const double TIME_UNTIL_START = 3.0; // seconds until combat starts after preparation
 
@@ -31,7 +32,8 @@ public partial class Combat : Node2D {
 
     // these properties will only matter when reconnecting during a combat
     [ProtoMember(7)] public double CombatTime { get; private set; } = -TIME_UNTIL_START;
-    [ProtoMember(8)] public bool Running { get; private set; } = false;
+    [ProtoMember(8)] public bool Started { get; private set; } = false;
+    [ProtoMember(9)] public CombatResult? Result { get; private set; }
 
     public Rect2 GlobalBounds => new Rect2(GlobalPosition + CombatArea.Position, CombatArea.Size);
 
@@ -71,11 +73,11 @@ public partial class Combat : Node2D {
     }
 
     public void Start() {
-        Running = true;
+        Started = true;
     }
 
     public override void _PhysicsProcess(double delta) {
-        if (!Running) return;
+        if (!Started || Result != null) return;
         
         CombatTime += delta;
         if (CombatTime < 0) return;
@@ -129,7 +131,20 @@ public partial class Combat : Node2D {
 
         if (closestEnemy == null) {// no enemies left
             if (unitInstance.CurrentTarget != null) unitInstance.SetTarget(null);
-            return; // TODO: finish combat
+            int playerAUnitCount = TeamA.Count(unit => unit != null && IsInstanceValid(unit) && unit.IsAlive() && unit.Unit.Container != null && unit.Unit.Type.Cost > 0); // has a container -> not summoned, has a cost above 0 -> a purchased fighter
+            int playerBUnitCount = TeamB.Count(unit => unit != null && IsInstanceValid(unit) && unit.IsAlive() && unit.Unit.Container != null && unit.Unit.Type.Cost > 0); // has a container -> not summoned, has a cost above 0 -> a purchased fighter
+            int survivingUnits = Math.Max(playerAUnitCount, playerBUnitCount);
+            Winner winner = survivingUnits == 0 ? Winner.DRAW : (playerAUnitCount > playerBUnitCount ? Winner.PLAYER_A : Winner.PLAYER_B);
+            Player? winningPlayer = winner == Winner.PLAYER_A ? PlayerA : winner == Winner.PLAYER_B ? PlayerB : null;
+            
+            Result = new CombatResult {
+                PlayerAId = PlayerA.Account.Id,
+                PlayerBId = PlayerB.Account.Id,
+                Winner = playerAUnitCount == 0 ? (playerBUnitCount == 0 ? Winner.DRAW : Winner.PLAYER_B) : Winner.PLAYER_A,
+                SurvivingUnits = Math.Max(playerAUnitCount, playerBUnitCount),
+                DamageDealt = Math.Max((winningPlayer?.GetLevel()??0) + (survivingUnits / 2), MIN_PLAYER_DAMAGE)
+            };
+            return;
         }
 
         if (closestSquaredDistance <= range * range) {
@@ -159,6 +174,22 @@ public partial class Combat : Node2D {
         } else {
             unitInstance.SetTarget(null);
         }
+    }
+
+    public IEnumerable<UnitInstance> GetAllUnits() {
+        return TeamA.Concat(TeamB).Where(unit => unit != null && IsInstanceValid(unit) && unit.IsAlive());
+    }
+
+    public bool IsFinished() {
+        return Started && Result != null;
+    }
+
+    public override void _ExitTree() {
+        foreach (UnitInstance unit in GetAllUnits()) {
+            unit.QueueFree();
+        }
+        TeamA.Clear();
+        TeamB.Clear();
     }
 }
 

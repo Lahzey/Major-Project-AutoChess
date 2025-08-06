@@ -53,7 +53,7 @@ public class Account : IEquatable<Account> {
             // temporary logic until login is implemented
             string[] args = OS.GetCmdlineArgs();
             string? secretKeyArg = args.FirstOrDefault(arg => arg.StartsWith("secret="));
-            if (secretKeyArg == null) throw new ArgumentException("Command line argument 'secretKey' not found. Expected format: secretKey=your_secret_key");
+            if (secretKeyArg == null) throw new ArgumentException("Command line argument 'secretKey' not found. Expected format: secret=your_secret_key");
             secretKeyArg = secretKeyArg.Substring("secret=".Length);
             SecretKey = secretKeyArg;
         }

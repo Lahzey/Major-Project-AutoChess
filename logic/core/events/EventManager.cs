@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using MPAutoChess.logic.core.networking;
 
 namespace MPAutoChess.logic.core.events;
 
@@ -10,10 +11,14 @@ public class EventManager {
     private readonly Dictionary<Type, IEventTypeHandler> handlers = new Dictionary<Type, IEventTypeHandler>(); // handlers will be initialized on demand
     
     public void NotifyBefore<T>(T e) where T : Event {
+        if (ServerController.Instance.IsServer && !e.RunsOnServer) return;
+        if (!ServerController.Instance.IsServer && !e.RunsOnClient) return;
         GetEventTypeHandler<T>().Before(e);
     }
 
     public void NotifyAfter<T>(T e) where T : Event {
+        if (ServerController.Instance.IsServer && !e.RunsOnServer) return;
+        if (!ServerController.Instance.IsServer && !e.RunsOnClient) return;
         GetEventTypeHandler<T>().After(e);
     }
     

@@ -22,5 +22,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="assets\items\" />
+    <Folder Include="logic\core\class\" />
   </ItemGroup>
 </Project>

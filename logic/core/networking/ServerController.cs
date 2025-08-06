@@ -216,7 +216,7 @@ public partial class ServerController : Node {
     }
     
     [Rpc(MultiplayerApi.RpcMode.Authority)]
-    public void TransferIdentifiable(byte[] serializedIdentifiable, string typeName) {
+    private void TransferIdentifiable(byte[] serializedIdentifiable, string typeName) {
         if (IsServer) throw new InvalidOperationException("TransferIdentifiable can only be called on the client.");
         
         Type type = typeName != null ? Type.GetType(typeName) : null;
@@ -230,7 +230,7 @@ public partial class ServerController : Node {
     }
 
     [Rpc(MultiplayerApi.RpcMode.Authority)]
-    public void TransferNode(byte[] serializedNode, string typeName) {
+    private void TransferNode(byte[] serializedNode, string typeName) {
         if (IsServer) throw new InvalidOperationException("TransferNode can only be called on the client.");
         
         Type type = typeName != null ? Type.GetType(typeName) : null;

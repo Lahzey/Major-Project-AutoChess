@@ -115,7 +115,34 @@ public class Calculation : IIdentifiable {
         ValuesChanged();
         return true;
     }
-
+    
+    public void AddPostMult(Value value, string id) {
+        int index = postMultIds.IndexOf(id);
+        if (index >= 0) {
+            postMultValues[index] = value;
+        } else {
+            postMultValues.Add(value);
+            postMultIds.Add(id);
+        }
+        ValuesChanged();
+    }
+    
+    public Value? GetPostMult(string id) {
+        int index = postMultIds.IndexOf(id);
+        if (index >= 0) {
+            return postMultValues[index];
+        }
+        return null;
+    }
+    
+    public bool RemovePostMult(string id) {
+        int index = postMultIds.IndexOf(id);
+        if (index == -1) return false;
+        postMultValues.RemoveAt(index);
+        postMultIds.RemoveAt(index);
+        ValuesChanged();
+        return true;
+    }
 
     private void ValuesChanged() {
         if (autoSendChanges) {

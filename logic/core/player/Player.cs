@@ -61,6 +61,21 @@ public partial class Player : Node2D {
         EventManager.INSTANCE.AddAfterListener((UnitLevelUpEvent e) => CheckForUnitLevelUp());
     }
 
+    public int GetLevel() {
+        switch (Experience) {
+            case < 2: return 1;
+            case < 6: return 2;
+            case < 10: return 3;
+            case < 20: return 4;
+            case < 50: return 5;
+            case < 80: return 6;
+            case < 120: return 7;
+            case < 190: return 8;
+            case < 250: return 9;
+            default: return 10; // Level 10 is the maximum level
+        }
+    }
+
     private void CheckForUnitLevelUp() {
         Dictionary<Tuple<UnitType, uint>, List<Unit>> units = new Dictionary<Tuple<UnitType, uint>, List<Unit>>();
 

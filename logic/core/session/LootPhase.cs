@@ -88,6 +88,7 @@ public partial class LootPhase : GamePhase {
         completedPlayers.Add(player.Account.Id);
         if (completedPlayers.Count == options.Count) {
             RemainingTime = Math.Min(RemainingTime, ALL_COMPLETE_COUNTDOWN);
+            ServerController.Instance.PublishChange(this);
         }
     }
 

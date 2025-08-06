@@ -20,8 +20,8 @@ void fragment() {
 	pos_in_cell = in_highlight ? pos_in_cell * highlight_shrink - vec2(highlight_shrink * 0.5f - 0.5f) : pos_in_cell; // hopefully ? is a bit faster than if
 	vec2 dist_to_edge = vec2(pos_in_cell.x > 0.5 ? 1.0 - pos_in_cell.x : pos_in_cell.x, pos_in_cell.y > 0.5 ? 1.0 - pos_in_cell.y : pos_in_cell.y);
 	float alpha = texture(edge_curve, vec2(min(dist_to_edge.x, dist_to_edge.y), 0.0)).r;
-	
-    
+
+
 	COLOR = in_highlight ? highlight_color : normal_color;
 	COLOR.a = alpha;
 }

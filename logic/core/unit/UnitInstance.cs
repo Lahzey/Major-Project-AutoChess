@@ -54,6 +54,7 @@ public partial class UnitInstance : CharacterBody2D {
     public UnitInstance? CurrentTarget { get; private set; }
     public PathFinder.Path? CurrentPath { get; private set; }
     public double AttackCooldown { get; set; } = 0.0;
+    public bool IsBusy { get; set; } = false; // units are usually busy while they are performing their attack or cast
 
     public override void _Ready() {
         if (Engine.IsEditorHint()) return;
@@ -202,6 +203,7 @@ public partial class UnitInstance : CharacterBody2D {
     public void ProcessCombat(double delta) {
         AttackCooldown -= delta;
         if (AttackCooldown > 0) return;
+        if (IsBusy) return;
         
         if (CanReachTarget()) {
             TriggerAttack();
@@ -224,22 +226,37 @@ public partial class UnitInstance : CharacterBody2D {
             return;
         }
         
+        AttackEvent attackEvent = new AttackEvent(this, CurrentTarget);
+        EventManager.INSTANCE.NotifyBefore(attackEvent);
+        if (attackEvent.IsCancelled) return;
         
-        UnitInstance target = CurrentTarget;
+        UnitInstance target = attackEvent.Target;
         FaceTowards(target.Position);
+        IsBusy = true;
         
         float attackSpeed = GetTotalAttackSpeed();
         AttackCooldown = 1f / attackSpeed;
+        float animationSpeed = attackSpeed * ATTACK_ANIMATION_SPEED;
+        float animationDuration = 1f / animationSpeed;
+        
+        EventManager.INSTANCE.NotifyAfter(attackEvent);
         
         if (!ServerController.Instance.IsServer) {
-            Sprite.Play(ATTACK_ANIMATION_NAME, attackSpeed * ATTACK_ANIMATION_SPEED);
+            Sprite.Play(ATTACK_ANIMATION_NAME, animationSpeed);
+            await ToSignal(GetTree().CreateTimer(animationDuration), "timeout");
+            IsBusy = false;
             return;
         }
+
+
+        float attackTriggeredAt = AttackTriggeredAt * animationDuration;
         
-        await ToSignal(GetTree().CreateTimer(AttackCooldown * AttackTriggeredAt), "timeout");
+        await ToSignal(GetTree().CreateTimer(attackTriggeredAt), "timeout");
         if (target != null && IsInstanceValid(target) && target.IsAlive()) {
             target.Damage(new DamageInstance(this, target, Stats.GetValue(StatType.STRENGTH), DamageType.PHYSICAL, PerformCritRoll(), Stats.GetValue(StatType.CRIT_DAMAGE), true));
         }
+        await ToSignal(GetTree().CreateTimer(animationDuration - attackTriggeredAt), "timeout");
+        IsBusy = false;
     }
 
     public void Damage(DamageInstance damageInstance) {

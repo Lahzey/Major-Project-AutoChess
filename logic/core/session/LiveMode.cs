@@ -15,7 +15,7 @@ public partial class LiveMode : GameMode {
         if (nextPhaseIndex % 2 == 0) {
             return LootPhase.Random();
         } else {
-            return new CombatPhase(GameSession.Instance.Players);
+            return new CombatPhase();
         }
     }
     
