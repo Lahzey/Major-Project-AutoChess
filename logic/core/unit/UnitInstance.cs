@@ -285,11 +285,11 @@ public partial class UnitInstance : CharacterBody2D {
         CurrentHealth = 0;
         IsDead = true;
         if (ServerController.Instance.IsServer) {
-            GetParent().RemoveChild(this);
+            CurrentCombat.OnUnitDeath(this);
         } else {
             Sprite.Play(DEATH_ANIMATION_NAME);
             await ToSignal(Sprite, "animation_finished");
-            GetParent().RemoveChild(this);
+            CurrentCombat.OnUnitDeath(this);
             GD.Print("Unit died on client");
         }
     }

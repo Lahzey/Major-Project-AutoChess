@@ -66,14 +66,24 @@ public partial class Combat : Node2D {
         Vector2 position = placement + (unit.GetSize() * 0.5f);
         if (teamA) position.Y *= -1f;
         unitInstance.Position = position;
-        unitInstance.CurrentCombat = this;
-        unitInstance.IsInTeamA = teamA;
+        // unitInstance.CurrentCombat = this; // we need by reference serialization to have this replicated on the client (this method is only executed by the server)
+        // unitInstance.IsInTeamA = teamA;
         
         return unitInstance;
     }
 
     public void Start() {
         Started = true;
+        
+        // until by reference serialization is implemented, we need to set these properties manually (this method is executed by client and server)
+        foreach (UnitInstance unit in TeamA) {
+            unit.CurrentCombat = this;
+            unit.IsInTeamA = true;
+        }
+        foreach (UnitInstance unit in TeamB) {
+            unit.CurrentCombat = this;
+            unit.IsInTeamA = false;
+        }
     }
 
     public override void _PhysicsProcess(double delta) {
@@ -190,6 +200,20 @@ public partial class Combat : Node2D {
         }
         TeamA.Clear();
         TeamB.Clear();
+    }
+
+    public void OnUnitDeath(UnitInstance unitInstance) {
+        CallDeferred(MethodName.RemoveUnit, unitInstance);
+    }
+
+    private void RemoveUnit(UnitInstance unitInstance) {
+        if (unitInstance == null || !IsInstanceValid(unitInstance)) return;
+        unitInstance.QueueFree();
+        if (unitInstance.IsInTeamA) {
+            TeamA.Remove(unitInstance);
+        } else {
+            TeamB.Remove(unitInstance);
+        }
     }
 }
 

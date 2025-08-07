@@ -12,7 +12,7 @@ using ProtoBuf;
 namespace MPAutoChess.logic.core.session;
 
 [ProtoContract]
-public partial class LootPhase : GamePhase {
+public partial class LootPhase : GamePhase, Choosable {
 
     private const double ALL_COMPLETE_COUNTDOWN = 3.0;
     
@@ -62,11 +62,15 @@ public partial class LootPhase : GamePhase {
         for (int i = 0; i < lootOptions.Length; i++) {
             LootOption option = lootOptions[i];
             int index = i; // capture the current index for the callback
-            Action chooseCallback = () => PlayerController.Current.InvokeOnServer(this, MethodName.ChooseLootOption, index, true);
+            Action chooseCallback = () => PlayerController.Current.MakeChoice(this, index);
             lootPhaseUI.AddLootOption(option.GetTexture(), option.GetName(), option.GetDescription(), chooseCallback, option.IsEnabledFunc());
         }
 
         PlayerUI.Instance.GamePhaseControls.SetPhaseControls(lootPhaseUI);
+    }
+
+    public void Choose(int choice) {
+        ChooseLootOption(choice, true);
     }
 
     public void ChooseLootOption(int index, bool respond) {

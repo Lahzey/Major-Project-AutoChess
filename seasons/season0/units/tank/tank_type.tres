@@ -8,7 +8,7 @@
 script = ExtResource("3_2ghqi")
 Name = "Tank"
 SlotsNeeded = 1
-Size = Vector2(2, 2)
+Size = Vector2(3, 3)
 Cost = 1
 Rarity = 1
 MaxHealth = 1000.0

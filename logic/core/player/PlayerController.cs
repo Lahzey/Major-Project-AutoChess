@@ -97,26 +97,30 @@ public partial class PlayerController : Node {
         }
     }
 
-    public void InvokeOnServer(Node node, StringName methodName, params Variant[] args) {
-        if (ServerController.Instance.IsServer) throw new InvalidOperationException("InvokeOnServer can only be called on the client.");
-        GD.Print("Invoking method on server: " + methodName + " with args: " + string.Join(", ", args.Select(a => a.ToString())));
-        Array<Variant> variants = new Array<Variant>();
-        variants.AddRange(args);
-        this.RpcToServer(MethodName.RequestInvokeOnServer, node.GetPath(), methodName, variants);
-    }
-    
-    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
-    private void RequestInvokeOnServer(string nodePath, StringName methodName, Array<Variant> args) {
-        if (!ServerController.Instance.IsServer) throw new InvalidOperationException("RequestInvokeOnServer can only be called on the server.");
         
-        GD.Print($"Received request to invoke {nodePath}.{methodName}({string.Join(", ", args.Select(a => a.ToString()))})");
+    public void MakeChoice<T>(T choosable, int choice) where T : Node, Choosable {
+        if (ServerController.Instance.IsServer) {
+            RequestMakeChoice(choosable.GetPath(), choice);
+        } else {
+            this.RpcToServer(MethodName.RequestMakeChoice, choosable.GetPath(), choice);
+        }
+    }
+
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
+    private void RequestMakeChoice(string choosablePath, int choice) {
+        if (!ServerController.Instance.IsServer) throw new InvalidOperationException("RequestMakeChoice can only be called on the server.");
+        Node choosableNode = GetNodeOrNull(choosablePath);
+        if (choosableNode == null) {
+            GD.PrintErr($"Node at path {choosablePath} not found.");
+            return;
+        }
+        if (choosableNode is not Choosable choosable) {
+            GD.PrintErr($"Node at path {choosablePath} is not a Choosable.");
+            return;
+        }
+        
         ServerController.Instance.RunInContext(() => {
-            Node node = GetNodeOrNull(nodePath);
-            if (node == null) {
-                GD.PrintErr($"Node at path {nodePath} not found.");
-                return;
-            }
-            node.Call(methodName, args.ToArray());
+            choosable.Choose(choice);
         }, this);
     }
     

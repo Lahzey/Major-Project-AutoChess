@@ -125,13 +125,9 @@ public partial class ServerController : Node {
     private void Connect(string playerSecret) {
         if (!IsServer) throw new InvalidOperationException("Connect can only be called on the server.");
         
-        GD.Print("Received connection request with secret: " + playerSecret);
-        
         if (!secretToPlayer.TryGetValue(playerSecret, out Player player)) {
-            GD.PrintErr("Player with secret " + playerSecret + " not found.");
             return;
         }
-        GD.Print("Connection request from player: " + player.Name);
         int senderId = Multiplayer.GetRemoteSenderId();
         peerIdToPlayer[senderId] = player;
         
@@ -174,13 +170,11 @@ public partial class ServerController : Node {
 
         Player player = peerIdToPlayer.GetValueOrDefault(Multiplayer.GetRemoteSenderId());
         if (player == null) {
-            GD.PrintErr("[ServerController.Ready()] Player not found for peer ID: " + Multiplayer.GetRemoteSenderId());
             return;
         }
         
         readyPlayers[player] = true;
         if (readyPlayers.Values.All(ready => ready)) {
-            GD.Print("All players are ready, starting game...");
             Rpc(MethodName.StartGame);
         }
     }

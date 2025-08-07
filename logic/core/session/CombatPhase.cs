@@ -20,8 +20,9 @@ public partial class CombatPhase : GamePhase {
     private const double AFTER_COMBAT_TIME = 5;
 
     [ProtoMember(1)] private List<Combat> combats;
-    [ProtoMember(2)] private Dictionary<long, int> playerCombatIndices = new Dictionary<long, int>();
-    [ProtoMember(3)] private bool finished = false;
+    [ProtoMember(2)] private List<CombatResult> combatResults;
+    [ProtoMember(3)] private Dictionary<long, int> playerCombatIndices = new Dictionary<long, int>();
+    [ProtoMember(4)] private bool finished = false;
 
     private int boostCounter = 0;
 
