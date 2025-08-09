@@ -19,7 +19,7 @@ public partial class GamePhaseControls : Control {
 
     public override void _Process(double delta) {
         if (ServerController.Instance.IsServer || GameSession.Instance == null || PlayerController.Current == null) return;
-        double remainingTime = GameSession.Instance.Mode.GetCurrentPhase().RemainingTime;
+        double remainingTime = GameSession.Instance.Mode.GetCurrentPhase()?.RemainingTime?? 0;
         PhaseTimer.Text = remainingTime >= 10 ? remainingTime.ToString("N0") : remainingTime.ToString("N1");
         PhaseTitle.Text = GameSession.Instance.Mode.GetCurrentPhase().GetTitle(PlayerController.Current.Player);
     }

@@ -9,4 +9,5 @@ public enum CollisionLayers : uint {
     UNIT_DROP_TARGET = 1 << 1,
     COMBAT_UNIT_INSTANCE = 1 << 2,
     PROJECTILE = 1 << 3,
+    SELECTABLE = 1 << 4,
 }

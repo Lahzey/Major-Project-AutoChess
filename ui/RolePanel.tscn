@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://ba3j1ed6oq0ry"]
+
+[ext_resource type="Texture2D" uid="uid://dkv0hiuxam4wh" path="res://seasons/season0/roles/placeholder.png" id="1_rn5wq"]
+[ext_resource type="Script" path="res://logic/util/AutoFontSize.cs" id="2_vuvdd"]
+
+[node name="RolePanel" type="HBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 2
+texture = ExtResource("1_rn5wq")
+expand_mode = 3
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "(2/4) Placeholder"
+
+[node name="AutoFontSize" type="Node" parent="Label"]
+script = ExtResource("2_vuvdd")

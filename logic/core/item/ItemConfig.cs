@@ -19,8 +19,8 @@ public partial class ItemConfig : Resource {
         return null;
     }
 
-    public ItemType GetRandomItemType(ItemCategory category) {
-        IEnumerable<ItemType> filteredTypes = ItemTypes.Where(type => type.Category == category);
+    public ItemType GetRandomItemType(ItemCategory category, ItemType excludeType = null) {
+        IEnumerable<ItemType> filteredTypes = ItemTypes.Where(type => type.Category == category && type != excludeType);
         int count = filteredTypes.Count();
         int randomIndex = GameSession.Instance.Random.Next(count);
         return filteredTypes.ElementAt(randomIndex);

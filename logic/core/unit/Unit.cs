@@ -5,6 +5,7 @@ using MPAutoChess.logic.core.events;
 using MPAutoChess.logic.core.item;
 using MPAutoChess.logic.core.networking;
 using MPAutoChess.logic.core.placement;
+using MPAutoChess.logic.core.player;
 using MPAutoChess.logic.core.session;
 using MPAutoChess.logic.core.stats;
 using ProtoBuf;
@@ -143,10 +144,26 @@ public class Unit : IIdentifiable {
         return true;
     }
 
-    public void ReplaceItem(Item craftedFrom, Item item) {
-        int index = EquippedItems.IndexOf(craftedFrom);
-        if (index == -1) throw new ArgumentException("Item to replace not found in equipped items.", nameof(craftedFrom));
-        EquippedItems[index] = item;
+    public void ReplaceItem(Item replacedItem, Item newItem) {
+        int index = EquippedItems.IndexOf(replacedItem);
+        if (index == -1) throw new ArgumentException("Item to replace not found in equipped items.", nameof(replacedItem));
+        EquippedItems[index] = newItem;
+        ApplyItemStats();
+        ServerController.Instance.PublishChange(this);
+    }
+
+    public void RemoveItems(bool addToInventory = true) {
+        if (addToInventory) {
+            Player player = Container.GetPlayer();
+            foreach (Item item in EquippedItems) {
+                if (item == null) continue; // skip null items, just in case
+                if (!player.Inventory.AddItem(item)) {
+                    GD.PrintErr($"Item was removed from unit {Type.Name} but could not be added to player inventory: {item.Type.Name}");
+                }
+            }
+        }
+
+        EquippedItems.Clear();
         ApplyItemStats();
         ServerController.Instance.PublishChange(this);
     }
@@ -158,7 +175,9 @@ public class Unit : IIdentifiable {
         instance.Unit = this;
         instance.IsCombatInstance = isCombatInstance;
         instance.Name = $"{Type.Name}@{Id}_Instance{name ?? (unitInstanceCounter++).ToString()}";
-        instance.CollisionLayer = isCombatInstance ? (uint) CollisionLayers.COMBAT_UNIT_INSTANCE : (uint) CollisionLayers.PASSIVE_UNIT_INSTANCE;
+        CollisionLayers collisionLayer = isCombatInstance ? CollisionLayers.COMBAT_UNIT_INSTANCE : CollisionLayers.PASSIVE_UNIT_INSTANCE;
+        collisionLayer |= CollisionLayers.SELECTABLE;
+        instance.CollisionLayer = (uint)collisionLayer;
 
         if (isCombatInstance) {
             // SceneSafeMpSynchronizer synchronizer = new SceneSafeMpSynchronizer();
@@ -191,5 +210,13 @@ public class Unit : IIdentifiable {
 
         craftedFrom = null;
         return null;
+    }
+    
+    public HashSet<UnitRole> GetRoles() {
+        return Type.RoleSet.Roles;
+    }
+
+    public bool HasRole(UnitRole role) {
+        return Type.RoleSet.HasRole(role);
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using MPAutoChess.logic.core.networking;
+using MPAutoChess.logic.core.player;
 using ProtoBuf;
 
 namespace MPAutoChess.logic.core.item;
@@ -16,6 +17,8 @@ public class Inventory : IIdentifiable {
 
     [ProtoMember(5)] private int minSize;
     [ProtoMember(6)] private ItemSlot[] itemSlots;
+    
+    public Player Player { get; set; } // set on each client individually because by reference serialization is very unreliable in ProtoBuf
     
     public Inventory() {} // for ProtoBuf serialization
 

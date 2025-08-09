@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using Godot.Collections;
 using MPAutoChess.logic.core.item;
+using MPAutoChess.logic.core.item.consumable;
 using MPAutoChess.logic.core.networking;
 using MPAutoChess.logic.core.placement;
 using MPAutoChess.logic.core.session;
@@ -15,7 +17,6 @@ using UnitInstance = MPAutoChess.logic.core.unit.UnitInstance;
 namespace MPAutoChess.logic.core.player;
 
 public partial class PlayerController : Node {
-    
     public Player Player { get; private set; }
 
     public event Action<Unit> OnDragStart;
@@ -23,7 +24,7 @@ public partial class PlayerController : Node {
     public event Action<Unit> OnDragEnd;
 
     private readonly UnitDragProcessor dragProcessor = new UnitDragProcessor();
-    
+
     private static System.Collections.Generic.Dictionary<Player, PlayerController> playerControllers = new System.Collections.Generic.Dictionary<Player, PlayerController>();
     public static PlayerController Current { get; private set; }
 
@@ -31,11 +32,12 @@ public partial class PlayerController : Node {
 
     public PlayerController(Player player) {
         Player = player;
-        Name = player.Name +"Controller";
+        Name = player.Name + "Controller";
         if (!ServerController.Instance.IsServer) {
             if (Current != null) throw new InvalidOperationException("Only servers can have multiple PlayerController instances.");
             Current = this;
         }
+
         if (Player == null) throw new ArgumentNullException(nameof(Player), "Player cannot be null.");
         playerControllers.Add(Player, this);
     }
@@ -57,16 +59,16 @@ public partial class PlayerController : Node {
         Current = null;
     }
 
-    public override void _Input(InputEvent @event) {
+    public override void _UnhandledInput(InputEvent @event) {
         if (ServerController.Instance.IsServer) return; // Server sho1uld not receive input events, but just to be sure
-        
+
         if (@event is InputEventMouseButton mouseButtonEvent) {
             if (mouseButtonEvent.ButtonIndex == MouseButton.Left) {
                 OnLeftClick(mouseButtonEvent);
             }
         }
     }
-    
+
     private void OnLeftClick(InputEventMouseButton mouseButtonEvent) {
         if (mouseButtonEvent.Pressed) {
             if (!dragProcessor.Running) {
@@ -79,7 +81,7 @@ public partial class PlayerController : Node {
                 OnDragEnd?.Invoke(dragProcessor.UnitInstance.Unit);
                 dragProcessor.Complete();
             }
-        } else if(dragProcessor.Running) {
+        } else if (dragProcessor.Running) {
             // Mouse up within 250 ms of mouse down: click to pickup -> click to drop (select and place)
             // Mouse up after 250 ms of mouse down:  mouse down to pickup -> mouse up to drop (drag to destination)
             if ((Environment.TickCount64 - dragProcessor.DragStartTime) > 250) {
@@ -97,7 +99,7 @@ public partial class PlayerController : Node {
         }
     }
 
-        
+
     public void MakeChoice<T>(T choosable, int choice) where T : Node, Choosable {
         if (ServerController.Instance.IsServer) {
             RequestMakeChoice(choosable.GetPath(), choice);
@@ -114,16 +116,15 @@ public partial class PlayerController : Node {
             GD.PrintErr($"Node at path {choosablePath} not found.");
             return;
         }
+
         if (choosableNode is not Choosable choosable) {
             GD.PrintErr($"Node at path {choosablePath} is not a Choosable.");
             return;
         }
-        
-        ServerController.Instance.RunInContext(() => {
-            choosable.Choose(choice);
-        }, this);
+
+        ServerController.Instance.RunInContext(() => { choosable.Choose(choice); }, this);
     }
-    
+
     public void MoveUnit(Unit unit, IUnitDropTarget dropTarget, Vector2 placement) {
         if (dropTarget is not Node dropTargetNode) throw new ArgumentException("Drop target must be a Node.", nameof(dropTarget));
         this.RpcToServer(MethodName.RequestMoveUnit, unit.Id, dropTargetNode.GetPath(), placement);
@@ -132,28 +133,30 @@ public partial class PlayerController : Node {
     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
     private void RequestMoveUnit(string unitId, string dropTargetPath, Vector2 placement) {
         if (!ServerController.Instance.IsServer) throw new InvalidOperationException("RequestMoveUnit can only be called on the server.");
-        
+
         IIdentifiable identifiable = IIdentifiable.TryGetInstance(unitId);
         if (identifiable is not Unit unit) {
             GD.PrintErr($"Unit with ID {unitId} not found or is not a Unit.");
             return;
         }
-        
+
         Node node = GetNodeOrNull(dropTargetPath);
         if (node is not IUnitDropTarget dropTarget) {
             GD.PrintErr($"Node at path {dropTargetPath} not found or not a drop target.");
             return;
         }
-        
+
         ServerController.Instance.RunInContext(() => {
             if (unit.Container == null) {
                 GD.PrintErr($"Unit {unit.Type.ResourcePath} has no container, cannot move.");
                 return;
             }
+
             if (unit.Container.GetPlayer() != Player || dropTarget.GetPlayer() != Player) {
                 GD.PrintErr($"Unit or drop target not owned by current player. Unit Owner: {unit.Container.GetPlayer()?.Account.Id.ToString() ?? "null"} | Drop Target Owner: {dropTarget.GetPlayer()?.Account.Id.ToString() ?? "null"} | Current: {Player.Account.Id}");
                 return;
             }
+
             dropTarget.OnUnitDrop(unit, placement);
         }, this);
     }
@@ -194,7 +197,7 @@ public partial class PlayerController : Node {
         else
             this.RpcToServer(MethodName.RequestBuyShopOffer, Player.Shop.IndexOf(offer));
     }
-    
+
     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
     private void RequestBuyShopOffer(int slotIndex) {
         if (!ServerController.Instance.IsServer) throw new InvalidOperationException("RequestBuyShopOffer can only be called on the server.");
@@ -207,16 +210,16 @@ public partial class PlayerController : Node {
     public void SwapItems(int indexA, int indexB, bool enableCrafting) {
         this.RpcToServer(MethodName.RequestSwapItems, indexA, indexB, enableCrafting);
     }
-    
+
     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
     private void RequestSwapItems(int indexA, int indexB, bool enableCrafting) {
         if (!ServerController.Instance.IsServer) throw new InvalidOperationException("RequestEquipItem can only be called on the server.");
-        
+
         if (indexA == indexB) {
             GD.PrintErr("Cannot swap items at the same index.");
             return;
         }
-        
+
         ServerController.Instance.RunInContext(() => {
             Item? itemA = Player.Inventory.GetItem(indexA);
             Item? itemB = Player.Inventory.GetItem(indexB);
@@ -255,12 +258,13 @@ public partial class PlayerController : Node {
                 GD.PrintErr($"Unit {unit.Type.ResourcePath} is not owned by player {Player.Name}");
                 return;
             }
-            
+
             Item item = Player.Inventory.GetItem(inventoryIndex);
             if (item == null) {
                 GD.PrintErr($"No item found at inventory index {inventoryIndex} for player {Player.Name}");
                 return;
             }
+
             ItemType? craftingTarget = unit.GetCraftingTargetWith(item, out Item craftedFrom);
             bool success;
             if (craftingTarget != null) {
@@ -271,7 +275,47 @@ public partial class PlayerController : Node {
             }
 
             if (success) Player.Inventory.ReplaceItem(inventoryIndex, null);
-            
+        }, this);
+    }
+
+    public void UseConsumable(Consumable consumable, Node target, int extraChoice = -1) {
+        this.RpcToServer(MethodName.RequestUseConsumable, consumable.GetTypeName(), target.GetPath(), extraChoice);
+    }
+
+    public void UseConsumable(Consumable consumable, IIdentifiable target, int extraChoice = -1) {
+        this.RpcToServer(MethodName.RequestUseConsumable, consumable.GetTypeName(), target.GetId(), extraChoice);
+    }
+
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
+    private void RequestUseConsumable(string consumableTypeName, string targetPathOrId, int extraChoice) {
+        if (!ServerController.Instance.IsServer) throw new InvalidOperationException("RequestUseConsumable can only be called on the server.");
+        Consumable? consumable = Consumable.GetByTypeName(consumableTypeName);
+        if (consumable == null) {
+            GD.PrintErr($"Consumable of type {consumableTypeName} not found.");
+            return;
+        }
+
+        object? target = IIdentifiable.TryGetInstance(targetPathOrId) ?? (object)GetNodeOrNull(targetPathOrId);
+        if (target == null) {
+            GD.PrintErr($"Target Identifiable or Node at ID/Path {targetPathOrId} not found.");
+            return;
+        }
+
+        ServerController.Instance.RunInContext(() => {
+            uint consumableCount = Player.GetConsumableCount(consumable);
+            if (consumableCount == 0) {
+                GD.PrintErr($"Player {Player.Name} has no consumables of type {consumableTypeName}.");
+                return;
+            }
+
+            if (!consumable.IsValidTarget(target, extraChoice)) {
+                GD.PrintErr($"Consumable {consumableTypeName} is not valid for target at path/id {targetPathOrId} with choice {extraChoice}.");
+                return;
+            }
+
+            bool success = consumable.Consume(target, extraChoice);
+            if (success) Player.SetConsumableCount(consumable, consumableCount - 1);
+            else GD.PrintErr($"Consumable {consumableTypeName} could not be consumed on target at path/id {targetPathOrId} with choice {extraChoice}.");
         }, this);
     }
 }

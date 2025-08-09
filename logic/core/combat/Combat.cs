@@ -23,6 +23,8 @@ public partial class Combat : Node2D {
     [ProtoMember(4)] public bool IsCloneFight { get; private set; }
     [ProtoMember(5)] public List<UnitInstance> TeamA { get; private set; } = new List<UnitInstance>();
     [ProtoMember(6)] public List<UnitInstance> TeamB { get; private set; } = new List<UnitInstance>();
+    [ProtoMember(7)] public Dictionary<UnitRole, int> TeamARoleCounts { get; private set; } = new Dictionary<UnitRole, int>();
+    [ProtoMember(8)] public Dictionary<UnitRole, int> TeamBRoleCounts { get; private set; } = new Dictionary<UnitRole, int>();
     
     // Units without a valid target always look for the shortest path to an enemy.
     // Each process, one unit per team which is still walking its path will recalculate its path.
@@ -31,9 +33,9 @@ public partial class Combat : Node2D {
     private int teamBUnitProcessingIndex = 0;
 
     // these properties will only matter when reconnecting during a combat
-    [ProtoMember(7)] public double CombatTime { get; private set; } = -TIME_UNTIL_START;
-    [ProtoMember(8)] public bool Started { get; private set; } = false;
-    [ProtoMember(9)] public CombatResult? Result { get; private set; }
+    [ProtoMember(9)] public double CombatTime { get; private set; } = -TIME_UNTIL_START;
+    [ProtoMember(10)] public bool Started { get; private set; } = false;
+    [ProtoMember(11)] public CombatResult? Result { get; private set; }
 
     public Rect2 GlobalBounds => new Rect2(GlobalPosition + CombatArea.Position, CombatArea.Size);
 
@@ -68,6 +70,15 @@ public partial class Combat : Node2D {
         unitInstance.Position = position;
         // unitInstance.CurrentCombat = this; // we need by reference serialization to have this replicated on the client (this method is only executed by the server)
         // unitInstance.IsInTeamA = teamA;
+        
+        Dictionary<UnitRole, int> roleCounts = teamA ? TeamARoleCounts : TeamBRoleCounts;
+        foreach (UnitRole role in unit.GetRoles()) {
+            if (roleCounts.ContainsKey(role)) {
+                roleCounts[role]++;
+            } else {
+                roleCounts[role] = 1;
+            }
+        }
         
         return unitInstance;
     }
@@ -214,6 +225,10 @@ public partial class Combat : Node2D {
         } else {
             TeamB.Remove(unitInstance);
         }
+    }
+
+    public int GetRoleCount(UnitRole role, bool teamA) {
+        return teamA ? TeamARoleCounts.GetValueOrDefault(role, 0) : TeamBRoleCounts.GetValueOrDefault(role, 0);
     }
 }
 

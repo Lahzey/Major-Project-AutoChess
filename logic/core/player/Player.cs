@@ -4,6 +4,7 @@ using Godot;
 using MPAutoChess.logic.core.environment;
 using MPAutoChess.logic.core.events;
 using MPAutoChess.logic.core.item;
+using MPAutoChess.logic.core.item.consumable;
 using MPAutoChess.logic.core.networking;
 using MPAutoChess.logic.core.placement;
 using MPAutoChess.logic.core.session;
@@ -26,8 +27,19 @@ public partial class Player : Node2D {
     [Export] [ProtoMember(4)] public int Gold { get; set; } = 100;
     
     [ProtoMember(5)] public Shop Shop { get; private set; }
+
+    private Inventory inventory;
+
+    [ProtoMember(6)]
+    public Inventory Inventory {
+        get => inventory;
+        private set {
+            inventory = value;
+            inventory.Player = this;
+        }
+    }
     
-    [ProtoMember(6)] public Inventory Inventory { get; private set; } = new Inventory(10);
+    [ProtoMember(7)] private Dictionary<Consumable, uint> consumables = new Dictionary<Consumable, uint>();
 
     private Arena _arena;
     [ProtoMember(8)]
@@ -47,6 +59,16 @@ public partial class Player : Node2D {
 
     public Player() {
         Shop = new Shop(this);
+        Inventory = new Inventory(20);
+        
+        foreach (Consumable consumable in Consumable.GetAll()) {
+            consumables[consumable] = 0;
+        }
+        
+        // just for testing TODO: remove
+        consumables[Consumable.Get<ItemRemover>()] = 5;
+        consumables[Consumable.Get<ItemReroll>()] = 5;
+        consumables[Consumable.Get<ItemUpgrade>()] = 5;
     }
 
     public void SetAccount(Account account) {
@@ -74,6 +96,16 @@ public partial class Player : Node2D {
             case < 250: return 9;
             default: return 10; // Level 10 is the maximum level
         }
+    }
+    
+    public uint GetConsumableCount(Consumable consumable) {
+        return consumables.TryGetValue(consumable, out uint count) ? count : 0;
+    }
+    
+    public void SetConsumableCount(Consumable consumable, uint count) {
+        if (!ServerController.Instance.IsServer) throw new InvalidOperationException("SetConsumableCount can only be called on the server.");
+        consumables[consumable] = count;
+        ServerController.Instance.PublishChange(this);
     }
 
     private void CheckForUnitLevelUp() {

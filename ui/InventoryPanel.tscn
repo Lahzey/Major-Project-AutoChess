@@ -1,13 +1,21 @@
-[gd_scene load_steps=3 format=3 uid="uid://dc6pkfnhwi4qo"]
+[gd_scene load_steps=4 format=3 uid="uid://dc6pkfnhwi4qo"]
 
 [ext_resource type="Script" path="res://logic/core/item/InventoryPanel.cs" id="1_klgis"]
 [ext_resource type="PackedScene" uid="uid://d1v04wm4w5hw" path="res://ui/ItemPanel.tscn" id="2_4fjgk"]
+[ext_resource type="PackedScene" uid="uid://dpalt42yvwrkk" path="res://ui/ConsumableButton.tscn" id="2_nobbv"]
 
-[node name="InventoryPanel" type="GridContainer"]
+[node name="InventoryPanel" type="MarginContainer" node_paths=PackedStringArray("ColumnsContainer")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_klgis")
+ColumnsContainer = NodePath("Columns")
+ConsumableButtonScene = ExtResource("2_nobbv")
 ItemPanelScene = ExtResource("2_4fjgk")
+
+[node name="Columns" type="HBoxContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 10.0

@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://dwn3j7yo8jn1a"]
+[gd_scene load_steps=13 format=3 uid="uid://dwn3j7yo8jn1a"]
 
 [ext_resource type="Script" path="res://logic/core/networking/ServerController.cs" id="1_ytwbe"]
 [ext_resource type="PackedScene" uid="uid://bpvjg64gxvyjj" path="res://prefabs/Player.tscn" id="2_q3aqn"]
@@ -9,6 +9,8 @@
 [ext_resource type="Script" path="res://logic/core/player/CameraController.cs" id="7_yt8wk"]
 [ext_resource type="Script" path="res://logic/menu/ContextMenu.cs" id="8_605kq"]
 [ext_resource type="PackedScene" uid="uid://c2fryil7qt0qx" path="res://ui/PlayerUI.tscn" id="9_8yf6j"]
+[ext_resource type="Script" path="res://logic/menu/SelectionLayer.cs" id="10_sb8lw"]
+[ext_resource type="PackedScene" uid="uid://cvekfw0dmpo2h" path="res://ui/ChoicePopup.tscn" id="11_nwohr"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_nyt2v"]
 shader = ExtResource("4_8lxle")
@@ -24,8 +26,6 @@ shader_parameter/star_texture = ExtResource("5_w52rg")
 material = SubResource("ShaderMaterial_nyt2v")
 scale = Vector2(1e+06, 1e+06)
 texture = ExtResource("4_qlt2k")
-
-[node name="WorldControlsLayer" type="CanvasLayer" parent="."]
 
 [node name="ServerController" type="Node" parent="."]
 script = ExtResource("1_ytwbe")
@@ -59,3 +59,16 @@ PopupMenu = NodePath("PopupMenu")
 [node name="PopupMenu" type="PopupMenu" parent="CanvasLayer/ContextMenu"]
 transparent_bg = true
 transparent = true
+
+[node name="SelectionLayer" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("10_sb8lw")
+
+[node name="ChoicePopup" parent="CanvasLayer" instance=ExtResource("11_nwohr")]
+mouse_filter = 2

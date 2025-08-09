@@ -16,7 +16,7 @@ public partial class UnitOverlayUI : ItemDropTarget {
 
     public UnitInstance UnitInstance { get; set; }
 
-    private List<TextureRect> itemIcons = new List<TextureRect>();
+    private List<ItemIcon> itemIcons = new List<ItemIcon>();
 
     public UnitOverlayUI() {
         MouseEntered += () => {
@@ -61,20 +61,20 @@ public partial class UnitOverlayUI : ItemDropTarget {
         IconsSpacer.Visible = false;
         
         while (itemIcons.Count < UnitInstance.Unit.EquippedItems.Count) {
-            TextureRect itemIcon = new TextureRect();
+            ItemIcon itemIcon = new ItemIcon();
             itemIcon.ExpandMode = TextureRect.ExpandModeEnum.FitWidthProportional;
             itemIcons.Add(itemIcon);
             IconsContainer.AddChild(itemIcon);
         }
         while (itemIcons.Count > UnitInstance.Unit.EquippedItems.Count) {
-            TextureRect itemIcon = itemIcons[0];
+            ItemIcon itemIcon = itemIcons[0];
             itemIcons.Remove(itemIcon);
             IconsContainer.RemoveChild(itemIcon);
             itemIcon.QueueFree();
         }
 
         for (int i = 0; i < itemIcons.Count; i++) {
-            itemIcons[i].Texture = UnitInstance.Unit.EquippedItems[i].Type.Icon;
+            itemIcons[i].Item = UnitInstance.Unit.EquippedItems[i];
         }
     }
 

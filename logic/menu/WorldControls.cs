@@ -5,6 +5,9 @@ namespace MPAutoChess.logic.menu;
 
 public partial class WorldControls : Control {
     public static WorldControls Instance { get; private set; }
+    public static WorldControls OverlayInstance { get; private set; }
+    
+    [Export] public bool IsOverlay { get; set; }
 
     private Dictionary<Control, PositioningInfo> controls = new Dictionary<Control, PositioningInfo>();
 
@@ -22,7 +25,8 @@ public partial class WorldControls : Control {
 
 
     public override void _EnterTree() {
-        Instance = this;
+        if (IsOverlay) OverlayInstance = this;
+        else Instance = this;
     }
 
     public void AddControl(Control control, PositioningInfo positioning) {

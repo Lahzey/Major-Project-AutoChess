@@ -83,6 +83,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 script = ExtResource("1_gfa4k")
 FreeSpace = NodePath("ViewBounds")
 Shop = NodePath("Shop")
@@ -96,6 +97,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 script = ExtResource("2_f4nfe")
 
 [node name="Shop" parent="." instance=ExtResource("2_vb6bc")]
@@ -116,7 +118,7 @@ anchor_right = 1.0
 anchor_bottom = 0.35
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 1
+mouse_filter = 2
 script = ExtResource("6_lur83")
 SmallControlsPanel = NodePath("SmallControlsPanel")
 LargeControlsPanel = NodePath("LargeControlsPanel")
@@ -162,7 +164,7 @@ anchors_preset = -1
 anchor_right = 1.0
 anchor_bottom = 0.314
 grow_horizontal = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 12
 text = "30"
 horizontal_alignment = 1
 
@@ -176,7 +178,7 @@ anchors_preset = -1
 anchor_right = 1.0
 anchor_bottom = 0.314
 grow_horizontal = 2
-theme_override_font_sizes/font_size = 23
+theme_override_font_sizes/font_size = 21
 text = "Round Title"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -207,15 +209,30 @@ grow_vertical = 2
 [node name="Panel" type="PanelContainer" parent="."]
 layout_mode = 1
 anchors_preset = -1
-anchor_top = 0.25
-anchor_bottom = 0.75
-offset_right = 110.0
+anchor_top = 0.2
+anchor_bottom = 0.8
+offset_top = 0.399994
+offset_right = 152.0
+offset_bottom = 0.599976
 grow_vertical = 2
 
 [node name="InventoryPanel" parent="Panel" instance=ExtResource("4_qij4o")]
 layout_mode = 2
+size_flags_vertical = 3
+
+[node name="OverlayWorldControls" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_f4nfe")
+IsOverlay = true
 
 [node name="ItemTooltipContainer" type="VBoxContainer" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = -1
 anchor_right = 0.2

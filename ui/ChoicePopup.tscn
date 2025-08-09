@@ -1,0 +1,126 @@
+[gd_scene load_steps=5 format=3 uid="uid://cvekfw0dmpo2h"]
+
+[ext_resource type="Script" path="res://logic/menu/ChoicePopup.cs" id="1_071mm"]
+[ext_resource type="Texture2D" uid="uid://bon5pix2ghl2" path="res://assets/white.png" id="2_rymfn"]
+[ext_resource type="Script" path="res://logic/util/AutoFontSize.cs" id="3_sgyeo"]
+[ext_resource type="Texture2D" uid="uid://cbfskvdseoi1k" path="res://assets/items/components/lard.jpg" id="5_cux6r"]
+
+[node name="ChoicePopup" type="Control" node_paths=PackedStringArray("TitleLabel", "ChoicesContainer")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_071mm")
+TitleLabel = NodePath("PanelContainer/VBoxContainer/Title")
+ChoicesContainer = NodePath("PanelContainer/VBoxContainer/ChoicesContainer")
+
+[node name="BackgroundDarken" type="TextureRect" parent="."]
+modulate = Color(0, 0, 0, 0.588235)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+texture = ExtResource("2_rymfn")
+expand_mode = 1
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.35
+anchor_right = 0.5
+anchor_bottom = 0.65
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 21
+text = "POPUP TITLE"
+horizontal_alignment = 1
+
+[node name="AutoFontSize" type="Node" parent="PanelContainer/VBoxContainer/Title"]
+script = ExtResource("3_sgyeo")
+SizeType = 3
+
+[node name="Separator" type="TextureRect" parent="PanelContainer/VBoxContainer"]
+modulate = Color(0.0627451, 0.113725, 0.156863, 1)
+layout_mode = 2
+texture = ExtResource("2_rymfn")
+
+[node name="ChoicesContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 15
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/ChoicesContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TextureRect" type="TextureRect" parent="PanelContainer/VBoxContainer/ChoicesContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+texture = ExtResource("5_cux6r")
+expand_mode = 3
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer/ChoicesContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Cho A"
+horizontal_alignment = 1
+
+[node name="AutoFontSize" type="Node" parent="PanelContainer/VBoxContainer/ChoicesContainer/VBoxContainer/Label"]
+script = ExtResource("3_sgyeo")
+SizeType = 2
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="PanelContainer/VBoxContainer/ChoicesContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TextureRect" type="TextureRect" parent="PanelContainer/VBoxContainer/ChoicesContainer/VBoxContainer2"]
+layout_mode = 2
+size_flags_vertical = 3
+texture = ExtResource("5_cux6r")
+expand_mode = 3
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer/ChoicesContainer/VBoxContainer2"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Cho A"
+horizontal_alignment = 1
+
+[node name="AutoFontSize" type="Node" parent="PanelContainer/VBoxContainer/ChoicesContainer/VBoxContainer2/Label"]
+script = ExtResource("3_sgyeo")
+SizeType = 2
+
+[node name="VBoxContainer3" type="VBoxContainer" parent="PanelContainer/VBoxContainer/ChoicesContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TextureRect" type="TextureRect" parent="PanelContainer/VBoxContainer/ChoicesContainer/VBoxContainer3"]
+layout_mode = 2
+size_flags_vertical = 3
+texture = ExtResource("5_cux6r")
+expand_mode = 3
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer/ChoicesContainer/VBoxContainer3"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Cho A"
+horizontal_alignment = 1
+
+[node name="AutoFontSize" type="Node" parent="PanelContainer/VBoxContainer/ChoicesContainer/VBoxContainer3/Label"]
+script = ExtResource("3_sgyeo")
+SizeType = 2

@@ -1,0 +1,48 @@
+[gd_scene load_steps=5 format=3 uid="uid://dpalt42yvwrkk"]
+
+[ext_resource type="Texture2D" uid="uid://yubxdf601i1l" path="res://assets/ui/magnet.png" id="1_m5h4i"]
+[ext_resource type="Script" path="res://logic/core/item/consumable/ConsumableButton.cs" id="2_haejw"]
+[ext_resource type="Texture2D" uid="uid://c0581iy55d63g" path="res://assets/circle.svg" id="2_wfxrg"]
+[ext_resource type="Script" path="res://logic/util/AutoFontSize.cs" id="3_ne07e"]
+
+[node name="ConsumableButton" type="TextureButton" node_paths=PackedStringArray("CountLabel")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("1_m5h4i")
+ignore_texture_size = true
+stretch_mode = 5
+script = ExtResource("2_haejw")
+CountLabel = NodePath("AspectRatioContainer/TextureRect/CountLabel")
+
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.4
+anchor_bottom = 0.4
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="AspectRatioContainer"]
+layout_mode = 2
+texture = ExtResource("2_wfxrg")
+expand_mode = 1
+
+[node name="CountLabel" type="Label" parent="AspectRatioContainer/TextureRect"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 6
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AutoFontSize" type="Node" parent="AspectRatioContainer/TextureRect/CountLabel"]
+script = ExtResource("3_ne07e")
+SizeType = 0

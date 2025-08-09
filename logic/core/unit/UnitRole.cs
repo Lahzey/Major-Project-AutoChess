@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Godot;
 using MPAutoChess.logic.core.placement;
+using MPAutoChess.logic.util;
 using ProtoBuf;
 
 namespace MPAutoChess.logic.core.unit;
@@ -11,22 +13,33 @@ public abstract class UnitRole {
 
     private static Dictionary<string, UnitRole> rolesByTypeName;
 
-    public abstract void OnBoardUpdate(Board board);
-    
-    public abstract void OnCombatStart(Board board);
-    
-    public abstract void OnCombatEnd(Board board);
+    public abstract void Apply(IEnumerable<UnitInstance> units);
 
     public virtual string GetName() {
-        return GetType().Name;
+        return StringUtil.PascalToReadable(GetType().Name);
     }
     
     public abstract string GetDescription();
+    
+    public abstract Texture2D GetIcon();
+
+    public virtual int GetLevel(int count) {
+        int level = 0;
+        foreach (int threshold in GetCountThresholds()) {
+            if (count >= threshold) {
+                level++;
+            } else {
+                break;
+            }
+        }
+
+        return level;
+    }
 
     public abstract int[] GetCountThresholds();
 
     public virtual bool IsActive(Board board) {
-        return board.GetUnits().Count(unit => unit.Type.Roles.HasRole(this)) >= GetCountThresholds()[0];
+        return board.GetUnits().Count(unit => unit.Type.RoleSet.HasRole(this)) >= GetCountThresholds()[0];
     }
     
     public string GetTypeName() {
@@ -56,7 +69,6 @@ public abstract class UnitRole {
             rolesByTypeName[GetTypeName(type)] = role;
         }
     }
-
 }
 
 [ProtoContract]
@@ -65,10 +77,12 @@ public class UnitRoleSurrogate {
     [ProtoMember(1)] public string TypeName { get; set; }
 
     public static implicit operator UnitRoleSurrogate(UnitRole role) {
+        if (role == null) return null;
         return new UnitRoleSurrogate { TypeName = role.GetTypeName() };
     }
 
     public static implicit operator UnitRole(UnitRoleSurrogate surrogate) {
+        if (surrogate == null) return null;
         return UnitRole.GetByTypeName(surrogate.TypeName);
     }
     

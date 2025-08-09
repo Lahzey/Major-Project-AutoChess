@@ -86,14 +86,4 @@ public partial class UnitRoleSet : Resource {
     public bool HasRole(UnitRole unitRole) {
         return Roles.Contains(unitRole);
     }
-
-    public bool HasRole<T>() {
-        foreach (UnitRole role in Roles) {
-            if (role is T) {
-                return true;
-            }
-        }
-
-        return false;
-    }
 }

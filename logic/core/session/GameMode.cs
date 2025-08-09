@@ -33,7 +33,9 @@ public abstract partial class GameMode : Node {
     }
 
     public virtual GamePhase GetCurrentPhase() {
-        return phases[GetCurrentPhaseIndex()];
+        int currentIndex = GetCurrentPhaseIndex();
+        if (currentIndex < 0) return null; // game has not yet started
+        return phases[currentIndex];
     }
     
     public virtual int GetCurrentPhaseIndex() {
