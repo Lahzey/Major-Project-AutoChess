@@ -38,6 +38,7 @@ public partial class ShopUI : Control {
                 slots.Add(slot);
             }
         }
+        
         if (slots.Count > offers.Length) {
             // remove excess slots
             for (int i = slots.Count - 1; i >= offers.Length; i--) {

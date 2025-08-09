@@ -152,16 +152,20 @@ public partial class Combat : Node2D {
 
         if (closestEnemy == null) {// no enemies left
             if (unitInstance.CurrentTarget != null) unitInstance.SetTarget(null);
-            int playerAUnitCount = TeamA.Count(unit => unit != null && IsInstanceValid(unit) && unit.IsAlive() && unit.Unit.Container != null && unit.Unit.Type.Cost > 0); // has a container -> not summoned, has a cost above 0 -> a purchased fighter
-            int playerBUnitCount = TeamB.Count(unit => unit != null && IsInstanceValid(unit) && unit.IsAlive() && unit.Unit.Container != null && unit.Unit.Type.Cost > 0); // has a container -> not summoned, has a cost above 0 -> a purchased fighter
+            int playerAUnitCount = TeamA.Count(unit => IsValid(unit) && unit.Unit.Container != null && unit.Unit.Type.Cost > 0); // has a container -> not summoned, has a cost above 0 -> a purchased fighter
+            int playerBUnitCount = TeamB.Count(unit => IsValid(unit) && unit.Unit.Container != null && unit.Unit.Type.Cost > 0); // has a container -> not summoned, has a cost above 0 -> a purchased fighter
             int survivingUnits = Math.Max(playerAUnitCount, playerBUnitCount);
             Winner winner = survivingUnits == 0 ? Winner.DRAW : (playerAUnitCount > playerBUnitCount ? Winner.PLAYER_A : Winner.PLAYER_B);
-            Player? winningPlayer = winner == Winner.PLAYER_A ? PlayerA : winner == Winner.PLAYER_B ? PlayerB : null;
+            Player? winningPlayer = winner switch {
+                Winner.PLAYER_A => PlayerA,
+                Winner.PLAYER_B => PlayerB,
+                _ => null
+            };
             
             Result = new CombatResult {
                 PlayerAId = PlayerA.Account.Id,
                 PlayerBId = PlayerB.Account.Id,
-                Winner = playerAUnitCount == 0 ? (playerBUnitCount == 0 ? Winner.DRAW : Winner.PLAYER_B) : Winner.PLAYER_A,
+                Winner = winner,
                 SurvivingUnits = Math.Max(playerAUnitCount, playerBUnitCount),
                 DamageDealt = Math.Max((winningPlayer?.GetLevel()??0) + (survivingUnits / 2), MIN_PLAYER_DAMAGE)
             };
@@ -229,6 +233,11 @@ public partial class Combat : Node2D {
 
     public int GetRoleCount(UnitRole role, bool teamA) {
         return teamA ? TeamARoleCounts.GetValueOrDefault(role, 0) : TeamBRoleCounts.GetValueOrDefault(role, 0);
+    }
+    
+
+    public bool IsValid(UnitInstance unit) {
+        return unit != null && IsInstanceValid(unit) && unit.IsAlive();
     }
 }
 

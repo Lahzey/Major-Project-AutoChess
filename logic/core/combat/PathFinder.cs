@@ -12,7 +12,7 @@ using Vector2 = Godot.Vector2;
 
 namespace MPAutoChess.logic.core.combat;
 
-public class PathFinder {
+public static class PathFinder {
     
     [ProtoContract]
     public class Path {
@@ -90,7 +90,7 @@ public class PathFinder {
             new Vector2I(-1, 1),
             new Vector2I(1, -1)
         };
-        float diagonalCost = 1.4142f; // sqrt(2) for diagonal movement
+        float diagonalCost = Mathf.Sqrt2; // sqrt(2) for diagonal movement
         float gridAcceptanceRadiusSquared = acceptanceRadius * oneOverGridScale;
         gridAcceptanceRadiusSquared *= gridAcceptanceRadiusSquared;
 
@@ -125,16 +125,16 @@ public class PathFinder {
                 float stepCost = i >= 4 ? diagonalCost : gridScale;
                 float newGCost = current.GCost + stepCost;
 
-                if (!open.TryGetValue(neighborHash, out NodeData neighbor) || newGCost < neighbor.GCost) {
-                    neighbor = new NodeData {
-                        Position = neighborGridPos,
-                        GCost = newGCost,
-                        HCost = Heuristic(neighborGridPos, targetCoord),
-                        Parent = current
-                    };
-                    open[neighborHash] = neighbor;
-                    queue.Enqueue(neighbor, neighbor.FCost);
-                }
+                if (open.TryGetValue(neighborHash, out NodeData neighbor) && !(newGCost < neighbor.GCost)) continue;
+                
+                neighbor = new NodeData {
+                    Position = neighborGridPos,
+                    GCost = newGCost,
+                    HCost = Heuristic(neighborGridPos, targetCoord),
+                    Parent = current
+                };
+                open[neighborHash] = neighbor;
+                queue.Enqueue(neighbor, neighbor.FCost);
             }
         }
 
@@ -152,7 +152,7 @@ public class PathFinder {
     private  static float Heuristic(Vector2I a, Vector2I b) {
         int dx = Math.Abs(a.X - b.X);
         int dy = Math.Abs(a.Y - b.Y);
-        return dx + dy + (1.4142f - 2f) * Math.Min(dx, dy); // Octile
+        return dx + dy + (Mathf.Sqrt2 - 2f) * Math.Min(dx, dy); // Octile
     }
     
     public static int Hash(Vector2I pos) {

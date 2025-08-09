@@ -70,16 +70,17 @@ public class Shop : IIdentifiable {
     }
 
     private void OnChange() {
-        if (!ServerController.Instance.IsServer) {
-            if (PlayerController.Current?.Player.Shop == this) { // just to be sure, currently the server should only send shop rolls to the owning player
-                if (PlayerUI.Instance == null) throw new InvalidOperationException("PlayerUI is not initialized, cannot update shop offers.");
-                else if (PlayerUI.Instance.Shop == null) throw new InvalidOperationException("PlayerUI.Shop is not initialized, cannot update shop offers.");
-                else if (Offers == null) throw new InvalidOperationException("Offers is null, cannot update shop offers.");
-                PlayerUI.Instance.Shop.SetOffers(Offers.ToArray());
-            }
-        } else {
+        if (ServerController.Instance.IsServer) {
             ServerController.Instance.PublishChange(this, Player); // forward to clients
+            return;
         }
+        if (PlayerController.Current?.Player.Shop != this) return; // just to be sure, currently the server should only send shop rolls to the owning player
+        
+        if (PlayerUI.Instance == null) throw new InvalidOperationException("PlayerUI is not initialized, cannot update shop offers.");
+        else if (PlayerUI.Instance.Shop == null) throw new InvalidOperationException("PlayerUI.Shop is not initialized, cannot update shop offers.");
+        else if (Offers == null) throw new InvalidOperationException("Offers is null, cannot update shop offers.");
+        
+        PlayerUI.Instance.Shop.SetOffers(Offers.ToArray());
     }
 
     public static int WeightedRandomIndex(float[] odds) {
