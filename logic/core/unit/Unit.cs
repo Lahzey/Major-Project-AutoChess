@@ -213,7 +213,7 @@ public class Unit : IIdentifiable {
     }
     
     public HashSet<UnitRole> GetRoles() {
-        return Type.RoleSet.Roles;
+        return Type.RoleSet?.Roles?? new HashSet<UnitRole>();
     }
 
     public bool HasRole(UnitRole role) {

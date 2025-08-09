@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://logic/core/item/ItemPanel.cs" id="1_c054t"]
 [ext_resource type="StyleBox" uid="uid://d123je7uogrma" path="res://ui/styles/ItemPanelNormalStyle.tres" id="1_n1w1n"]
 [ext_resource type="StyleBox" uid="uid://bnfmlaoniltkw" path="res://ui/styles/ItemPanelCraftHoverStyle.tres" id="2_0l36m"]
-[ext_resource type="Texture2D" uid="uid://uv15gyjx8dmh" path="res://icon.svg" id="4_vt3gf"]
+[ext_resource type="Texture2D" uid="uid://b6ugrqofex0a7" path="res://assets/transparent.png" id="4_2xncq"]
 [ext_resource type="Script" path="res://logic/core/item/ItemIcon.cs" id="5_dldg4"]
 
 [node name="ItemPanel" type="PanelContainer" node_paths=PackedStringArray("Icon")]
@@ -22,7 +22,7 @@ CraftHoverStyle = ExtResource("2_0l36m")
 
 [node name="TextureRect" type="TextureRect" parent="."]
 layout_mode = 2
-texture = ExtResource("4_vt3gf")
+texture = ExtResource("4_2xncq")
 expand_mode = 3
 stretch_mode = 5
 script = ExtResource("5_dldg4")

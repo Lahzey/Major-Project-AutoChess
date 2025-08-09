@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Godot;
 using MPAutoChess.logic.core.player;
@@ -8,6 +7,7 @@ using MPAutoChess.logic.core.session;
 using MPAutoChess.logic.menu;
 using MPAutoChess.logic.util;
 using MPAutoChess.seasons.season0;
+using Environment = System.Environment;
 
 namespace MPAutoChess.logic.core.networking;
 
@@ -151,7 +151,7 @@ public partial class ServerController : Node {
         for (int i = 0; i < GameSession.Players.Length; i++) {
             Player player = GameSession.Players[i];
             if (!player.Account.Equals(Account.GetCurrent())) continue;
-            GD.Print($"{System.Environment.ProcessId}: [{Account.GetCurrent().Id}] Creating player controller for player {player.Account.Id} at {player.Position}.");
+            GD.Print($"{Environment.ProcessId}: [{Account.GetCurrent().Id}] Creating player controller for player {player.Account.Id} at {player.Position}.");
 
             PlayerController controller = new PlayerController(player);
             controller.Name = $"Player{i}Controller";
