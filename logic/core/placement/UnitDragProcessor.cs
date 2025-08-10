@@ -1,6 +1,7 @@
 using System;
 using Godot;
 using MPAutoChess.logic.core.player;
+using MPAutoChess.logic.core.session;
 using MPAutoChess.logic.core.unit;
 using MPAutoChess.logic.util;
 using Environment = System.Environment;
@@ -63,6 +64,8 @@ public class UnitDragProcessor {
 
     private bool IsAllowed() {
         if (HoveredDropTarget == null) return false;
+        if (HoveredDropTarget.GetPlayer() != UnitInstance.Unit.Container.GetPlayer()) return false;
+        if (GameSession.Instance.IsInCombat(HoveredDropTarget.GetPlayer()) && (HoveredDropTarget is Board || UnitInstance.Unit.Container is Board)) return false; // cannot modify the board during combat
 
         Vector2 targetPlacement = HoveredDropTarget.ConvertToPlacement(CurrentMousePosition, UnitInstance.Unit);
         Unit? replacedUnit = HoveredDropTarget is UnitContainer targetContainer ? targetContainer.GetUnitAt(targetPlacement, UnitInstance.Unit.GetSize()) : null;

@@ -3,7 +3,7 @@ using System.Linq;
 using Godot;
 using Godot.Collections;
 
-namespace MPAutoChess.logic.core.unit;
+namespace MPAutoChess.logic.core.unit.role;
 
 [GlobalClass, Tool]
 public partial class UnitRoleSet : Resource {

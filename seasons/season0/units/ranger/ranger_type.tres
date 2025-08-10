@@ -1,8 +1,14 @@
-[gd_resource type="Resource" script_class="UnitType" load_steps=4 format=3 uid="uid://bsfnnltelsj0s"]
+[gd_resource type="Resource" script_class="UnitType" load_steps=6 format=3 uid="uid://bsfnnltelsj0s"]
 
 [ext_resource type="Texture2D" uid="uid://buln5i3ub41cg" path="res://seasons/season0/units/ranger/ranger_icon.png" id="1_cic5s"]
+[ext_resource type="Script" path="res://logic/core/unit/role/UnitRoleSet.cs" id="2_i6xbb"]
 [ext_resource type="PackedScene" uid="uid://ciphnirn3ae0b" path="res://seasons/season0/units/ranger/ranger_prefab.tscn" id="2_wl7u2"]
 [ext_resource type="Script" path="res://logic/core/unit/UnitType.cs" id="3_eet88"]
+
+[sub_resource type="Resource" id="Resource_h33x0"]
+script = ExtResource("2_i6xbb")
+"Role Count" = 1
+"Role 1" = "Placeholder (in MPAutoChess.seasons.season0.roles)"
 
 [resource]
 script = ExtResource("3_eet88")
@@ -11,6 +17,7 @@ SlotsNeeded = 1
 Size = Vector2(2, 2)
 Cost = 2
 Rarity = 2
+RoleSet = SubResource("Resource_h33x0")
 MaxHealth = 1000.0
 MaxMana = 100.0
 StartingMana = 100.0

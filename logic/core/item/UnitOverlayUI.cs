@@ -13,6 +13,7 @@ public partial class UnitOverlayUI : ItemDropTarget {
     [Export] public ResourceBar ManaBar { get; set; }
     [Export] public Container IconsContainer { get; set; }
     [Export] public Control IconsSpacer { get; set; }
+    [Export] public Label LevelLabel { get; set; }
 
     public UnitInstance UnitInstance { get; set; }
 
@@ -25,9 +26,9 @@ public partial class UnitOverlayUI : ItemDropTarget {
 
             if (canDrop.Value) {
                 ItemDragInfo dragInfo = (ItemDragInfo) GetViewport().GuiGetDragData().AsGodotObject();
-                ItemType? craftingTarget = UnitInstance.Unit.GetCraftingTargetWith(dragInfo.GetItem(), out _);
-                if (craftingTarget != null) {
-                    SetShowCraftingPreview(true, craftingTarget);
+                Item? craftingResult = UnitInstance.Unit.GetCraftingResultWith(dragInfo.GetItem(), out _);
+                if (craftingResult != null) {
+                    SetShowCraftingPreview(true, craftingResult);
                 }
             } else {
                 return;
@@ -51,6 +52,7 @@ public partial class UnitOverlayUI : ItemDropTarget {
 
     public override void _Process(double delta) {
         Visible = UnitInstance.IsVisibleInTree();
+        LevelLabel.Text = UnitInstance.GetLevel().ToString();
         
         if (UnitInstance.Unit.EquippedItems.Count == 0) {
             IconsContainer.Visible = false;

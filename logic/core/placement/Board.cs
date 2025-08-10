@@ -5,6 +5,7 @@ using MPAutoChess.logic.core.events;
 using MPAutoChess.logic.core.networking;
 using MPAutoChess.logic.core.player;
 using MPAutoChess.logic.core.unit;
+using MPAutoChess.logic.core.unit.role;
 using MPAutoChess.logic.util;
 using ProtoBuf;
 using Vector2 = Godot.Vector2;
@@ -20,7 +21,18 @@ public partial class Board : UnitContainer {
 
     public Player Player { get; set; }
 
-    [ProtoMember(3)] private BoardData data = new BoardData();
+    private BoardData _data = new BoardData();
+
+    [ProtoMember(3)]
+    private BoardData data {
+        get => _data;
+        set {
+            _data = value;
+            OnChange();
+        }
+    }
+    
+    private Dictionary<UnitRole, HashSet<UnitType>> unitTypesInRole = new Dictionary<UnitRole, HashSet<UnitType>>();
 
     public override void _Ready() {
         GridTexture.Scale = new Vector2(Columns, Rows);
@@ -116,11 +128,11 @@ public partial class Board : UnitContainer {
 
     public override bool IsValidDrop(Unit unit, Vector2 placement, Unit replacedUnit = null) {
         // slot count check
-        int freedSlots = replacedUnit != null && replacedUnit.Container != this ? replacedUnit.Type.SlotsNeeded : 0;
+        int freedSlots = (replacedUnit != null && replacedUnit.Container == this) ? replacedUnit.Type.SlotsNeeded : 0;
         int requiredSlots = unit.Container != this ? unit.Type.SlotsNeeded : 0;
         int newSlotCount = data.units.Count + requiredSlots - freedSlots;
         if (Player.BoardSize.Evaluate() < newSlotCount) {
-            GD.Print("Not enough slots on the board for unit: " + unit.Type.Name + " replacing: " + (replacedUnit?.Type.Name ?? "none"));
+            GD.Print($"Not enough slots on the board for unit: {unit.Type.Name}[{requiredSlots}] replacing: {(replacedUnit?.Type.Name ?? "none")}[{freedSlots}]");
             return false;
         }
         
@@ -156,8 +168,9 @@ public partial class Board : UnitContainer {
     }
 
     private void OnChange() {
+        LoadRoleCounts();
         if (ServerController.Instance.IsServer) {
-            Rpc(MethodName.TransferBoard, SerializerExtensions.Serialize(this));
+            ServerController.Instance.PublishChange(this);
         } else {
             foreach (Unit unit in data.units) {
                 unit.Container = this;
@@ -174,20 +187,30 @@ public partial class Board : UnitContainer {
         ClearLeftoverUnitInstances();
     }
 
+    private void LoadRoleCounts() {
+        unitTypesInRole.Clear();
+        foreach (Unit unit in data.units) {
+            foreach (UnitRole role in unit.GetRoles()) {
+                if (!unit.HasRole(role)) continue;
+                if (!unitTypesInRole.TryGetValue(role, out HashSet<UnitType> unitTypes)) {
+                    unitTypes = new HashSet<UnitType>();
+                    unitTypesInRole.Add(role, unitTypes);
+                }
+                unitTypes.Add(unit.Type);
+            }
+        }
+    }
+
+    public Dictionary<UnitRole, HashSet<UnitType>> GetUnitTypesInAllRoles() {
+        return unitTypesInRole;
+    }
+
     private void ClearLeftoverUnitInstances() {
         foreach (Node child in GetChildren()) {
             if (child is UnitInstance unitInstance && !data.units.Contains(unitInstance.Unit)) {
                 RemoveChild(unitInstance);
             }
         }
-    }
-
-    [Rpc(MultiplayerApi.RpcMode.Authority)]
-    private void TransferBoard(byte[] serializedBoard) {
-        if (ServerController.Instance.IsServer) throw new InvalidOperationException("TransferBoard can only be called on the client.");
-        Board board = SerializerExtensions.Deserialize<Board>(serializedBoard);
-        OnChange();
-        if (board != this) GD.PrintErr("Deserialized Board does not match the current instance, this should not happen!");
     }
 
     [ProtoContract]

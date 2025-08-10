@@ -17,10 +17,10 @@ size_flags_vertical = 3
 mouse_default_cursor_shape = 2
 theme_override_styles/panel = ExtResource("1_n1w1n")
 script = ExtResource("1_c054t")
-Icon = NodePath("TextureRect")
+Icon = NodePath("ItemIcon")
 CraftHoverStyle = ExtResource("2_0l36m")
 
-[node name="TextureRect" type="TextureRect" parent="."]
+[node name="ItemIcon" type="TextureRect" parent="."]
 layout_mode = 2
 texture = ExtResource("4_2xncq")
 expand_mode = 3

@@ -19,7 +19,7 @@ public partial class CombatPhase : GamePhase {
     private const string BOOST_STAT_ID = "COMBAT_OVERTIME_BOOST";
     private const double AFTER_COMBAT_TIME = 5;
 
-    [ProtoMember(1)] private List<Combat> combats;
+    [ProtoMember(1)] public List<Combat> Combats { get; private set; }
     [ProtoMember(2)] private List<CombatResult> combatResults;
     [ProtoMember(3)] private Dictionary<long, int> playerCombatIndices = new Dictionary<long, int>();
     [ProtoMember(4)] private bool finished = false;
@@ -27,7 +27,7 @@ public partial class CombatPhase : GamePhase {
     private int boostCounter = 0;
 
     public override void _Process(double delta) {
-        if (combats == null) {
+        if (Combats == null) {
             RemainingTime -= delta;
             if (RemainingTime <= 0 && ServerController.Instance.IsServer) {
                 CreateCombats();
@@ -40,7 +40,7 @@ public partial class CombatPhase : GamePhase {
             int boostCounter = boostTime >= 0 ? (1 + (int)(boostTime / BOOST_INTERVAL)) : 0;
 
             if (ServerController.Instance.IsServer && boostCounter != this.boostCounter) {
-               foreach (Combat combat in combats) {
+               foreach (Combat combat in Combats) {
                     foreach (UnitInstance unit in combat.GetAllUnits()) {
                         unit.Stats.GetCalculation(StatType.BONUS_ATTACK_SPEED).AddPostMult(1f + boostCounter * 0.5f, BOOST_STAT_ID);
                         unit.Stats.GetCalculation(StatType.STRENGTH).AddPostMult(1f + boostCounter * 0.5f, BOOST_STAT_ID);
@@ -53,7 +53,7 @@ public partial class CombatPhase : GamePhase {
             this.boostCounter = boostCounter;
 
             if (ServerController.Instance.IsServer) {
-                finished = !combats.Any(combat => !combat.IsFinished());
+                finished = !Combats.Any(combat => !combat.IsFinished());
                 if (finished) {
                     RemainingTime = AFTER_COMBAT_TIME;
                     ServerController.Instance.PublishChange(this);
@@ -85,11 +85,11 @@ public partial class CombatPhase : GamePhase {
             throw new System.InvalidOperationException("Cannot create combats with less than 2 players.");
         }
 
-        combats = new List<Combat>();
+        Combats = new List<Combat>();
         for (int i = 0; i < GameSession.Instance.Players.Length; i+=2) {
             Player playerA = GameSession.Instance.Players[i];
             Player playerB = GameSession.Instance.Players[(i + 1) % GameSession.Instance.Players.Length];
-            int combatIndex = combats.Count;
+            int combatIndex = Combats.Count;
             bool isCloneFight = (i + 1) >= GameSession.Instance.Players.Length;
             
             Combat combat = new Combat();
@@ -98,17 +98,24 @@ public partial class CombatPhase : GamePhase {
             combat.GlobalPosition = playerA.Arena.Board.GlobalPosition;
             
             combat.Name = "Combat" + combatIndex;
-            combats.Add(combat);
+            Combats.Add(combat);
             
             // map players to their respective combat
             playerCombatIndices.Add(playerA.Account.Id, combatIndex);
             if (!isCloneFight) playerCombatIndices.Add(playerB.Account.Id, combatIndex);
         }
     }
+    
+    public Combat GetCombatForPlayer(Player player) {
+        if (Combats == null || !playerCombatIndices.TryGetValue(player.Account.Id, out int combatIndex)) {
+            return null;
+        }
+        return Combats[combatIndex];
+    }
 
     public override string GetTitle(Player forPlayer) {
-        if (combats == null) return "Prepare for Combat";
-        Combat combat = combats[playerCombatIndices[forPlayer.Account.Id]];
+        if (Combats == null) return "Prepare for Combat";
+        Combat combat = GetCombatForPlayer(forPlayer);
         Player otherPlayer = combat.PlayerA == forPlayer ? combat.PlayerB : combat.PlayerA;
         return $"Combat against {otherPlayer.Account.Name}";
     }
@@ -120,7 +127,7 @@ public partial class CombatPhase : GamePhase {
     [Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true)]
     private void StartCombats() {
         RemainingTime = 0;
-        foreach (Combat combat in combats) {
+        foreach (Combat combat in Combats) {
             combat.Start();
         }
         if (ServerController.Instance.IsServer) return;
@@ -133,7 +140,7 @@ public partial class CombatPhase : GamePhase {
 
     private void SetupLocal() {
         SetBoardsVisible(false);
-        Combat playerCombat = combats[playerCombatIndices[PlayerController.Current.Player.Account.Id]];
+        Combat playerCombat = GetCombatForPlayer(PlayerController.Current.Player);
         CameraController.Instance.Cover(playerCombat.GlobalBounds);
     }
 

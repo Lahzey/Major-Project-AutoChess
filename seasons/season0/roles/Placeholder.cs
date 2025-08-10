@@ -4,6 +4,7 @@ using MPAutoChess.logic.core.events;
 using MPAutoChess.logic.core.networking;
 using MPAutoChess.logic.core.session;
 using MPAutoChess.logic.core.unit;
+using MPAutoChess.logic.core.unit.role;
 
 namespace MPAutoChess.seasons.season0.roles;
 
@@ -15,7 +16,7 @@ public class Placeholder : UnitRole {
     private static readonly float[] DOUBLE_ATTACK_CHANCES = { 0.25f, 0.5f, };
 
     public Placeholder() {
-        if (!ServerController.Instance.IsServer) return;
+        if (Engine.IsEditorHint()) return;
         EventManager.INSTANCE.AddAfterListener<AttackEvent>(OnAttack);
     }
 
@@ -28,6 +29,7 @@ public class Placeholder : UnitRole {
     }
 
     private void OnAttack(AttackEvent attackEvent) {
+        if (!ServerController.Instance.IsServer) return;
         if (!attackEvent.Source.Unit.HasRole(this)) return;
             
         int roleCount = attackEvent.Source.CurrentCombat.GetRoleCount(this, attackEvent.Source.IsInTeamA);
@@ -35,6 +37,7 @@ public class Placeholder : UnitRole {
         if (level == 0) return;
             
         if (GameSession.Instance.Random.NextSingle() < DOUBLE_ATTACK_CHANCES[level - 1]) {
+            GD.Print($"Resetting attack cooldown for {attackEvent.Source.Name}.");
             attackEvent.Source.AttackCooldown = 0;
         }
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Godot;
+using MPAutoChess.logic.core.events;
 using MPAutoChess.logic.core.networking;
 using MPAutoChess.logic.core.player;
 using MPAutoChess.logic.util;
@@ -52,6 +53,8 @@ public abstract partial class GameMode : Node {
             phases[^1].End();
             RemoveChild(phases[^1]);
         }
+        PhaseStartEvent phaseStartEvent = new PhaseStartEvent(phase);
+        EventManager.INSTANCE.NotifyBefore(phaseStartEvent);
         
         phases.Add(phase);
         PowerLevel += phase.GetPowerLevel();
@@ -66,6 +69,7 @@ public abstract partial class GameMode : Node {
         }
         
         phase.Start();
+        EventManager.INSTANCE.NotifyAfter(phaseStartEvent);
     }
 
     [Rpc(MultiplayerApi.RpcMode.Authority)]

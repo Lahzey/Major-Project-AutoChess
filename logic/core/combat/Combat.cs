@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
+using MPAutoChess.logic.core.events;
 using MPAutoChess.logic.core.networking;
 using MPAutoChess.logic.core.placement;
 using MPAutoChess.logic.core.player;
 using MPAutoChess.logic.core.stats;
 using MPAutoChess.logic.core.unit;
+using MPAutoChess.logic.core.unit.role;
 using ProtoBuf;
+using Environment = System.Environment;
 
 namespace MPAutoChess.logic.core.combat;
 
@@ -48,10 +51,16 @@ public partial class Combat : Node2D {
             UnitInstance unitInstance = CreateUnitInstance(unit, playerA.Board.GetPlacement(unit), true);
             TeamA.Add(unitInstance);
         }
+        foreach ((UnitRole role, HashSet<UnitType> unitTypes) in playerA.Board.GetUnitTypesInAllRoles()) {
+            TeamARoleCounts[role] = unitTypes.Count;
+        }
 
         foreach (Unit unit in playerB.Board.GetUnits()) {
             UnitInstance unitInstance = CreateUnitInstance(unit, playerB.Board.GetPlacement(unit), false);
             TeamB.Add(unitInstance);
+        }
+        foreach ((UnitRole role, HashSet<UnitType> unitTypes) in playerB.Board.GetUnitTypesInAllRoles()) {
+            TeamBRoleCounts[role] = unitTypes.Count;
         }
 
         Vector2 combatSize = new Vector2(playerA.Board.Columns, playerA.Board.Rows + playerB.Board.Rows);
@@ -84,6 +93,8 @@ public partial class Combat : Node2D {
     }
 
     public void Start() {
+        CombatStartEvent combatStartEvent = new CombatStartEvent(this);
+        EventManager.INSTANCE.NotifyBefore(combatStartEvent);
         Started = true;
         
         // until by reference serialization is implemented, we need to set these properties manually (this method is executed by client and server)
@@ -95,6 +106,7 @@ public partial class Combat : Node2D {
             unit.CurrentCombat = this;
             unit.IsInTeamA = false;
         }
+        EventManager.INSTANCE.NotifyAfter(combatStartEvent);
     }
 
     public override void _PhysicsProcess(double delta) {

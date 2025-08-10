@@ -7,7 +7,7 @@
 
 [resource]
 script = ExtResource("1_i5f6w")
-Name = "Spirit Menders"
+Name = "Spirit Mender"
 Category = 1
 Description = ""
 Icon = ExtResource("3_htu3k")

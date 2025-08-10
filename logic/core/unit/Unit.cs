@@ -8,6 +8,7 @@ using MPAutoChess.logic.core.placement;
 using MPAutoChess.logic.core.player;
 using MPAutoChess.logic.core.session;
 using MPAutoChess.logic.core.stats;
+using MPAutoChess.logic.core.unit.role;
 using ProtoBuf;
 
 namespace MPAutoChess.logic.core.unit;
@@ -42,11 +43,6 @@ public class Unit : IIdentifiable {
         Type = type;
         this.pool = pool;
         SetBaseStatsFromType();
-    }
-    
-    ~Unit() {
-        pool?.ReturnUnit(Type);
-        passiveInstance?.QueueFree();
     }
 
     private void SetBaseStatsFromType() {
@@ -108,7 +104,7 @@ public class Unit : IIdentifiable {
             
             // keep a reference to the merged copy to prevent it from being destructed (which returns it to the pool)
             mergedCopies.Add(copy);
-            copy.passiveInstance.QueueFree(); // dispose the passive instance here already (to save memory), since destructor will not be called until this unit is destructed
+            copy.passiveInstance?.QueueFree(); // dispose the passive instance here already (to save memory), since destructor will not be called until this unit is destructed
             copy.passiveInstance = null;
             // TODO instead of disposing immediately, play a merge animation and then dispose the instance
 
@@ -128,9 +124,9 @@ public class Unit : IIdentifiable {
 
         Level++;
         SetBaseStatsFromType();
-        GetOrCreatePassiveInstance().Modulate = new Color(1f + 0.2f * (Level - 1), 1f + 0.2f * (Level - 1), 1f);
         GD.Print("Leveled up unit: " + Type.Name + " to level " + Level);
         EventManager.INSTANCE.NotifyAfter(levelUpEvent);
+        ServerController.Instance.PublishChange(this);
     }
     
     public bool EquipItem(Item item) {
@@ -158,7 +154,7 @@ public class Unit : IIdentifiable {
             foreach (Item item in EquippedItems) {
                 if (item == null) continue; // skip null items, just in case
                 if (!player.Inventory.AddItem(item)) {
-                    GD.PrintErr($"Item was removed from unit {Type.Name} but could not be added to player inventory: {item.Type.Name}");
+                    GD.PrintErr($"Item was removed from unit {Type.Name} but could not be added to player inventory: {item.GetName()}");
                 }
             }
         }
@@ -175,9 +171,6 @@ public class Unit : IIdentifiable {
         instance.Unit = this;
         instance.IsCombatInstance = isCombatInstance;
         instance.Name = $"{Type.Name}@{Id}_Instance{name ?? (unitInstanceCounter++).ToString()}";
-        CollisionLayers collisionLayer = isCombatInstance ? CollisionLayers.COMBAT_UNIT_INSTANCE : CollisionLayers.PASSIVE_UNIT_INSTANCE;
-        collisionLayer |= CollisionLayers.SELECTABLE;
-        instance.CollisionLayer = (uint)collisionLayer;
 
         if (isCombatInstance) {
             // SceneSafeMpSynchronizer synchronizer = new SceneSafeMpSynchronizer();
@@ -199,9 +192,9 @@ public class Unit : IIdentifiable {
         return passiveInstance;
     }
 
-    public ItemType? GetCraftingTargetWith(Item item, out Item craftedFrom) {
+    public Item? GetCraftingResultWith(Item item, out Item craftedFrom) {
         foreach (Item equippedItem in EquippedItems) {
-            ItemType? resultingItem = GameSession.Instance.GetItemConfig().GetRecipeFor(item.Type, equippedItem.Type);
+            Item? resultingItem = GameSession.Instance.GetItemConfig().GetCraftingResult(item, equippedItem);
             if (resultingItem != null) {
                 craftedFrom = equippedItem;
                 return resultingItem;
@@ -218,5 +211,10 @@ public class Unit : IIdentifiable {
 
     public bool HasRole(UnitRole role) {
         return Type.RoleSet.HasRole(role);
+    }
+
+    public void Dispose() {
+        pool?.ReturnUnit(Type);
+        passiveInstance?.QueueFree();
     }
 }

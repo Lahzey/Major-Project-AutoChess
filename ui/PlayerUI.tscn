@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://c2fryil7qt0qx"]
+[gd_scene load_steps=18 format=3 uid="uid://c2fryil7qt0qx"]
 
 [ext_resource type="Script" path="res://logic/core/player/PlayerUI.cs" id="1_gfa4k"]
 [ext_resource type="Script" path="res://logic/menu/WorldControls.cs" id="2_f4nfe"]
@@ -11,6 +11,8 @@
 [ext_resource type="Material" uid="uid://b2mv00fv4xlp6" path="res://plugins/MaterialTheming/shaders/DecoratedPanelMaterial.tres" id="7_ecxb7"]
 [ext_resource type="Script" path="res://plugins/MaterialTheming/Scripts/StyleBoxDecorated.cs" id="8_bjbxx"]
 [ext_resource type="Script" path="res://logic/util/AutoFontSize.cs" id="9_fv8je"]
+[ext_resource type="PackedScene" uid="uid://b3yhkspgyhkaw" path="res://ui/RoleList.tscn" id="11_frthg"]
+[ext_resource type="PackedScene" uid="uid://bki55krvbhqnt" path="res://ui/PlayerList.tscn" id="12_ihqlf"]
 
 [sub_resource type="Resource" id="Resource_tmwpu"]
 script = ExtResource("6_yluh8")
@@ -76,7 +78,7 @@ AdditionalContentMarginTop = 0.0
 AdditionalContentMarginRight = 0.0
 AdditionalContentMarginBottom = 0.0
 
-[node name="PlayerUI" type="Control" node_paths=PackedStringArray("FreeSpace", "Shop", "Inventory", "GamePhaseControls")]
+[node name="PlayerUI" type="Control" node_paths=PackedStringArray("FreeSpace", "Shop", "Inventory", "GamePhaseControls", "UnitRoleList")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -87,8 +89,9 @@ mouse_filter = 2
 script = ExtResource("1_gfa4k")
 FreeSpace = NodePath("ViewBounds")
 Shop = NodePath("Shop")
-Inventory = NodePath("Panel/InventoryPanel")
+Inventory = NodePath("HBoxContainer/Panel/InventoryPanel")
 GamePhaseControls = NodePath("GamePhaseControls")
+UnitRoleList = NodePath("HBoxContainer/RoleList")
 
 [node name="WorldControls" type="Control" parent="."]
 layout_mode = 1
@@ -206,19 +209,30 @@ anchor_bottom = 0.94
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Panel" type="PanelContainer" parent="."]
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = -1
 anchor_top = 0.2
 anchor_bottom = 0.8
-offset_top = 0.399994
-offset_right = 152.0
-offset_bottom = 0.599976
 grow_vertical = 2
 
-[node name="InventoryPanel" parent="Panel" instance=ExtResource("4_qij4o")]
+[node name="Panel" type="PanelContainer" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="InventoryPanel" parent="HBoxContainer/Panel" instance=ExtResource("4_qij4o")]
 layout_mode = 2
 size_flags_vertical = 3
+
+[node name="RoleList" parent="HBoxContainer" instance=ExtResource("11_frthg")]
+layout_mode = 2
+
+[node name="PlayerList" parent="." instance=ExtResource("12_ihqlf")]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.875
+anchor_top = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 0
 
 [node name="OverlayWorldControls" type="Control" parent="."]
 layout_mode = 1
@@ -232,7 +246,6 @@ script = ExtResource("2_f4nfe")
 IsOverlay = true
 
 [node name="ItemTooltipContainer" type="VBoxContainer" parent="."]
-visible = false
 layout_mode = 1
 anchors_preset = -1
 anchor_right = 0.2

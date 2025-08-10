@@ -10,10 +10,10 @@ public partial class ItemConfig : Resource {
     
     [Export] public ItemType[] ItemTypes { get; set; }
 
-    public ItemType? GetRecipeFor(ItemType typeA, ItemType typeB) {
+    public Item? GetCraftingResult(Item itemA, Item itemB) {
         foreach (ItemType itemType in ItemTypes) {
-            if (itemType.CraftedFromA == typeA && itemType.CraftedFromB == typeB) return itemType;
-            if (itemType.CraftedFromA == typeB && itemType.CraftedFromB == typeA) return itemType;
+            if (itemType.CraftedFromA == itemA.Type && itemType.CraftedFromB == itemB.Type) return new Item(itemType, itemA, itemB);
+            if (itemType.CraftedFromA == itemB.Type && itemType.CraftedFromB == itemA.Type) return new Item(itemType, itemB, itemA);
         }
 
         return null;

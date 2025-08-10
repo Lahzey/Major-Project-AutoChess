@@ -1,24 +1,82 @@
-[gd_scene load_steps=3 format=3 uid="uid://ba3j1ed6oq0ry"]
+[gd_scene load_steps=5 format=3 uid="uid://ba3j1ed6oq0ry"]
 
+[ext_resource type="Script" path="res://logic/core/unit/role/UnitRolePanel.cs" id="1_2uo0r"]
 [ext_resource type="Texture2D" uid="uid://dkv0hiuxam4wh" path="res://seasons/season0/roles/placeholder.png" id="1_rn5wq"]
 [ext_resource type="Script" path="res://logic/util/AutoFontSize.cs" id="2_vuvdd"]
 
-[node name="RolePanel" type="HBoxContainer"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pdd8l"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+bg_color = Color(0, 0, 0, 0.286275)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
 
-[node name="TextureRect" type="TextureRect" parent="."]
+[node name="RolePanel" type="HBoxContainer" node_paths=PackedStringArray("Icon", "NameLabel", "NameSize", "CountLabel", "ThresholdsLabel")]
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -25.5
+offset_right = 150.0
+offset_bottom = 14.5
+grow_vertical = 2
+script = ExtResource("1_2uo0r")
+Icon = NodePath("Icon")
+NameLabel = NodePath("VBoxContainer/NameLabel")
+NameSize = NodePath("VBoxContainer/NameLabel/AutoFontSize")
+CountLabel = NodePath("CountLabel")
+ThresholdsLabel = NodePath("VBoxContainer/ThresholdsLabel")
+
+[node name="Icon" type="TextureRect" parent="."]
 layout_mode = 2
 texture = ExtResource("1_rn5wq")
 expand_mode = 3
 
-[node name="Label" type="Label" parent="."]
+[node name="CountLabel" type="Label" parent="."]
 layout_mode = 2
-theme_override_font_sizes/font_size = 8
-text = "(2/4) Placeholder"
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBoxFlat_pdd8l")
+text = "5"
 
-[node name="AutoFontSize" type="Node" parent="Label"]
+[node name="AutoFontSize" type="Node" parent="CountLabel"]
 script = ExtResource("2_vuvdd")
+SizeType = 2
+
+[node name="Gap" type="Control" parent="."]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="NameLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 10
+theme_override_font_sizes/font_size = 8
+text = "Placeholder"
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/NameLabel"]
+script = ExtResource("2_vuvdd")
+
+[node name="ThresholdsLabel" type="RichTextLabel" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_font_sizes/normal_font_size = 8
+theme_override_font_sizes/bold_font_size = 8
+bbcode_enabled = true
+text = "2   >   [b]4[/b]   >   6"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/ThresholdsLabel"]
+script = ExtResource("2_vuvdd")
+FontSizeProperty = "normal_font_size"
+
+[node name="AutoFontSize2" type="Node" parent="VBoxContainer/ThresholdsLabel"]
+script = ExtResource("2_vuvdd")
+FontSizeProperty = "bold_font_size"

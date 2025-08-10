@@ -78,9 +78,12 @@ public partial class Player : Node2D {
     }
 
     public override void _Ready() {
-        EventManager.INSTANCE.AddAfterListener((UnitContainerUpdateEvent e) => CheckForUnitLevelUp());
-        EventManager.INSTANCE.AddAfterListener((RoundStartEvent e) => CheckForUnitLevelUp());
-        EventManager.INSTANCE.AddAfterListener((UnitLevelUpEvent e) => CheckForUnitLevelUp());
+        if (!ServerController.Instance.IsServer) return;
+        
+        // do not call CheckForUnitLevelUp immediately as containers will update during the level up process (state might be incomplete during the level up)
+        EventManager.INSTANCE.AddAfterListener((UnitContainerUpdateEvent e) => CallDeferred(MethodName.CheckForUnitLevelUp));
+        EventManager.INSTANCE.AddAfterListener((PhaseStartEvent e) => CallDeferred(MethodName.CheckForUnitLevelUp));
+        EventManager.INSTANCE.AddAfterListener((UnitLevelUpEvent e) => CallDeferred(MethodName.CheckForUnitLevelUp));
     }
 
     public int GetLevel() {
@@ -129,8 +132,9 @@ public partial class Player : Node2D {
         
         foreach (List<Unit> unitList in units.Values) {
             Unit firstUnit = unitList[0];
-            if (unitList.Count >= firstUnit.GetCopyCountForLevelUp()) {
-                Unit[] copies = unitList.GetRange(1, unitList.Count - 1).ToArray();
+            int requiredForLevelUp = firstUnit.GetCopyCountForLevelUp();
+            if (unitList.Count >= requiredForLevelUp) {
+                Unit[] copies = unitList.GetRange(1, requiredForLevelUp - 1).ToArray();
                 firstUnit.LevelUp(copies);
             }
         }

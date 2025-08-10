@@ -1,8 +1,14 @@
-[gd_resource type="Resource" script_class="UnitType" load_steps=4 format=3 uid="uid://ci5usp1tdsfcl"]
+[gd_resource type="Resource" script_class="UnitType" load_steps=6 format=3 uid="uid://ci5usp1tdsfcl"]
 
 [ext_resource type="Texture2D" uid="uid://c6ocqgi15ivkc" path="res://seasons/season0/units/warrior/warrior_icon.png" id="1_puv3d"]
 [ext_resource type="PackedScene" uid="uid://dabn87xyhhe31" path="res://seasons/season0/units/warrior/warrior_prefab.tscn" id="2_502l3"]
+[ext_resource type="Script" path="res://logic/core/unit/role/UnitRoleSet.cs" id="2_gqcea"]
 [ext_resource type="Script" path="res://logic/core/unit/UnitType.cs" id="3_wktye"]
+
+[sub_resource type="Resource" id="Resource_28apb"]
+script = ExtResource("2_gqcea")
+"Role Count" = 1
+"Role 1" = "Placeholder (in MPAutoChess.seasons.season0.roles)"
 
 [resource]
 script = ExtResource("3_wktye")
@@ -11,6 +17,7 @@ SlotsNeeded = 1
 Size = Vector2(2, 2)
 Cost = 3
 Rarity = 3
+RoleSet = SubResource("Resource_28apb")
 MaxHealth = 1000.0
 MaxMana = 100.0
 StartingMana = 100.0

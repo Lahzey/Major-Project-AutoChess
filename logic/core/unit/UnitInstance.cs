@@ -31,8 +31,8 @@ public partial class UnitInstance : CharacterBody2D {
     
     private static readonly PackedScene OVERHEAD_UI_SCENE = ResourceLoader.Load<PackedScene>("res://ui/UnitOverlayUI.tscn");
     
-    [Export(PropertyHint.Range, "0.0,1.0,0.01")] public float AttackTriggeredAt { get; set; } = 1f; // 0 = start of the animation, 1 = end of the animation
-    [Export(PropertyHint.Range, "0.0,1.0,0.01")] public float SpellTriggeredAt { get; set; } = 1f; // 0 = start of the animation, 1 = end of the animation
+    [Export(PropertyHint.Range, "0.0,1.0,0.01")] public float AttackDamageTriggeredAt { get; set; } = 1f; // 0 = start of the animation, 1 = end of the animation
+    [Export(PropertyHint.Range, "0.0,1.0,0.01")] public float SpellEffectTriggeredAt { get; set; } = 1f; // 0 = start of the animation, 1 = end of the animation
     
     [ProtoMember(1)] public Unit Unit { get; set; }
     [ProtoMember(2)] public Stats Stats { get; private set; } = new Stats();
@@ -90,7 +90,15 @@ public partial class UnitInstance : CharacterBody2D {
     }
 
     public override void _EnterTree() {
-        if (Engine.IsEditorHint() || ServerController.Instance.IsServer) return;
+        if (Engine.IsEditorHint()) return;
+        
+        // cannot be set on creation because the collision layer is not automatically serialized
+        CollisionLayers collisionLayer = IsCombatInstance ? CollisionLayers.COMBAT_UNIT_INSTANCE : CollisionLayers.PASSIVE_UNIT_INSTANCE;
+        collisionLayer |= CollisionLayers.SELECTABLE;
+        CollisionLayer = (uint)collisionLayer;
+        
+        if (ServerController.Instance.IsServer) return;
+        
         overlayUi = OVERHEAD_UI_SCENE.Instantiate<UnitOverlayUI>();
         overlayUi.UnitInstance = this;
         WorldControls.Instance.AddControl(overlayUi, new WorldControls.PositioningInfo() {
@@ -101,6 +109,7 @@ public partial class UnitInstance : CharacterBody2D {
             yGrowthDirection = GrowthDirection.NEGATIVE,
             size =  new Vector2(1f, 1.3f)
         });
+        
     }
 
     public override void _ExitTree() {
@@ -202,11 +211,10 @@ public partial class UnitInstance : CharacterBody2D {
 
     public void ProcessCombat(double delta) {
         AttackCooldown -= delta;
-        if (AttackCooldown > 0) return;
         if (IsBusy) return;
         
         if (CanReachTarget()) {
-            TriggerAttack();
+            if (AttackCooldown <= 0) TriggerAttack();
         } else if (CurrentPath != null) {
             Sprite.Play(WALK_ANIMATION_NAME);
             Vector2 newPosition = CurrentPath.Advance(Position, (float)(Stats.GetValue(StatType.MOVEMENT_SPEED) * delta));
@@ -221,7 +229,13 @@ public partial class UnitInstance : CharacterBody2D {
         Sprite.FlipH = (target - Position).X < 0;
     }
 
-    private async void TriggerAttack() {
+    private void TriggerAttack() {
+        if (!ServerController.Instance.IsServer) return;
+        Rpc(MethodName.Attack);
+    }
+
+    [Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true)]
+    private async void Attack() {
         if (CurrentTarget == null || !IsInstanceValid(CurrentTarget) || !CurrentTarget.IsAlive()) {
             return;
         }
@@ -243,19 +257,18 @@ public partial class UnitInstance : CharacterBody2D {
         
         if (!ServerController.Instance.IsServer) {
             Sprite.Play(ATTACK_ANIMATION_NAME, animationSpeed);
-            await ToSignal(GetTree().CreateTimer(animationDuration), "timeout");
+            await ToSignal(Sprite, "animation_finished");
             IsBusy = false;
             return;
         }
 
-
-        float attackTriggeredAt = AttackTriggeredAt * animationDuration;
+        float damageTriggeredAt = AttackDamageTriggeredAt * animationDuration;
         
-        await ToSignal(GetTree().CreateTimer(attackTriggeredAt), "timeout");
+        await ToSignal(GetTree().CreateTimer(damageTriggeredAt), "timeout");
         if (target != null && IsInstanceValid(target) && target.IsAlive()) {
             target.Damage(new DamageInstance(this, target, Stats.GetValue(StatType.STRENGTH), DamageType.PHYSICAL, PerformCritRoll(), Stats.GetValue(StatType.CRIT_DAMAGE), true));
         }
-        await ToSignal(GetTree().CreateTimer(animationDuration - attackTriggeredAt), "timeout");
+        await ToSignal(GetTree().CreateTimer(animationDuration - damageTriggeredAt), "timeout");
         IsBusy = false;
     }
 
@@ -310,5 +323,9 @@ public partial class UnitInstance : CharacterBody2D {
         
         EventManager.INSTANCE.NotifyAfter(critRollEvent);
         return critRollEvent.CritLevel;
+    }
+
+    public uint GetLevel() {
+        return Unit.Level;
     }
 }

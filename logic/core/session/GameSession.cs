@@ -1,5 +1,6 @@
 using System;
 using Godot;
+using MPAutoChess.logic.core.combat;
 using MPAutoChess.logic.core.item;
 using MPAutoChess.logic.core.networking;
 using MPAutoChess.logic.core.player;
@@ -53,7 +54,8 @@ public partial class GameSession : Node {
     }
 
     public bool IsInCombat(Player player) {
-        return false; // TODO
+        if (Mode.GetCurrentPhase() is not CombatPhase combatPhase) return false;
+        return combatPhase.GetCombatForPlayer(player) != null;
     }
 
     public ItemConfig GetItemConfig() {

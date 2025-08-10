@@ -49,11 +49,11 @@ public abstract partial class ItemDropTarget : Control {
         OnDrop(atPosition, dragInfo);
     }
     
-    protected virtual bool SetShowCraftingPreview(bool show, ItemType? craftingTarget = null) {
+    protected virtual bool SetShowCraftingPreview(bool show, Item? craftingResult = null) {
         if (show == showingCraftingPreview) return false;
         
         if (show) {
-            ItemTooltip.Instance.Open(craftingTarget);
+            ItemTooltip.Instance.Open(craftingResult);
             ItemTooltip.Instance.Move(GetGlobalPosition() + new Vector2(Size.X + 5, 0));
         } else {
             ItemTooltip.Instance.Close();

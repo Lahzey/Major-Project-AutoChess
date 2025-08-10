@@ -6,7 +6,7 @@ using MPAutoChess.logic.core.placement;
 using MPAutoChess.logic.util;
 using ProtoBuf;
 
-namespace MPAutoChess.logic.core.unit;
+namespace MPAutoChess.logic.core.unit.role;
 
 [ProtoContract(Surrogate = typeof(UnitRoleSurrogate))]
 public abstract class UnitRole {
@@ -34,6 +34,11 @@ public abstract class UnitRole {
         }
 
         return level;
+    }
+
+    public virtual int GetCurrentThreshold(int count) {
+        int level = GetLevel(count);
+        return level == 0 ? 0 : GetCountThresholds()[level - 1];
     }
 
     public abstract int[] GetCountThresholds();

@@ -1,4 +1,5 @@
 using Godot;
+using MPAutoChess.logic.util;
 
 namespace MPAutoChess.logic.core.item;
 
@@ -8,6 +9,12 @@ public partial class ItemIcon : TextureRect {
     private static readonly Texture2D STAR_ICON = ResourceLoader.Load<Texture2D>("res://assets/basic_star.png");
     private static readonly Color STAR_COLOR = new Color(1f, 0.694f, 0.141f);
     
+    private static readonly Texture2D BORDER_TEXTURE = ResourceLoader.Load<Texture2D>("res://assets/ui/border.svg");
+    private static readonly Color COMPONENT_COLOR = new Color("#384039");
+    private static readonly Color ITEM_COLOR = new Color("#193b1d");
+    private static readonly Color MYTHICAL_COMPONENT_COLOR = new Color("#47302a");
+    private static readonly Color MYTHICAL_ITEM_COLOR = new Color("#541c11");
+    
     private Item? item;
     public Item? Item {
         get => item;
@@ -15,14 +22,29 @@ public partial class ItemIcon : TextureRect {
             if (item != value) {
                 item = value;
                 SetTexture(item?.Type.Icon??NO_ICON);
+                QueueRedraw();
             }
         }
     }
 
+    private TextureRect border;
     private HBoxContainer starsContainer;
     private int starCount = 0;
 
     public override void _Ready() {
+        border = new  TextureRect();
+        border.SetTexture(BORDER_TEXTURE);
+        border.ExpandMode = ExpandModeEnum.IgnoreSize;
+        border.AnchorLeft = 0f;
+        border.AnchorTop = 0f;
+        border.AnchorRight = 1f;
+        border.AnchorBottom = 1f;
+        border.OffsetLeft = 0;
+        border.OffsetTop = 0;
+        border.OffsetRight = 0;
+        border.OffsetBottom = 0;
+        AddChild(border);
+        
         starsContainer = new HBoxContainer();
         starsContainer.Alignment = BoxContainer.AlignmentMode.Center;
         starsContainer.AnchorLeft = 0f;
@@ -39,8 +61,17 @@ public partial class ItemIcon : TextureRect {
     }
 
     public override void _Process(double delta) {
-        // ensure we have a star for each level of the item above 1 (level 1 -> no stars, level 2 -> 1 star etc.)
-        int desiredStarCount = item != null ? (item.Level - 1) : 0;
+        // set border color (it is white, so modulate = color)
+        border.Modulate = item == null ? Colors.Transparent : item.Type.Category switch {
+            ItemCategory.COMPONENT => COMPONENT_COLOR,
+            ItemCategory.ITEM => ITEM_COLOR,
+            ItemCategory.MYTHICAL_COMPONENT => MYTHICAL_COMPONENT_COLOR,
+            ItemCategory.MYTHICAL_ITEM => MYTHICAL_ITEM_COLOR,
+            _ => Colors.Transparent
+        };
+        
+        // ensure we have a star for each level of the item
+        int desiredStarCount = item?.Level ?? 0;
         while (starCount < desiredStarCount) {
             TextureRect star = new TextureRect();
             star.SetTexture(STAR_ICON);
@@ -54,5 +85,4 @@ public partial class ItemIcon : TextureRect {
             starCount--;
         }
     }
-    
 }

@@ -18,7 +18,7 @@ public class ItemUpgrade : Consumable {
             ChoicePopup.Choice[] choices = new ChoicePopup.Choice[unitInstance.Unit.EquippedItems.Count];
             for (int i = 0; i < unitInstance.Unit.EquippedItems.Count; i++) {
                 Item item = unitInstance.Unit.EquippedItems[i];
-                choices[i] = new ChoicePopup.Choice(item.Type.Icon, item.Type.Name);
+                choices[i] = new ChoicePopup.Choice(item.Type.Icon, item.GetName());
             }
             ChoicePopup.Instance.Open("Select an item to upgrade", choices, (int choiceIndex) => {
                 PlayerController.Current.UseConsumable(this, unitInstance, choiceIndex);

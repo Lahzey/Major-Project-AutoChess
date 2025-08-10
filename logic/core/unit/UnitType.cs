@@ -13,7 +13,7 @@ public partial class UnitType : Resource {
     [Export] public Vector2 Size { get; set; } = new Vector2(2f, 2f);
     [Export] public int Cost { get; set; } = 1;
     [Export] public UnitRarity Rarity { get; set; } = UnitRarity.SPECIAL;
-    [Export] public UnitRoleSet RoleSet { get; set; }
+    [Export] public role.UnitRoleSet RoleSet { get; set; }
     [ExportCategory("Default Stats")]
     [Export] public float MaxHealth { get; set; } = 1000;
     [Export] public float MaxMana { get; set; } = 100;

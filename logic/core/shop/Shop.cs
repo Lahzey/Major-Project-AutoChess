@@ -64,6 +64,9 @@ public class Shop : IIdentifiable {
     }
     
     private void AddOffers(ShopOffer[] offers) {
+        foreach (ShopOffer offer in offers) {
+            offer.Dispose();
+        }
         Offers.Clear();
         Offers.AddRange(offers);
         OnChange();

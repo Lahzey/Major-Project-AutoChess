@@ -29,6 +29,7 @@ public class ItemReroll : Consumable {
             foreach (Item item in unitInstance.Unit.EquippedItems) {
                 ItemType newType = GameSession.Instance.Season.GetItemConfig().GetRandomItemType(item.Type.Category, item.Type);
                 Item newItem = new Item(newType);
+                newItem.ComponentLevels = item.ComponentLevels; // keep component levels
                 unitInstance.Unit.ReplaceItem(item, newItem);
             }
             unitInstance.Unit.RemoveItems(); // put them back into the inventory for convenience

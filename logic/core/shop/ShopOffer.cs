@@ -46,6 +46,8 @@ public abstract class ShopOffer {
         slot.ShopOffer = this;
         slot.Texture.Texture = GetTexture();
     }
+
+    public virtual void Dispose() { }
 }
 
 [ProtoContract]
@@ -101,5 +103,9 @@ public class UnitOffer : GoldCostingOffer {
     public override void FillShopSlot(ShopSlot slot) {
         base.FillShopSlot(slot);
         slot.SetBorderForRarity(Unit.Type.Rarity);
+    }
+
+    public override void Dispose() {
+        if (!Purchased) Unit.Dispose();
     }
 }

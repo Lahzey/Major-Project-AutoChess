@@ -8,7 +8,7 @@ public static class FontSizeCalculator {
     
     public static int GetFontSize(FontSizeType type, Viewport viewport) {
         return type switch {
-            FontSizeType.SMALL => (int) (GetNormalFontSize(viewport) * 0.8f),
+            FontSizeType.SMALL => (int) (GetNormalFontSize(viewport) * 0.5f),
             FontSizeType.NORMAL => (int) GetNormalFontSize(viewport),
             FontSizeType.SUBTITLE => (int) (GetNormalFontSize(viewport) * 1.5f),
             FontSizeType.TITLE => (int) (GetNormalFontSize(viewport) * 2.5f),

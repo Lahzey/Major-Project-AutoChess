@@ -34,7 +34,6 @@ public partial class SelectionLayer : Control {
 
         if (@event is InputEventMouseMotion mouseMotionEvent) {
             Node hoveredSelectable = GetHoveredSelectable();
-            GD.Print($"Hovered Selectable: {hoveredSelectable?.Name ?? "None"}");
             Input.SetCustomMouseCursor(hoveredSelectable != null ? validSelectionCursor : invalidSelectionCursor, Input.CursorShape.Arrow, new Vector2(16, 16));
         } else if (@event is InputEventMouseButton mouseButtonEvent && !mouseButtonEvent.Pressed) { // only trigger on mouse button release
             AcceptEvent();

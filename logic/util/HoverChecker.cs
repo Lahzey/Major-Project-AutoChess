@@ -17,7 +17,9 @@ public class HoverChecker {
 
         List<T> hoveredNodes = new List<T>();
         foreach (IntersectionHit2D intersectionHit in spaceState.IntersectPointTyped(queryParameters)) {
-            if (intersectionHit.Collider.Obj.GetType().IsAssignableTo(typeof(T))) {
+            object collidedObject = intersectionHit.Collider.Obj;
+            if (collidedObject.GetType().IsAssignableTo(typeof(T))) {
+                if (collidedObject is Node2D node && !node.IsVisibleInTree()) continue; // skip invisible nodes
                 hoveredNodes.Add((T) intersectionHit.Collider.Obj);
             }
         }
@@ -35,7 +37,9 @@ public class HoverChecker {
         };
 
         foreach (IntersectionHit2D intersectionHit in spaceState.IntersectPointTyped(queryParameters)) {
-            if (intersectionHit.Collider.Obj.GetType().IsAssignableTo(typeof(T))) {
+            object collidedObject = intersectionHit.Collider.Obj;
+            if (collidedObject.GetType().IsAssignableTo(typeof(T))) {
+                if (collidedObject is Node2D node && !node.IsVisibleInTree()) continue; // skip invisible nodes
                 return (T) intersectionHit.Collider.Obj;
             }
         }

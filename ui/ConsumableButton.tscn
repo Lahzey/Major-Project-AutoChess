@@ -20,12 +20,13 @@ CountLabel = NodePath("AspectRatioContainer/TextureRect/CountLabel")
 [node name="AspectRatioContainer" type="AspectRatioContainer" parent="."]
 layout_mode = 1
 anchors_preset = -1
-anchor_right = 0.4
-anchor_bottom = 0.4
+anchor_right = 0.3
+anchor_bottom = 0.3
 grow_horizontal = 2
 grow_vertical = 2
 
 [node name="TextureRect" type="TextureRect" parent="AspectRatioContainer"]
+self_modulate = Color(1, 1, 1, 0.482353)
 layout_mode = 2
 texture = ExtResource("2_wfxrg")
 expand_mode = 1
@@ -38,7 +39,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 6
+theme_override_font_sizes/font_size = 4
 text = "1"
 horizontal_alignment = 1
 vertical_alignment = 1

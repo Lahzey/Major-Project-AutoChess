@@ -60,9 +60,9 @@ public partial class ItemPanel : ItemDropTarget {
 
             if (canDrop.Value) {
                 ItemDragInfo dragInfo = (ItemDragInfo) GetViewport().GuiGetDragData().AsGodotObject();
-                ItemType? craftingTarget = GetCraftingTargetWith(dragInfo.GetItem());
-                if (dragInfo.InventoryIndex != InventoryIndex && craftingTarget != null) {
-                    SetShowCraftingPreview(true, craftingTarget);
+                Item? craftingResult = GetCraftingResultWith(dragInfo.GetItem());
+                if (dragInfo.InventoryIndex != InventoryIndex && craftingResult != null) {
+                    SetShowCraftingPreview(true, craftingResult);
                 } else {
                     styleBox.BackgroundPolygon.BorderColor = dropAcceptBorderColor;
                 }
@@ -84,10 +84,8 @@ public partial class ItemPanel : ItemDropTarget {
                 if (item == null) return;
                 ContextMenu.Instance.ShowContextMenu(GetGlobalMousePosition(), new ContextMenuItem[] {
                     ContextMenuItem.Label("Drop", () => {
-                        // Inventory.DropItemAt(Index);
                     }),
                     ContextMenuItem.Label("Duplicate", () => {
-                        Player.Inventory.AddItem(new Item(item.Type));
                     })
                 });
                 GetViewport().SetInputAsHandled();
@@ -95,8 +93,8 @@ public partial class ItemPanel : ItemDropTarget {
         }
     }
     
-    protected override bool SetShowCraftingPreview(bool show, ItemType? craftingTarget = null) {
-        bool changed = base.SetShowCraftingPreview(show, craftingTarget);
+    protected override bool SetShowCraftingPreview(bool show, Item? craftingResult = null) {
+        bool changed = base.SetShowCraftingPreview(show, craftingResult);
         
         if (show) {
             AddThemeStyleboxOverride("panel", CraftHoverStyle);
@@ -108,11 +106,11 @@ public partial class ItemPanel : ItemDropTarget {
         return changed;
     }
 
-    private ItemType? GetCraftingTargetWith(Item with) {
+    private Item? GetCraftingResultWith(Item with) {
         Item item = GetItem();
         if (item == null || with == null) return null;
 
-        return GameSession.Instance.GetItemConfig().GetRecipeFor(item.Type, with.Type);
+        return GameSession.Instance.GetItemConfig().GetCraftingResult(item, with);
     }
 
     public override void _Process(double delta) {

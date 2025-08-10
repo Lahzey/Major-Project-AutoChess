@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using Godot.Collections;
+using MPAutoChess.logic.core.events;
 using MPAutoChess.logic.core.item;
 using MPAutoChess.logic.core.item.consumable;
 using MPAutoChess.logic.core.networking;
@@ -36,10 +37,19 @@ public partial class PlayerController : Node {
         if (!ServerController.Instance.IsServer) {
             if (Current != null) throw new InvalidOperationException("Only servers can have multiple PlayerController instances.");
             Current = this;
+            EventManager.INSTANCE.AddAfterListener<CombatStartEvent>(OnCombatStart);
         }
 
         if (Player == null) throw new ArgumentNullException(nameof(Player), "Player cannot be null.");
         playerControllers.Add(Player, this);
+    }
+
+    private void OnCombatStart(CombatStartEvent e) {
+        if (e.Combat.PlayerA != Player && (e.Combat.PlayerB != Player || e.Combat.IsCloneFight)) return; // Not our combat, ignore
+        
+        if (dragProcessor.Running && dragProcessor.UnitInstance.Unit.Container == Player.Board) {
+            dragProcessor.Complete(true);
+        }
     }
 
     public override void _Ready() {
@@ -74,6 +84,9 @@ public partial class PlayerController : Node {
             if (!dragProcessor.Running) {
                 UnitInstance? hoveredUnitInstance = HoverChecker.GetHoveredNodeOrNull<UnitInstance>(CollisionLayers.PASSIVE_UNIT_INSTANCE, Player);
                 if (hoveredUnitInstance != null) {
+                    CollisionLayers hoveredLayer = (CollisionLayers)hoveredUnitInstance.CollisionLayer;
+                }
+                if (hoveredUnitInstance != null && hoveredUnitInstance.Unit.Container.GetPlayer() == Player) {
                     dragProcessor.Start(hoveredUnitInstance);
                     OnDragStart?.Invoke(dragProcessor.UnitInstance.Unit);
                 }
@@ -225,13 +238,12 @@ public partial class PlayerController : Node {
             Item? itemB = Player.Inventory.GetItem(indexB);
 
 
-            ItemType? craftingResult = null;
+            Item? craftingResult = null;
             if (enableCrafting && itemA != null && itemB != null)
-                craftingResult = GameSession.Instance.GetItemConfig().GetRecipeFor(itemA.Type, itemA.Type);
+                craftingResult = GameSession.Instance.GetItemConfig().GetCraftingResult(itemA, itemB);
 
             if (craftingResult != null) {
-                Item newItem = new Item(craftingResult);
-                Player.Inventory.ReplaceItem(Mathf.Min(indexA, indexB), newItem);
+                Player.Inventory.ReplaceItem(Mathf.Min(indexA, indexB), craftingResult);
                 Player.Inventory.ReplaceItem(Mathf.Max(indexA, indexB), null);
             } else {
                 Player.Inventory.ReplaceItem(indexA, itemB);
@@ -265,10 +277,10 @@ public partial class PlayerController : Node {
                 return;
             }
 
-            ItemType? craftingTarget = unit.GetCraftingTargetWith(item, out Item craftedFrom);
+            Item? craftingResult = unit.GetCraftingResultWith(item, out Item craftedFrom);
             bool success;
-            if (craftingTarget != null) {
-                unit.ReplaceItem(craftedFrom, new Item(craftingTarget));
+            if (craftingResult != null) {
+                unit.ReplaceItem(craftedFrom, craftingResult);
                 success = true;
             } else {
                 success = unit.EquipItem(item);
