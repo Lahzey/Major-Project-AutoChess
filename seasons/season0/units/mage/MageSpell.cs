@@ -19,4 +19,8 @@ public partial class MageSpell : Spell {
     public override void Cast(UnitInstance caster) {
         throw new NotImplementedException();
     }
+
+    public override string GetDescription(UnitInstance forUnit) {
+        return $"Throws a fireball at the largest group of enemies, dealing {GetDamageAmount(forUnit):0} magic damage to each enemy hit.";
+    }
 }

@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://dyquuipmd6w7j"]
+[gd_scene load_steps=7 format=3 uid="uid://dyquuipmd6w7j"]
 
 [ext_resource type="Script" path="res://logic/core/shop/ShopSlot.cs" id="1_fmqg4"]
 [ext_resource type="Texture2D" uid="uid://cg8w7tua6ut6d" path="res://assets/ui/shop_slot_borders/common_border.png" id="2_psirm"]
@@ -6,7 +6,6 @@
 [ext_resource type="Texture2D" uid="uid://cgkg0jtkdwk6f" path="res://assets/ui/shop_slot_borders/rare_border.png" id="4_05mur"]
 [ext_resource type="Texture2D" uid="uid://dbjr5lvvxe1a5" path="res://assets/ui/shop_slot_borders/epic_border.png" id="5_uyu73"]
 [ext_resource type="Texture2D" uid="uid://dew7kx2q8t874" path="res://assets/ui/shop_slot_borders/legendary_border.png" id="6_1r7k7"]
-[ext_resource type="Texture2D" uid="uid://uv15gyjx8dmh" path="res://icon.svg" id="7_te3qs"]
 
 [node name="ShopSlot" type="Control" node_paths=PackedStringArray("BuyButton", "Texture")]
 layout_mode = 3
@@ -63,6 +62,5 @@ anchor_bottom = 0.912
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = ExtResource("7_te3qs")
 expand_mode = 1
 stretch_mode = 5

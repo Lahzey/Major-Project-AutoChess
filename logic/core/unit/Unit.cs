@@ -217,4 +217,9 @@ public class Unit : IIdentifiable {
         pool?.ReturnUnit(Type);
         passiveInstance?.QueueFree();
     }
+
+    public int GetSellValue() {
+        int level = (int)Level;
+        return level * Type.Cost - (level - 1);
+    }
 }

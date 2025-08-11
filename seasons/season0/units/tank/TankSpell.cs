@@ -18,4 +18,8 @@ public partial class TankSpell : Spell {
     public override void Cast(UnitInstance caster) {
         caster.Heal(GetHealAmount(caster));
     }
+
+    public override string GetDescription(UnitInstance forUnit) {
+        return $"Heals himself for {GetHealAmount(forUnit)} health.";
+    }
 }

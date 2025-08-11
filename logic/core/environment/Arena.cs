@@ -1,5 +1,6 @@
 using Godot;
 using MPAutoChess.logic.core.placement;
+using MPAutoChess.logic.core.player;
 using ProtoBuf;
 
 namespace MPAutoChess.logic.core.environment;
@@ -11,6 +12,17 @@ public partial class Arena : Node2D {
     
     [Export] [ProtoMember(1)] public Board Board { get; set; }
     [Export] [ProtoMember(2)] public Bench Bench { get; set; }
+
+    private Player player;
+
+    public Player Player {
+        get => player;
+        set {
+            player = value;
+            Board.Player = value;
+            Bench.Player = value;
+        }
+    }
 
     public void FitCameraToArena(Camera2D camera) {
         if (camera == null)

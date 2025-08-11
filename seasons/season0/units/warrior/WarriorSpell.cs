@@ -23,4 +23,8 @@ public partial class WarriorSpell : Spell {
     public override void Cast(UnitInstance caster) {
         // TODO: Implement damage logic
     }
+
+    public override string GetDescription(UnitInstance forUnit) {
+        return $"Strikes the target, dealing {GetDamage(forUnit)} damage and healing himself for {StatType.VAMPIRISM.ToString(GetHealing(forUnit))} of damage dealt.";
+    }
 }

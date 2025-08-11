@@ -30,7 +30,7 @@ public partial class CameraController : Node {
     public override void _Process(double delta) {
         if (camera == null) return;
         
-        float currentZoom = GetViewport().GetCamera2D().Zoom.X;
+        float currentZoom = camera.Zoom.X;
         float zoomDiff = targetZoom - currentZoom;
         if (Mathf.Abs(zoomDiff) > 0.01f) {
             float newZoom = Mathf.Lerp(currentZoom, targetZoom, (float)delta * 5f);
@@ -51,22 +51,35 @@ public partial class CameraController : Node {
 
     public void Cover(Rect2 bounds) {
         toCover = bounds;
-        
+
         camera = GetViewport().GetCamera2D();
         if (camera == null)
             return;
-        
+
         if (viewBounds.Size.X == 0 || viewBounds.Size.Y == 0 || toCover.Size.X == 0 || toCover.Size.Y == 0)
             return;
         
+        camera.AnchorMode = Camera2D.AnchorModeEnum.DragCenter;
+
         float zoomX = viewBounds.Size.X / toCover.Size.X;
         float zoomY = viewBounds.Size.Y / toCover.Size.Y;
-        float requiredZoom = Mathf.Min(zoomX, zoomY); // Take the smaller zoom to ensure the entire arena is visible
-
-        Vector2 center = toCover.Position + toCover.Size / 2f;
-
-        camera.AnchorMode = Camera2D.AnchorModeEnum.FixedTopLeft;
+        float requiredZoom = Mathf.Min(zoomX, zoomY); // Smallest zoom to ensure full bounds visible
         targetZoom = requiredZoom;
-        targetPosition = center - (viewBounds.Position / requiredZoom + viewBounds.Size / 2 / requiredZoom);
+
+        Vector2 toCoverCenter = toCover.Position + toCover.Size / 2f;
+        
+        // account for difference between the viewport center and the view bounds center
+        Vector2 viewportCenter = GetViewport().GetVisibleRect().Size * 0.5f;
+        Vector2 viewBoundsCenter = viewBounds.Position + viewBounds.Size * 0.5f;
+        Vector2 boundsCenterOffset = (viewportCenter - viewBoundsCenter) / requiredZoom;
+
+        targetPosition = toCoverCenter + boundsCenterOffset;
+    }
+
+    public Vector2 ToWorldPosition(Vector2 viewportPosition) {
+        if (camera == null) return viewportPosition;
+
+        Vector2 offset = camera.AnchorMode == Camera2D.AnchorModeEnum.DragCenter ? GetViewport().GetVisibleRect().Size * 0.5f : Vector2.Zero;
+        return (viewportPosition - offset) / camera.Zoom + camera.GlobalPosition;
     }
 }

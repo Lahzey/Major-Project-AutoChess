@@ -56,4 +56,16 @@ public class Item : IIdentifiable {
     public string GetDescription() {
         return Type.Description;
     }
+
+    public int GetSellValue() {
+        int sellValue = Type.Category switch {
+            ItemCategory.COMPONENT => 5,
+            ItemCategory.ITEM => 9,
+            ItemCategory.MYTHICAL_COMPONENT => 15,
+            ItemCategory.MYTHICAL_ITEM => 28,
+        };
+        int sellValuePerLevel = 10;
+
+        return sellValue + (Level * sellValuePerLevel);
+    }
 }

@@ -15,6 +15,8 @@ public class Account : IEquatable<Account> {
     [ProtoMember(2)] public string Name { get; private set; }
     
     [ProtoMember(3)] public ArenaType Arena { get; private set; }
+    
+    [ProtoMember(4)] public Texture2D ProfilePicture { get; private set; }
 
     private static Account currentAccount;
     public string SecretKey { get; private set; }
@@ -25,6 +27,7 @@ public class Account : IEquatable<Account> {
         Id = id;
         Name = name;
         Arena = ArenaType.DEFAULT;
+        ProfilePicture = ResourceLoader.Load<Texture2D>("res://assets/profile_pictures/default.png");
     }
     
     public static Account FindById(long id) {

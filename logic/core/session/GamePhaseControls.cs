@@ -31,5 +31,10 @@ public partial class GamePhaseControls : Control {
 
         SmallControlsPanel.Visible = control == null;
         LargeControlsPanel.Visible = control != null;
+        LargeControlsPanel.Modulate = Colors.White;
+    }
+
+    public void SetSemiTransparent(bool semiTransparent) {
+        LargeControlsPanel.Modulate = semiTransparent ? new Color(1, 1, 1, 0.33f) : Colors.White;
     }
 }

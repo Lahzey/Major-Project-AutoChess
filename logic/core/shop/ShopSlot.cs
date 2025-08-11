@@ -5,6 +5,7 @@ using Godot;
 using Godot.Bridge;
 using MPAutoChess.logic.core.player;
 using MPAutoChess.logic.core.unit;
+using MPAutoChess.logic.util;
 
 namespace MPAutoChess.logic.core.shop;
 
@@ -20,6 +21,46 @@ public partial class ShopSlot : Control {
     [Export] public TextureButton BuyButton { get; private set; }
     [Export] public TextureRect Texture { get; private set; }
     public ShopOffer ShopOffer { get; set; }
+    
+    private Texture2D originalTexture;
+    private Texture2D grayScaleTexture;
+    
+    public void SetTexture(Texture2D texture) {
+        originalTexture = texture;
+        grayScaleTexture = TextureUtil.ToGrayScale(texture);
+    }
+
+    public void SetBorderForRarity(UnitRarity typeRarity) {
+        BuyButton.TextureNormal = rarityBorders.GetValueOrDefault((int) typeRarity);
+    }
+
+    public override void _Ready() {
+        if (BuyButton != null)
+            BuyButton.Pressed += TryPurchase;
+        else
+            GD.PrintErr("BuyButton is not set for ShopSlot. Please assign it in the editor.");
+    }
+
+    public override void _Process(double delta) {
+        if (BuyButton == null) return;
+        
+        bool hasOffer = ShopOffer != null && !ShopOffer.Purchased;
+        Color colorModulate = !hasOffer ? PURCHASED_MODULATE : BuyButton.IsPressed() ? PRESSED_MODULATE : BuyButton.IsHovered() ? HOVER_MODULATE : NORMAL_MODULATE;
+        bool enabled = hasOffer && ShopOffer.IsEnabled() && ShopOffer.CanAfford();
+
+        BuyButton.Disabled = !enabled;
+        BuyButton.Modulate = enabled ? colorModulate : colorModulate.Darkened(0.2f);
+        Texture.Modulate = colorModulate;
+        Texture.Texture = enabled ? originalTexture : grayScaleTexture;
+    }
+
+    private void TryPurchase() {
+        if (ShopOffer == null || ShopOffer.Purchased) return;
+        PlayerController.Current.BuyShopOffer(ShopOffer);
+        if (ShopOffer.Purchased) {
+            BuyButton.TextureNormal = null;
+        }
+    }
 
     public override Godot.Collections.Array<Godot.Collections.Dictionary> _GetPropertyList() {
         Godot.Collections.Array<Godot.Collections.Dictionary> list = new();
@@ -56,33 +97,5 @@ public partial class ShopSlot : Control {
         }
 
         return base._Set(property, value);
-    }
-
-    public override void _Ready() {
-        if (BuyButton != null)
-            BuyButton.Pressed += TryPurchase;
-        else
-            GD.PrintErr("BuyButton is not set for ShopSlot. Please assign it in the editor.");
-    }
-
-    public override void _Process(double delta) {
-        if (BuyButton != null) {
-            bool hasOffer = ShopOffer != null && !ShopOffer.Purchased;
-            BuyButton.Disabled = !hasOffer || !ShopOffer.IsEnabled();
-            BuyButton.Modulate = !hasOffer ? PURCHASED_MODULATE : BuyButton.IsPressed() ? PRESSED_MODULATE : BuyButton.IsHovered() ? HOVER_MODULATE : NORMAL_MODULATE;
-            Texture.Modulate = BuyButton.Modulate;
-        }
-    }
-
-    public void SetBorderForRarity(UnitRarity typeRarity) {
-        BuyButton.TextureNormal = rarityBorders.GetValueOrDefault((int) typeRarity);
-    }
-
-    private void TryPurchase() {
-        if (ShopOffer == null || ShopOffer.Purchased) return;
-        PlayerController.Current.BuyShopOffer(ShopOffer);
-        if (ShopOffer.Purchased) {
-            BuyButton.TextureNormal = null;
-        }
     }
 }

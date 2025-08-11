@@ -50,7 +50,7 @@ public class Shop : IIdentifiable {
         return odds.Select(o => o / totalOdds).ToArray();
     }
 
-    public void Reroll() {
+    public ShopOffer[] GenerateShopOffers() {
         float[] odds = GetNormalizedRarityOdds();
         ShopOffer[] offers = new ShopOffer[Size];
         for (int i = 0; i < offers.Length; i++) {
@@ -59,12 +59,11 @@ public class Shop : IIdentifiable {
             offer.Unit = pool.TakeRandomUnit(GameSession.Instance.Random);
             offers[i] = offer;
         }
-        // TODO fire ShopRollEvent
-        AddOffers(offers);
+        return offers;
     }
     
-    private void AddOffers(ShopOffer[] offers) {
-        foreach (ShopOffer offer in offers) {
+    public void SetOffers(IEnumerable<ShopOffer> offers) {
+        foreach (ShopOffer offer in Offers) {
             offer.Dispose();
         }
         Offers.Clear();

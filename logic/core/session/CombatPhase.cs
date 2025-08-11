@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -18,6 +19,8 @@ public partial class CombatPhase : GamePhase {
     private const double BOOST_INTERVAL = 5;
     private const string BOOST_STAT_ID = "COMBAT_OVERTIME_BOOST";
     private const double AFTER_COMBAT_TIME = 5;
+    
+    private static readonly Texture2D ICON = ResourceLoader.Load<Texture2D>("res://assets/ui/phases/combat.png");
 
     [ProtoMember(1)] public List<Combat> Combats { get; private set; }
     [ProtoMember(2)] private List<CombatResult> combatResults;
@@ -53,7 +56,7 @@ public partial class CombatPhase : GamePhase {
             this.boostCounter = boostCounter;
 
             if (ServerController.Instance.IsServer) {
-                finished = !Combats.Any(combat => !combat.IsFinished());
+                finished = Combats.All(combat => combat.IsFinished());
                 if (finished) {
                     RemainingTime = AFTER_COMBAT_TIME;
                     ServerController.Instance.PublishChange(this);
@@ -65,7 +68,7 @@ public partial class CombatPhase : GamePhase {
     }
     
     public override void Start() {
-        RemainingTime = 30;
+        RemainingTime = 5; // TODO swap back to 30
     }
 
     public override bool IsFinished() {
@@ -73,10 +76,18 @@ public partial class CombatPhase : GamePhase {
     }
 
     public override void End() {
-        if (!ServerController.Instance.IsServer) {
+        if (ServerController.Instance.IsServer) {
+            combatResults = new List<CombatResult>();
+            foreach (Combat combat in Combats) {
+                combatResults.Add(combat.Result);
+                combat.QueueFree();
+            }
+            Combats.Clear();
+            Combats = null;
+            ServerController.Instance.PublishChange(this);
+        } else {
             SetBoardsVisible(true);
-            Arena arena = PlayerController.Current.Player.Arena;
-            CameraController.Instance.Cover(new Rect2(arena.GlobalPosition, arena.ArenaSize));
+            PlayerController.Current.GoToArena(PlayerController.Current.Player.Arena);
         }
     }
 
@@ -95,7 +106,7 @@ public partial class CombatPhase : GamePhase {
             Combat combat = new Combat();
             combat.Prepare(playerA, playerB, isCloneFight);
             AddChild(combat);
-            combat.GlobalPosition = playerA.Arena.Board.GlobalPosition;
+            combat.GlobalPosition = playerA.Arena.Board.GlobalPosition + new Vector2(playerA.Arena.Board.Columns * 0.5f, 0f);
             
             combat.Name = "Combat" + combatIndex;
             Combats.Add(combat);
@@ -107,19 +118,50 @@ public partial class CombatPhase : GamePhase {
     }
     
     public Combat GetCombatForPlayer(Player player) {
-        if (Combats == null || !playerCombatIndices.TryGetValue(player.Account.Id, out int combatIndex)) {
+        if (Combats == null || Combats.Count == 0 || !playerCombatIndices.TryGetValue(player.Account.Id, out int combatIndex)) {
             return null;
         }
         return Combats[combatIndex];
     }
+    
+    public CombatResult GetCombatResultForPlayer(Player player) {
+        if (combatResults == null || combatResults.Count == 0 || !playerCombatIndices.TryGetValue(player.Account.Id, out int combatIndex)) {
+            return null;
+        }
+        return combatResults[combatIndex];
+    }
+
+    public IEnumerable<Combat> GetAllCombats() {
+        return Combats;
+    }
 
     public override string GetTitle(Player forPlayer) {
-        if (Combats == null) return "Prepare for Combat";
         Combat combat = GetCombatForPlayer(forPlayer);
-        Player otherPlayer = combat.PlayerA == forPlayer ? combat.PlayerB : combat.PlayerA;
-        return $"Combat against {otherPlayer.Account.Name}";
+        CombatResult combatResult = GetCombatResultForPlayer(forPlayer);
+        if (combat == null && combatResult == null) return "Prepare for Combat";
+        else if (combatResult == null) {
+            Player otherPlayer = combat.PlayerA == forPlayer ? combat.PlayerB : combat.PlayerA;
+            return $"Combat against {otherPlayer.Account.Name}";
+        } else {
+            Player otherPlayer = combatResult.PlayerA == forPlayer ? combatResult.PlayerB : combatResult.PlayerA;
+            return $"Combat against {otherPlayer.Account.Name}";
+        }
     }
-    
+
+    public override Texture2D GetIcon(Player forPlayer, out Color modulate) {
+        modulate = DEFAULT_ICON_MODULATE;
+        CombatResult combatResult = GetCombatResultForPlayer(forPlayer);
+        if (combatResult != null) {
+            bool wasWinner = combatResult.Winner switch {
+                Winner.PLAYER_A => combatResult.PlayerAId == forPlayer.Account.Id,
+                Winner.PLAYER_B => combatResult.PlayerBId == forPlayer.Account.Id,
+                _ => false
+            };
+            modulate = wasWinner ? new Color("#5a7548") : new Color("#7d3939");
+        }
+        return ICON;
+    }
+
     public override int GetPowerLevel() {
         return 0;
     }
@@ -132,16 +174,15 @@ public partial class CombatPhase : GamePhase {
         }
         if (ServerController.Instance.IsServer) return;
         
-        new Thread(() => {
-            Thread.Sleep(500);
-            CallDeferred(MethodName.SetupLocal);
-        }).Start();
+        SetupLocal();
     }
 
     private void SetupLocal() {
         SetBoardsVisible(false);
         Combat playerCombat = GetCombatForPlayer(PlayerController.Current.Player);
-        CameraController.Instance.Cover(playerCombat.GlobalBounds);
+        bool isPlayerA = playerCombat.PlayerA == PlayerController.Current.Player;
+        PlayerController.Current.GoToArena(playerCombat.PlayerA.Arena);
+        playerCombat.Rotation = isPlayerA ? 0 : Mathf.Pi;
     }
 
     private void SetBoardsVisible(bool visible) {

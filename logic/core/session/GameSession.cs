@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Godot;
 using MPAutoChess.logic.core.combat;
 using MPAutoChess.logic.core.item;
@@ -52,10 +53,19 @@ public partial class GameSession : Node {
         
         Mode.Tick(delta);
     }
+    
+    public Combat GetCombatForPlayer(Player player) {
+        if (Mode.GetCurrentPhase() is not CombatPhase combatPhase) return null;
+        return combatPhase.GetCombatForPlayer(player);
+    }
 
     public bool IsInCombat(Player player) {
-        if (Mode.GetCurrentPhase() is not CombatPhase combatPhase) return false;
-        return combatPhase.GetCombatForPlayer(player) != null;
+        return GetCombatForPlayer(player) != null;
+    }
+
+    public IEnumerable<Combat> GetCurrentCombats() {
+        if (Mode.GetCurrentPhase() is not CombatPhase combatPhase) return null;
+        return combatPhase.GetAllCombats();
     }
 
     public ItemConfig GetItemConfig() {

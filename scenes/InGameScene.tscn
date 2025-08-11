@@ -32,7 +32,6 @@ script = ExtResource("1_ytwbe")
 PlayerScene = ExtResource("2_q3aqn")
 
 [node name="Camera2D" type="Camera2D" parent="."]
-anchor_mode = 0
 
 [node name="CameraController" type="Node" parent="Camera2D"]
 script = ExtResource("7_yt8wk")

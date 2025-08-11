@@ -1,5 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://bki55krvbhqnt"]
+[gd_scene load_steps=3 format=3 uid="uid://bki55krvbhqnt"]
 
+[ext_resource type="Script" path="res://logic/core/player/PlayerInfoListPanel.cs" id="1_tc52w"]
 [ext_resource type="PackedScene" uid="uid://drnlcjdosobhn" path="res://ui/PlayerPanel.tscn" id="1_voey2"]
 
 [node name="PlayerList" type="VBoxContainer"]
@@ -8,15 +9,5 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-
-[node name="PlayerPanel" parent="." instance=ExtResource("1_voey2")]
-layout_mode = 2
-
-[node name="PlayerPanel2" parent="." instance=ExtResource("1_voey2")]
-layout_mode = 2
-
-[node name="PlayerPanel3" parent="." instance=ExtResource("1_voey2")]
-layout_mode = 2
-
-[node name="PlayerPanel4" parent="." instance=ExtResource("1_voey2")]
-layout_mode = 2
+script = ExtResource("1_tc52w")
+PlayerInfoPanelScene = ExtResource("1_voey2")

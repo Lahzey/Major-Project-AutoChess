@@ -55,10 +55,11 @@ public class StatType {
     public static readonly StatType BONUS_ATTACK_SPEED = new StatType("Bonus Attack Speed", "Acts as a multiplier to attack speed.", GD.Load<Texture2D>("res://assets/ui/attack_speed_icon.png"), 0, true);
     public static readonly StatType CRIT_CHANCE = new StatType("Crit Chance", "The chance for physical attacks to critically strike.", GD.Load<Texture2D>("res://assets/ui/crit_chance_icon.png"), 0, true);
     public static readonly StatType CRIT_DAMAGE = new StatType("Crit Damage", "The amount of bonus damage dealt with a critical strike.", GD.Load<Texture2D>("res://assets/ui/crit_damage_icon.png"), 0, true);
-    public static readonly StatType RANGE = new StatType("Range", "The distance at which the unit can attack.", GD.Load<Texture2D>("res://assets/ui/max_health_icon.png"));
+    public static readonly StatType RANGE = new StatType("Range", "The distance at which the unit can attack.", GD.Load<Texture2D>("res://assets/ui/range_icon.png"));
     public static readonly StatType WIDTH = new StatType("Width", "The width of the unit in grid cells.", null);
     public static readonly StatType HEIGHT = new StatType("Height", "The height of the unit in grid cells.", null);
-    public static readonly StatType MOVEMENT_SPEED = new StatType("Movement Speed", "The amount of cells the unit can traverse per second.", null);
+    public static readonly StatType MOVEMENT_SPEED = new StatType("Movement Speed", "The amount of cells the unit can traverse per second.", GD.Load<Texture2D>("res://assets/ui/movement_speed_icon.png"));
+    public static readonly StatType VAMPIRISM = new StatType("Vampirism", "Heals the unit for a percentage of all damage dealt.", GD.Load<Texture2D>("res://assets/ui/vampirism.png"), 0, true);
 
     public string ToString(float statVal, int additionalDigits = 0) {
         int digitsAfterDecimal = (int) DigitsAfterDecimal + additionalDigits;

@@ -17,20 +17,24 @@ namespace MPAutoChess.logic.core.player;
 
 [ProtoContract]
 public partial class Player : Node2D {
-
-    [ProtoMember(1)] public Account Account { get; private set; }
-
-    [Export] [ProtoMember(2)] public int Health { get; set; } = 1000;
-
-    [Export] [ProtoMember(3)] public int Experience { get; set; } = 0;
-
-    [Export] [ProtoMember(4)] public int Gold { get; set; } = 100;
     
-    [ProtoMember(5)] public Shop Shop { get; private set; }
+    private const int STARTING_HEALTH = 100;
+    public const int COST_PER_XP = 1;
+    public const int COST_PER_REROLL = 2;
+    
+    // some fields are exported so they can be synchronized with a MultiplayerSynchronizer node
+    [ProtoMember(1)] public Account Account { get; private set; }
+    [Export] [ProtoMember(2)] public int CurrentHealth { get; private set; }
+    [Export] [ProtoMember(3)] public int MaxHealth { get; private set; } = STARTING_HEALTH;
+    [Export] [ProtoMember(4)] public int Experience { get; private set; }
+    [Export] [ProtoMember(5)] public int Level { get; private set; } = 1;
+    [Export] [ProtoMember(6)] public int Gold { get; private set; }
+    [Export] [ProtoMember(7)] public int FreeRerolls { get; set; } = 10; // TODO reset to 0 (just for testing)
+    [ProtoMember(8)] public Shop Shop { get; private set; }
 
     private Inventory inventory;
 
-    [ProtoMember(6)]
+    [ProtoMember(9)]
     public Inventory Inventory {
         get => inventory;
         private set {
@@ -39,31 +43,32 @@ public partial class Player : Node2D {
         }
     }
     
-    [ProtoMember(7)] private Dictionary<Consumable, uint> consumables = new Dictionary<Consumable, uint>();
+    [ProtoMember(10)] private Dictionary<Consumable, uint> consumables = new Dictionary<Consumable, uint>();
 
     private Arena _arena;
-    [ProtoMember(8)]
-    public Arena Arena {
+    [ProtoMember(11)] public Arena Arena {
         get => _arena;
         private set {
             _arena = value;
-            _arena.Board.Player = this;
-            _arena.Bench.Player = this;
+            _arena.Player = this;
         }
     }
 
     public Board Board => Arena.Board;
     public Bench Bench => Arena.Bench;
     
-    public Calculation BoardSize { get; private set; } = new Calculation(5);
+    [ProtoMember(12)] public Calculation BoardSize { get; private set; } = new Calculation(1);
 
     public Player() {
         Shop = new Shop(this);
         Inventory = new Inventory(20);
+        CurrentHealth = MaxHealth;
         
         foreach (Consumable consumable in Consumable.GetAll()) {
             consumables[consumable] = 0;
         }
+        
+        BoardSize.SetAutoSendChanges(true);
         
         // just for testing TODO: remove
         consumables[Consumable.Get<ItemRemover>()] = 5;
@@ -82,22 +87,34 @@ public partial class Player : Node2D {
         
         // do not call CheckForUnitLevelUp immediately as containers will update during the level up process (state might be incomplete during the level up)
         EventManager.INSTANCE.AddAfterListener((UnitContainerUpdateEvent e) => CallDeferred(MethodName.CheckForUnitLevelUp));
-        EventManager.INSTANCE.AddAfterListener((PhaseStartEvent e) => CallDeferred(MethodName.CheckForUnitLevelUp));
+        EventManager.INSTANCE.AddAfterListener((PhaseChangeEvent e) => CallDeferred(MethodName.CheckForUnitLevelUp));
         EventManager.INSTANCE.AddAfterListener((UnitLevelUpEvent e) => CallDeferred(MethodName.CheckForUnitLevelUp));
     }
 
-    public int GetLevel() {
-        switch (Experience) {
-            case < 2: return 1;
-            case < 6: return 2;
-            case < 10: return 3;
-            case < 20: return 4;
-            case < 50: return 5;
-            case < 80: return 6;
-            case < 120: return 7;
-            case < 190: return 8;
-            case < 250: return 9;
-            default: return 10; // Level 10 is the maximum level
+    public int GetXpForLevel(int level) {
+        if (level <= 0) return -1;
+         switch (level) {
+            case 1: return 0;
+            case 2: return 2;
+            case 3: return 6;
+            case 4: return 10;
+            case 5: return 20;
+            case 6: return 35;
+            case 7: return 65;
+            case 8: return 100;
+            case 9: return 140;
+            case 10: return 200; // Level 10 is the effective maximum level
+            default: return 999 * (level - 10); // each level past level 10 requires so much xp its probably not doable
+        }
+    }
+
+    private void OnExperienceGain() {
+        while (Experience >= GetXpForLevel(Level + 1)) {
+            Level++;
+        }
+
+        if (Level != Mathf.RoundToInt(BoardSize.BaseValue.Get())) {
+            BoardSize.BaseValue = Level;
         }
     }
     
@@ -156,4 +173,45 @@ public partial class Player : Node2D {
         // TODO: Implement logic to move the unit to a temporary bench
     }
 
+    public void TakeDamage(float damage, Player? source) {
+        if (!ServerController.Instance.IsServer) throw new InvalidOperationException("TakeDamage can only be called on the server.");
+        PlayerDamageEvent playerDamageEvent = new PlayerDamageEvent(source, this, damage);
+        EventManager.INSTANCE.NotifyBefore(playerDamageEvent);
+        CurrentHealth -= Mathf.RoundToInt(damage);
+        if (CurrentHealth <= 0) Kill();
+        EventManager.INSTANCE.NotifyAfter(playerDamageEvent);
+    }
+
+    public void Kill() {
+        if (!ServerController.Instance.IsServer) throw new InvalidOperationException("Kill can only be called on the server.");
+        PlayerDeathEvent deathEvent = new PlayerDeathEvent(this);
+        EventManager.INSTANCE.NotifyBefore(deathEvent);
+        if (deathEvent.IsCancelled) {
+            CurrentHealth = 1;
+            return;
+        }
+        CurrentHealth = 0;
+        EventManager.INSTANCE.NotifyAfter(deathEvent);
+    }
+
+    [Rpc(MultiplayerApi.RpcMode.Authority)]
+    public void AddGold(int gold) {
+        if (ServerController.Instance.IsServer) {
+            Gold += gold;
+            Rpc(MethodName.AddGold, gold);
+        } else {
+            // TODO gold gain animation
+        }
+    }
+    
+    [Rpc(MultiplayerApi.RpcMode.Authority)]
+    public void AddExperience(int experience) {
+        if (ServerController.Instance.IsServer) {
+            Experience += experience;
+            OnExperienceGain();
+            Rpc(MethodName.AddExperience, experience);
+        } else {
+            // TODO experience gain animation
+        }
+    }
 }

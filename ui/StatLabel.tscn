@@ -1,0 +1,28 @@
+[gd_scene load_steps=4 format=3 uid="uid://bdrfbgo2xmp38"]
+
+[ext_resource type="Texture2D" uid="uid://dlof3tplwtnhj" path="res://assets/ui/strength_icon.png" id="1_ddkmm"]
+[ext_resource type="Script" path="res://logic/core/stats/StatLabel.cs" id="1_m2u5k"]
+[ext_resource type="Script" path="res://logic/util/AutoFontSize.cs" id="2_3vi04"]
+
+[node name="StatLabel" type="HBoxContainer" node_paths=PackedStringArray("Icon", "ValueLabel")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_m2u5k")
+Icon = NodePath("Icon")
+ValueLabel = NodePath("Label")
+
+[node name="Icon" type="TextureRect" parent="."]
+layout_mode = 2
+texture = ExtResource("1_ddkmm")
+expand_mode = 3
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "50"
+
+[node name="AutoFontSize" type="Node" parent="Label"]
+script = ExtResource("2_3vi04")

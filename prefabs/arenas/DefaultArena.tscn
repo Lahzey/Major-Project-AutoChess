@@ -1,31 +1,52 @@
-[gd_scene load_steps=6 format=3 uid="uid://jvh77p6sx12j"]
+[gd_scene load_steps=9 format=3 uid="uid://jvh77p6sx12j"]
 
 [ext_resource type="Script" path="res://logic/core/environment/Arena.cs" id="1_qm1y1"]
 [ext_resource type="PackedScene" uid="uid://cj1ikyyt77nmw" path="res://prefabs/placement/Board.tscn" id="2_d0jws"]
 [ext_resource type="Texture2D" uid="uid://bmc1eb3barx23" path="res://prefabs/arenas/map.png" id="3_7j8o7"]
 [ext_resource type="PackedScene" uid="uid://cvu8csgnfw3cs" path="res://prefabs/placement/Bench.tscn" id="3_8u81s"]
 [ext_resource type="Texture2D" uid="uid://bon5pix2ghl2" path="res://assets/white.png" id="5_35plp"]
+[ext_resource type="Texture2D" uid="uid://blgdnwvsa2a4c" path="res://assets/ui/sell_target_on.png" id="6_g3e6d"]
+[ext_resource type="Script" path="res://logic/core/shop/SellTarget.cs" id="7_wylgw"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_r33gw"]
+size = Vector2(1, 1)
 
 [node name="Arena" type="Node2D" node_paths=PackedStringArray("Board", "Bench")]
 script = ExtResource("1_qm1y1")
-ArenaSize = Vector2(40, 20)
+ArenaSize = Vector2(28, 20)
 Board = NodePath("Board")
 Bench = NodePath("Bench")
 
-[node name="SizePreview" type="Sprite2D" parent="."]
-visible = false
-modulate = Color(1, 1, 1, 0.151)
-scale = Vector2(40, 20)
-texture = ExtResource("5_35plp")
-centered = false
-
 [node name="Background" type="Sprite2D" parent="."]
-position = Vector2(19.98, 9.055)
 scale = Vector2(0.0625, 0.0625)
 texture = ExtResource("3_7j8o7")
 
 [node name="Board" parent="." instance=ExtResource("2_d0jws")]
-position = Vector2(10, 9)
+position = Vector2(-10, 0)
 
 [node name="Bench" parent="." instance=ExtResource("3_8u81s")]
-position = Vector2(20, 17)
+position = Vector2(0, 8)
+
+[node name="SizePreview" type="Sprite2D" parent="."]
+visible = false
+modulate = Color(1, 1, 1, 0.151)
+position = Vector2(-14, -10)
+scale = Vector2(28, 20)
+texture = ExtResource("5_35plp")
+centered = false
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(-12.4875, 3.9375)
+scale = Vector2(0.0155, 0.0155)
+texture = ExtResource("6_g3e6d")
+
+[node name="Area2D" type="Area2D" parent="Sprite2D" node_paths=PackedStringArray("SellSprite")]
+position = Vector2(-50, 50)
+scale = Vector2(130, 130)
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("7_wylgw")
+SellSprite = NodePath("..")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sprite2D/Area2D"]
+shape = SubResource("RectangleShape2D_r33gw")

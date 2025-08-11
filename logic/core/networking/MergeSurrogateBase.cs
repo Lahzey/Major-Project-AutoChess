@@ -160,7 +160,7 @@ public abstract class MergeSurrogateBase<T> where T : new() {
                 WriteToDictionary(memberDictionary, value);
                 return memberDictionary;
             } else {
-                throw new ArgumentException($"CollectionType {memberType} is not supported for merge surrogate serialization. Only IList and IDictionary are supported.");
+                throw new ArgumentException($"[{typeof(T)}] CollectionType {memberType} is not supported for merge surrogate serialization. Only IList and IDictionary are supported.");
             }
         } else return value;
     }
@@ -171,7 +171,7 @@ public abstract class MergeSurrogateBase<T> where T : new() {
             return;
         }
         
-        if (data is not IList newList) throw new ArgumentException("Data must be of type IList to write to a list.");
+        if (data is not IList newList) throw new ArgumentException($"[{typeof(T)}] Data must be of type IList to write to a list.");
         list.Clear();
         foreach (object item in newList) {
             list.Add(item);
@@ -184,7 +184,7 @@ public abstract class MergeSurrogateBase<T> where T : new() {
             return;
         }
         
-        if (data is not IDictionary newDictionary) throw new ArgumentException("Data must be of type IDictionary to write to a dictionary.");
+        if (data is not IDictionary newDictionary) throw new ArgumentException($"[{typeof(T)}] Data must be of type IDictionary to write to a dictionary, but is of type {data.GetType()}.");
         dictionary.Clear();
         foreach (DictionaryEntry entry in newDictionary) {
             dictionary[entry.Key] = entry.Value;

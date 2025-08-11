@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://drnlcjdosobhn"]
+[gd_scene load_steps=6 format=3 uid="uid://drnlcjdosobhn"]
 
 [ext_resource type="Texture2D" uid="uid://uv15gyjx8dmh" path="res://icon.svg" id="1_8cede"]
 [ext_resource type="Script" path="res://logic/util/AutoFontSize.cs" id="1_rjd1s"]
+[ext_resource type="Script" path="res://logic/core/player/PlayerInfoPanel.cs" id="1_ykm10"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xwg8l"]
 content_margin_left = 5.0
@@ -19,17 +20,24 @@ content_margin_right = 5.0
 content_margin_bottom = 5.0
 bg_color = Color(0, 0, 0, 0.286275)
 
-[node name="PlayerPanel" type="HBoxContainer"]
+[node name="PlayerPanel" type="HBoxContainer" node_paths=PackedStringArray("HealthBar", "HealthLabel", "NameLabel", "ProfilePicture", "ProfileBackground")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 0
+script = ExtResource("1_ykm10")
+HealthBar = NodePath("VBoxContainer/PlayerHealth")
+HealthLabel = NodePath("PlayerHealthCounter")
+NameLabel = NodePath("VBoxContainer/PlayerName")
+ProfilePicture = NodePath("IconBackground/PlayerIcon")
+ProfileBackground = NodePath("IconBackground")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 4
 theme_override_constants/separation = 1
 
 [node name="PlayerName" type="Label" parent="VBoxContainer"]

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Godot;
+using MPAutoChess.logic.core.combat;
 using MPAutoChess.logic.core.events;
 using MPAutoChess.logic.core.networking;
 using MPAutoChess.logic.core.player;
@@ -33,10 +34,18 @@ public abstract partial class GameMode : Node {
         if (ServerController.Instance.IsServer) AdvancePhase();
     }
 
-    public virtual GamePhase GetCurrentPhase() {
+    public virtual int GetPhaseStartGold() {
+        return Math.Min(GetCurrentPhaseIndex() + 1, 5);
+    }
+
+    public GamePhase GetCurrentPhase() {
         int currentIndex = GetCurrentPhaseIndex();
-        if (currentIndex < 0) return null; // game has not yet started
-        return phases[currentIndex];
+        return GetPhaseAt(currentIndex);
+    }
+
+    public virtual GamePhase GetPhaseAt(int index) {
+        if (index < 0 || index >= phases.Count) return null;
+        return phases[index];
     }
     
     public virtual int GetCurrentPhaseIndex() {
@@ -49,12 +58,14 @@ public abstract partial class GameMode : Node {
     }
 
     protected virtual void StartPhase(GamePhase phase) {
-        if (phases.Count > 0) {
-            phases[^1].End();
-            RemoveChild(phases[^1]);
+        GamePhase? currentPhase = GetCurrentPhase();
+        PhaseChangeEvent phaseChangeEvent = new PhaseChangeEvent(currentPhase, phase);
+        EventManager.INSTANCE.NotifyBefore(phaseChangeEvent);
+        
+        if (currentPhase != null) {
+            currentPhase.End();
+            RemoveChild(currentPhase);
         }
-        PhaseStartEvent phaseStartEvent = new PhaseStartEvent(phase);
-        EventManager.INSTANCE.NotifyBefore(phaseStartEvent);
         
         phases.Add(phase);
         PowerLevel += phase.GetPowerLevel();
@@ -63,17 +74,20 @@ public abstract partial class GameMode : Node {
         if (ServerController.Instance.IsServer) {
             phase.Name = $"Phase{phases.Count}";
             AddChild(phase);
-            Rpc(MethodName.TriggerStartPhase, SerializerExtensions.Serialize(phase));
+            Rpc(MethodName.TriggerClientStartPhase, SerializerExtensions.Serialize(phase));
+            foreach (Player player in GameSession.Instance.Players) {
+                player.AddGold(GetPhaseStartGold());
+            }
         } else {
             PlayerUI.Instance.GamePhaseControls.SetPhaseControls(null);
         }
         
         phase.Start();
-        EventManager.INSTANCE.NotifyAfter(phaseStartEvent);
+        EventManager.INSTANCE.NotifyAfter(phaseChangeEvent);
     }
 
     [Rpc(MultiplayerApi.RpcMode.Authority)]
-    protected virtual void TriggerStartPhase(byte[] serializedGamePhase) {
+    protected virtual void TriggerClientStartPhase(byte[] serializedGamePhase) {
         GamePhase phase = SerializerExtensions.Deserialize<GamePhase>(serializedGamePhase);
         StartPhase(phase);
     }

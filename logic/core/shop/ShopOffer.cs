@@ -44,7 +44,7 @@ public abstract class ShopOffer {
     
     public virtual void FillShopSlot(ShopSlot slot) {
         slot.ShopOffer = this;
-        slot.Texture.Texture = GetTexture();
+        slot.SetTexture(GetTexture());
     }
 
     public virtual void Dispose() { }

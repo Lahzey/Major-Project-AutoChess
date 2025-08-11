@@ -4,15 +4,24 @@
 [ext_resource type="Script" path="res://addons/scene_safe_multiplayer/SceneSafeMpSynchronizer.cs" id="2_x8q35"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_qgllg"]
-properties/0/path = NodePath(".:Health")
+properties/0/path = NodePath(".:Experience")
 properties/0/spawn = true
 properties/0/replication_mode = 1
-properties/1/path = NodePath(".:Experience")
+properties/1/path = NodePath(".:Gold")
 properties/1/spawn = true
 properties/1/replication_mode = 1
-properties/2/path = NodePath(".:Gold")
+properties/2/path = NodePath(".:CurrentHealth")
 properties/2/spawn = true
 properties/2/replication_mode = 1
+properties/3/path = NodePath(".:MaxHealth")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+properties/4/path = NodePath(".:FreeRerolls")
+properties/4/spawn = true
+properties/4/replication_mode = 1
+properties/5/path = NodePath(".:Level")
+properties/5/spawn = true
+properties/5/replication_mode = 1
 
 [node name="Player" type="Node2D"]
 script = ExtResource("1_gu5bn")

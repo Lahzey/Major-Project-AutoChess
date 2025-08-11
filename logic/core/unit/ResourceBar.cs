@@ -4,20 +4,31 @@ using MPAutoChess.logic.core.stats;
 
 namespace MPAutoChess.logic.core.unit;
 
-[Tool]
+[Tool, GlobalClass]
 public partial class ResourceBar : ProgressBar {
     
     public const float HEALTH_SMALL_GAP = 250f;
     public const float HEALTH_LARGE_GAP = 1000f;
     public const float NO_GAP = 0f;
-    public static readonly Color HEALTH_COLOR = new Color(0.55f, 0f, 0f, 1f);
-    public static readonly Color MANA_COLOR = new Color(0f, 0.24f, 0.4f, 1f);
+    public static readonly Color HEALTH_SELF_COLOR = new Color("#166e0f");
+    public static readonly Color HEALTH_ALLY_COLOR = new Color("#a69107");
+    public static readonly Color HEALTH_ENEMY_COLOR = new Color("#780707");
+    public static readonly Color MANA_COLOR = new Color("003d66");
     
-    public float SmallSeparatorGap { get; set; } = 250f;
-    public float LargeSeparatorGap { get; set; } = 1000f;
+    [Export] public float SmallSeparatorGap { get; set; } = 250f;
+    [Export] public float LargeSeparatorGap { get; set; } = 1000f;
     
-    public Color SmallSeparatorColor { get; set; } = new Color(0f, 0f, 0f, 0.5f);
-    public Color LargeSeparatorColor { get; set; } = new Color(0f, 0f, 0f, 1f);
+    [Export] public Color SmallSeparatorColor { get; set; } = new Color(0f, 0f, 0f, 0.5f);
+    [Export] public Color LargeSeparatorColor { get; set; } = new Color(0f, 0f, 0f, 1f);
+
+    private Color fillColor = Colors.Transparent;
+    [Export] public Color FillColor {
+        get => fillColor;
+        set {
+            SetFillColor(value);
+            fillColor = value;
+        }
+    }
 
     public UnitInstance UnitInstance { get; private set; }
     public Func<UnitInstance, float> GetMaxValue { get; private set; }
@@ -39,9 +50,16 @@ public partial class ResourceBar : ProgressBar {
     }
     
     public void SetFillColor(Color color) {
-        StyleBoxFlat stylebox = (StyleBoxFlat) GetThemeStylebox("fill").Duplicate();
-        stylebox.BgColor = color;
-        AddThemeStyleboxOverride("fill", stylebox);
+        StyleBox styleBox = GetThemeStylebox("fill");
+        StyleBoxFlat styleBoxFlat = styleBox is StyleBoxFlat flat ? (StyleBoxFlat) flat.Duplicate() : new StyleBoxFlat();
+        styleBoxFlat.BgColor = color;
+        AddThemeStyleboxOverride("fill", styleBoxFlat);
+    }
+
+    public override void _Ready() {
+        if (FillColor != Colors.Transparent) {
+            SetFillColor(FillColor);
+        }
     }
 
     public override void _Process(double delta) {

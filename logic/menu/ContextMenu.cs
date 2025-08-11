@@ -11,6 +11,8 @@ public partial class ContextMenu : Control {
     
     private Action[] callbacks;
     
+    private bool hideOnLeave = false;
+    
     // Called when the node enters the scene tree for the first time.
     public override void _Ready() {
         Instance = this;
@@ -19,10 +21,17 @@ public partial class ContextMenu : Control {
                 callbacks[id]();
             }
         };
+        PopupMenu.MouseExited += OnMouseLeave;
         PopupMenu.Hide();
     }
+    
+    private void OnMouseLeave() {
+        if (hideOnLeave) {
+            PopupMenu.Hide();
+        }
+    }
 
-    public void ShowContextMenu(Vector2 position, ContextMenuItem[] items) {
+    public void ShowContextMenu(Vector2 position, ContextMenuItem[] items, AnchorPoint anchor = AnchorPoint.TOP_LEFT, bool hideOnLeave = false) {
         PopupMenu.Clear();
         callbacks = new Action[items.Length];
         for (int i = 0; i < items.Length; i++) {
@@ -30,10 +39,42 @@ public partial class ContextMenu : Control {
             item.AddToContextMenu(PopupMenu);
             callbacks[i] = item.action;
         }
+        this.hideOnLeave = hideOnLeave;
 
         PopupMenu.Position = (Vector2I) position;
         PopupMenu.ResetSize();
+        
+        switch (anchor) {
+            case AnchorPoint.TOP_LEFT:
+                // nothing to do, that is how godot positions elements already
+                break;
+            case AnchorPoint.TOP_RIGHT:
+                PopupMenu.Position -= new Vector2I(PopupMenu.Size.X, 0);
+                break;
+            case AnchorPoint.BOTTOM_LEFT:
+                PopupMenu.Position -= new Vector2I(0, PopupMenu.Size.Y);
+                break;
+            case AnchorPoint.BOTTOM_RIGHT:
+                PopupMenu.Position -= new Vector2I(PopupMenu.Size.X, PopupMenu.Size.Y);
+                break;
+            case AnchorPoint.CENTER:
+                PopupMenu.Position -= new Vector2I(PopupMenu.Size.X / 2, PopupMenu.Size.Y / 2);
+                break;
+        }
+        
         PopupMenu.Show();
+    }
+    
+    public void HideContextMenu() {
+        PopupMenu.Hide();
+    }
+    
+    public enum AnchorPoint {
+        TOP_LEFT,
+        TOP_RIGHT,
+        BOTTOM_LEFT,
+        BOTTOM_RIGHT,
+        CENTER,
     }
 }
 
@@ -51,7 +92,7 @@ public struct ContextMenuItem {
     private Texture2D? icon;
     private PopupMenu? submenu;
     
-    internal Action action;
+    internal Action? action;
     
     private ContextMenuItem(ContextMenuItemType type, string text, Texture2D? icon, PopupMenu? submenu, Action action) {
         this.type = type;
@@ -61,7 +102,7 @@ public struct ContextMenuItem {
         this.action = action;
     }
     
-    public static ContextMenuItem Label(string text, Action action) {
+    public static ContextMenuItem Label(string text, Action action = null) {
         return new ContextMenuItem(ContextMenuItemType.LABEL, text, null, null, action);
     }
     

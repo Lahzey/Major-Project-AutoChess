@@ -1,0 +1,402 @@
+[gd_scene load_steps=14 format=3 uid="uid://463r56msr1t3"]
+
+[ext_resource type="Texture2D" uid="uid://cchykonplol2y" path="res://seasons/season0/units/tank/tank_icon.png" id="1_2feqj"]
+[ext_resource type="Script" path="res://logic/core/unit/UnitInfoPanel.cs" id="1_5k5yd"]
+[ext_resource type="Script" path="res://logic/util/AutoFontSize.cs" id="2_phiga"]
+[ext_resource type="Texture2D" uid="uid://c6fgakc88bbgb" path="res://assets/ui/border.svg" id="2_x2ul6"]
+[ext_resource type="Texture2D" uid="uid://dkv0hiuxam4wh" path="res://seasons/season0/roles/placeholder.png" id="3_57ef7"]
+[ext_resource type="Texture2D" uid="uid://cqdkb311jheg1" path="res://assets/ui/gold_icon.png" id="5_0klog"]
+[ext_resource type="Texture2D" uid="uid://bon5pix2ghl2" path="res://assets/white.png" id="5_hd781"]
+[ext_resource type="Script" path="res://logic/core/unit/ResourceBar.cs" id="6_bujft"]
+[ext_resource type="PackedScene" uid="uid://bdrfbgo2xmp38" path="res://ui/StatLabel.tscn" id="7_1ix44"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v6u24"]
+bg_color = Color(0, 0, 0, 0.470588)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.0627451, 0.113725, 0.156863, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wapgb"]
+bg_color = Color(0.0862745, 0.431373, 0.0588235, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sgoip"]
+bg_color = Color(0, 0, 0, 0.470588)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.0627451, 0.113725, 0.156863, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6xbp0"]
+bg_color = Color(0, 0.24, 0.4, 1)
+
+[node name="UnitInfoPanel" type="PanelContainer" node_paths=PackedStringArray("SplashArt", "NameLabel", "RoleIcons", "RoleLabels", "SellPriceLabel", "HealthBar", "HealthBarLabel", "ManaBar", "ManaBarLabel", "ItemIconsContainer", "SpellNameLabel", "SpellCostLabel", "SpellDescriptionLabel", "StatLabels")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_5k5yd")
+SplashArt = NodePath("VBoxContainer/Header/SplashArt")
+NameLabel = NodePath("VBoxContainer/Header/VBoxContainer/Name")
+RoleIcons = [NodePath("VBoxContainer/Header/VBoxContainer/HBoxContainer/Role1Icon"), NodePath("VBoxContainer/Header/VBoxContainer/HBoxContainer2/Role2Icon"), NodePath("VBoxContainer/Header/VBoxContainer/HBoxContainer3/Role3Icon")]
+RoleLabels = [NodePath("VBoxContainer/Header/VBoxContainer/HBoxContainer/Role1Label"), NodePath("VBoxContainer/Header/VBoxContainer/HBoxContainer2/Role2Label"), NodePath("VBoxContainer/Header/VBoxContainer/HBoxContainer3/Role3Label")]
+SellPriceLabel = NodePath("VBoxContainer/Header/HBoxContainer/SellPrice")
+HealthBar = NodePath("VBoxContainer/HealthBarContainer/HealthBar")
+HealthBarLabel = NodePath("VBoxContainer/HealthBarContainer/MarginContainer/HealthBarText")
+ManaBar = NodePath("VBoxContainer/ManaBarContainer/ManaBar")
+ManaBarLabel = NodePath("VBoxContainer/ManaBarContainer/ManaBarText")
+ItemIconsContainer = NodePath("VBoxContainer/Items/ItemIconsContainer")
+SpellNameLabel = NodePath("VBoxContainer/SpellTitle/SpellName")
+SpellCostLabel = NodePath("VBoxContainer/SpellTitle/SpellCost")
+SpellDescriptionLabel = NodePath("VBoxContainer/SpellDescription")
+StatLabels = [NodePath("VBoxContainer/GridContainer/StrengthLabel"), NodePath("VBoxContainer/GridContainer/ArmorLabel"), NodePath("VBoxContainer/GridContainer/MagicLabel"), NodePath("VBoxContainer/GridContainer/AegisLabel"), NodePath("VBoxContainer/GridContainer/AttackSpeedLabel"), NodePath("VBoxContainer/GridContainer/TenacityLabel"), NodePath("VBoxContainer/GridContainer/CritChanceLabel"), NodePath("VBoxContainer/GridContainer/RangeLabel"), NodePath("VBoxContainer/GridContainer/CritDamageLabel"), NodePath("VBoxContainer/GridContainer/VampirismLabel")]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 9
+
+[node name="Header" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="SplashArt" type="TextureRect" parent="VBoxContainer/Header"]
+layout_mode = 2
+texture = ExtResource("1_2feqj")
+expand_mode = 3
+
+[node name="SplashArtBorder" type="TextureRect" parent="VBoxContainer/Header/SplashArt"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_x2ul6")
+expand_mode = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Name" type="Label" parent="VBoxContainer/Header/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Unit Name
+"
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Header/VBoxContainer/Name"]
+script = ExtResource("2_phiga")
+SizeType = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/Header/VBoxContainer"]
+layout_mode = 2
+
+[node name="Role1Icon" type="TextureRect" parent="VBoxContainer/Header/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("3_57ef7")
+expand_mode = 3
+
+[node name="Role1Label" type="Label" parent="VBoxContainer/Header/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "Role 1"
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Header/VBoxContainer/HBoxContainer/Role1Label"]
+script = ExtResource("2_phiga")
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/Header/VBoxContainer"]
+layout_mode = 2
+
+[node name="Role2Icon" type="TextureRect" parent="VBoxContainer/Header/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+texture = ExtResource("3_57ef7")
+expand_mode = 3
+
+[node name="Role2Label" type="Label" parent="VBoxContainer/Header/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "Role 2"
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Header/VBoxContainer/HBoxContainer2/Role2Label"]
+script = ExtResource("2_phiga")
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="VBoxContainer/Header/VBoxContainer"]
+layout_mode = 2
+
+[node name="Role3Icon" type="TextureRect" parent="VBoxContainer/Header/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+texture = ExtResource("3_57ef7")
+expand_mode = 3
+
+[node name="Role3Label" type="Label" parent="VBoxContainer/Header/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "Role 3"
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Header/VBoxContainer/HBoxContainer3/Role3Label"]
+script = ExtResource("2_phiga")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/Header"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="SellPrice" type="Label" parent="VBoxContainer/Header/HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 12
+text = "5"
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Header/HBoxContainer/SellPrice"]
+script = ExtResource("2_phiga")
+SizeType = 2
+
+[node name="CoinIcon" type="TextureRect" parent="VBoxContainer/Header/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("5_0klog")
+expand_mode = 3
+
+[node name="Separator" type="TextureRect" parent="VBoxContainer"]
+modulate = Color(0.0627451, 0.113725, 0.156863, 1)
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+texture = ExtResource("5_hd781")
+expand_mode = 1
+
+[node name="HealthBarContainer" type="PanelContainer" parent="VBoxContainer"]
+layout_mode = 2
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBoxFlat_v6u24")
+
+[node name="HealthBar" type="ProgressBar" parent="VBoxContainer/HealthBarContainer"]
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_styles/fill = SubResource("StyleBoxFlat_wapgb")
+value = 50.0
+show_percentage = false
+script = ExtResource("6_bujft")
+SmallSeparatorGap = 0.0
+LargeSeparatorGap = 0.0
+FillColor = Color(0.0862745, 0.431373, 0.0588235, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/HealthBarContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="HealthBarText" type="Label" parent="VBoxContainer/HealthBarContainer/MarginContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "500 / 1000"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/HealthBarContainer/MarginContainer/HealthBarText"]
+script = ExtResource("2_phiga")
+
+[node name="ManaBarContainer" type="PanelContainer" parent="VBoxContainer"]
+layout_mode = 2
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBoxFlat_sgoip")
+
+[node name="ManaBar" type="ProgressBar" parent="VBoxContainer/ManaBarContainer"]
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_styles/fill = SubResource("StyleBoxFlat_6xbp0")
+value = 50.0
+show_percentage = false
+script = ExtResource("6_bujft")
+SmallSeparatorGap = 0.0
+LargeSeparatorGap = 0.0
+FillColor = Color(0, 0.24, 0.4, 1)
+
+[node name="ManaBarText" type="Label" parent="VBoxContainer/ManaBarContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "50 / 100"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/ManaBarContainer/ManaBarText"]
+script = ExtResource("2_phiga")
+
+[node name="Separator2" type="TextureRect" parent="VBoxContainer"]
+modulate = Color(0.0627451, 0.113725, 0.156863, 1)
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+texture = ExtResource("5_hd781")
+expand_mode = 1
+
+[node name="Items" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="HeightControl" type="RichTextLabel" parent="VBoxContainer/Items"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/normal_font_size = 8
+text = "
+
+
+
+"
+fit_content = true
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Items/HeightControl"]
+script = ExtResource("2_phiga")
+FontSizeProperty = "normal_font_size"
+
+[node name="ItemIconsContainer" type="HBoxContainer" parent="VBoxContainer/Items"]
+layout_mode = 2
+theme_override_constants/separation = 25
+
+[node name="Spacer" type="RichTextLabel" parent="VBoxContainer/Items"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/normal_font_size = 8
+text = "
+
+
+
+"
+fit_content = true
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Items/Spacer"]
+script = ExtResource("2_phiga")
+FontSizeProperty = "normal_font_size"
+
+[node name="Separator3" type="TextureRect" parent="VBoxContainer"]
+modulate = Color(0.0627451, 0.113725, 0.156863, 1)
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+texture = ExtResource("5_hd781")
+expand_mode = 1
+
+[node name="SpellTitle" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 25
+
+[node name="SpellName" type="Label" parent="VBoxContainer/SpellTitle"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = "Super Duper Mega Spell"
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/SpellTitle/SpellName"]
+script = ExtResource("2_phiga")
+SizeType = 2
+
+[node name="SpellCost" type="Label" parent="VBoxContainer/SpellTitle"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "20/100"
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/SpellTitle/SpellCost"]
+script = ExtResource("2_phiga")
+SizeType = 2
+
+[node name="SpellDescription" type="RichTextLabel" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/bold_italics_font_size = 8
+theme_override_font_sizes/italics_font_size = 8
+theme_override_font_sizes/mono_font_size = 8
+theme_override_font_sizes/normal_font_size = 8
+theme_override_font_sizes/bold_font_size = 8
+bbcode_enabled = true
+text = "Here is a detailed  description of the spell at hand, what its effects are and exactly how much damage it does, scaling with which stat. These stat scalings should eventually also contain icons.
+
+And on the bottom here are the exact scaling calculations."
+fit_content = true
+
+[node name="AutoFontSizeBI" type="Node" parent="VBoxContainer/SpellDescription"]
+script = ExtResource("2_phiga")
+FontSizeProperty = "bold_italics_font_size"
+
+[node name="AutoFontSizeI" type="Node" parent="VBoxContainer/SpellDescription"]
+script = ExtResource("2_phiga")
+FontSizeProperty = "italics_font_size"
+
+[node name="AutoFontSizeM" type="Node" parent="VBoxContainer/SpellDescription"]
+script = ExtResource("2_phiga")
+FontSizeProperty = "mono_font_size"
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/SpellDescription"]
+script = ExtResource("2_phiga")
+FontSizeProperty = "normal_font_size"
+
+[node name="AutoFontSizeB" type="Node" parent="VBoxContainer/SpellDescription"]
+script = ExtResource("2_phiga")
+FontSizeProperty = "bold_font_size"
+
+[node name="Separator4" type="TextureRect" parent="VBoxContainer"]
+modulate = Color(0.0627451, 0.113725, 0.156863, 1)
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+texture = ExtResource("5_hd781")
+expand_mode = 1
+
+[node name="GridContainer" type="GridContainer" parent="VBoxContainer"]
+layout_mode = 2
+columns = 2
+
+[node name="StrengthLabel" parent="VBoxContainer/GridContainer" instance=ExtResource("7_1ix44")]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 0
+
+[node name="ArmorLabel" parent="VBoxContainer/GridContainer" instance=ExtResource("7_1ix44")]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 0
+Stat = "Armor"
+
+[node name="MagicLabel" parent="VBoxContainer/GridContainer" instance=ExtResource("7_1ix44")]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 0
+Stat = "Magic"
+
+[node name="AegisLabel" parent="VBoxContainer/GridContainer" instance=ExtResource("7_1ix44")]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 0
+Stat = "Aegis"
+
+[node name="AttackSpeedLabel" parent="VBoxContainer/GridContainer" instance=ExtResource("7_1ix44")]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 0
+Stat = "Attack Speed"
+
+[node name="TenacityLabel" parent="VBoxContainer/GridContainer" instance=ExtResource("7_1ix44")]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 0
+Stat = "Tenacity"
+
+[node name="CritChanceLabel" parent="VBoxContainer/GridContainer" instance=ExtResource("7_1ix44")]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 0
+Stat = "Crit Chance"
+
+[node name="RangeLabel" parent="VBoxContainer/GridContainer" instance=ExtResource("7_1ix44")]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 0
+Stat = "Range"
+
+[node name="CritDamageLabel" parent="VBoxContainer/GridContainer" instance=ExtResource("7_1ix44")]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 0
+Stat = "Crit Damage"
+
+[node name="VampirismLabel" parent="VBoxContainer/GridContainer" instance=ExtResource("7_1ix44")]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 0
+Stat = "Vampirism"

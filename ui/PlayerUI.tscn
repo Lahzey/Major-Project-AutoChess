@@ -1,18 +1,22 @@
-[gd_scene load_steps=18 format=3 uid="uid://c2fryil7qt0qx"]
+[gd_scene load_steps=22 format=3 uid="uid://c2fryil7qt0qx"]
 
 [ext_resource type="Script" path="res://logic/core/player/PlayerUI.cs" id="1_gfa4k"]
 [ext_resource type="Script" path="res://logic/menu/WorldControls.cs" id="2_f4nfe"]
 [ext_resource type="PackedScene" uid="uid://b1mjtwvjjws5j" path="res://ui/ShopUI.tscn" id="2_vb6bc"]
 [ext_resource type="Script" path="res://logic/core/player/ViewBounds.cs" id="3_mh5rr"]
 [ext_resource type="PackedScene" uid="uid://dc6pkfnhwi4qo" path="res://ui/InventoryPanel.tscn" id="4_qij4o"]
+[ext_resource type="Texture2D" uid="uid://bon5pix2ghl2" path="res://assets/white.png" id="5_2uqml"]
 [ext_resource type="PackedScene" uid="uid://b20qdtptl1g83" path="res://ui/ItemTooltip.tscn" id="5_jl212"]
 [ext_resource type="Script" path="res://logic/core/session/GamePhaseControls.cs" id="6_lur83"]
 [ext_resource type="Script" path="res://plugins/MaterialTheming/Scripts/PolygonInfo.cs" id="6_yluh8"]
 [ext_resource type="Material" uid="uid://b2mv00fv4xlp6" path="res://plugins/MaterialTheming/shaders/DecoratedPanelMaterial.tres" id="7_ecxb7"]
 [ext_resource type="Script" path="res://plugins/MaterialTheming/Scripts/StyleBoxDecorated.cs" id="8_bjbxx"]
 [ext_resource type="Script" path="res://logic/util/AutoFontSize.cs" id="9_fv8je"]
+[ext_resource type="Texture2D" uid="uid://bl6rhr1df4c5o" path="res://assets/ui/phases/default.png" id="10_ai3re"]
+[ext_resource type="Script" path="res://logic/core/session/GamePhaseIndicator.cs" id="10_gq3u2"]
 [ext_resource type="PackedScene" uid="uid://b3yhkspgyhkaw" path="res://ui/RoleList.tscn" id="11_frthg"]
 [ext_resource type="PackedScene" uid="uid://bki55krvbhqnt" path="res://ui/PlayerList.tscn" id="12_ihqlf"]
+[ext_resource type="PackedScene" uid="uid://463r56msr1t3" path="res://ui/UnitInfoPanel.tscn" id="16_awyvp"]
 
 [sub_resource type="Resource" id="Resource_tmwpu"]
 script = ExtResource("6_yluh8")
@@ -109,11 +113,22 @@ layout_mode = 1
 [node name="ViewBounds" type="Control" parent="."]
 layout_mode = 1
 anchor_left = 0.1
-anchor_top = 0.1
+anchor_top = 0.11
 anchor_right = 0.9
 anchor_bottom = 0.8
 mouse_filter = 2
 script = ExtResource("3_mh5rr")
+
+[node name="Visualizer" type="TextureRect" parent="ViewBounds"]
+visible = false
+modulate = Color(0.619608, 0, 0, 0.321569)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("5_2uqml")
 
 [node name="GamePhaseControls" type="Control" parent="." node_paths=PackedStringArray("SmallControlsPanel", "LargeControlsPanel", "PastPhases", "FuturePhases", "PhaseTimer", "PhaseTitle", "PhaseSpecificControls")]
 layout_mode = 1
@@ -161,6 +176,38 @@ anchor_bottom = 0.17
 grow_horizontal = 2
 grow_vertical = 2
 
+[node name="Phase-4" type="TextureRect" parent="GamePhaseControls/PastPhases"]
+layout_mode = 2
+size_flags_horizontal = 6
+texture = ExtResource("10_ai3re")
+expand_mode = 3
+script = ExtResource("10_gq3u2")
+PhaseOffset = -4
+
+[node name="Phase-3" type="TextureRect" parent="GamePhaseControls/PastPhases"]
+layout_mode = 2
+size_flags_horizontal = 6
+texture = ExtResource("10_ai3re")
+expand_mode = 3
+script = ExtResource("10_gq3u2")
+PhaseOffset = -3
+
+[node name="Phase-2" type="TextureRect" parent="GamePhaseControls/PastPhases"]
+layout_mode = 2
+size_flags_horizontal = 6
+texture = ExtResource("10_ai3re")
+expand_mode = 3
+script = ExtResource("10_gq3u2")
+PhaseOffset = -2
+
+[node name="Phase-1" type="TextureRect" parent="GamePhaseControls/PastPhases"]
+layout_mode = 2
+size_flags_horizontal = 6
+texture = ExtResource("10_ai3re")
+expand_mode = 3
+script = ExtResource("10_gq3u2")
+PhaseOffset = -1
+
 [node name="PhaseTimer" type="Label" parent="GamePhaseControls"]
 layout_mode = 1
 anchors_preset = -1
@@ -200,6 +247,38 @@ anchor_bottom = 0.17
 grow_horizontal = 2
 grow_vertical = 2
 
+[node name="Phase+1" type="TextureRect" parent="GamePhaseControls/FuturePhases"]
+layout_mode = 2
+size_flags_horizontal = 6
+texture = ExtResource("10_ai3re")
+expand_mode = 3
+script = ExtResource("10_gq3u2")
+PhaseOffset = 1
+
+[node name="Phase+2" type="TextureRect" parent="GamePhaseControls/FuturePhases"]
+layout_mode = 2
+size_flags_horizontal = 6
+texture = ExtResource("10_ai3re")
+expand_mode = 3
+script = ExtResource("10_gq3u2")
+PhaseOffset = 2
+
+[node name="Phase+3" type="TextureRect" parent="GamePhaseControls/FuturePhases"]
+layout_mode = 2
+size_flags_horizontal = 6
+texture = ExtResource("10_ai3re")
+expand_mode = 3
+script = ExtResource("10_gq3u2")
+PhaseOffset = 3
+
+[node name="Phase+4" type="TextureRect" parent="GamePhaseControls/FuturePhases"]
+layout_mode = 2
+size_flags_horizontal = 6
+texture = ExtResource("10_ai3re")
+expand_mode = 3
+script = ExtResource("10_gq3u2")
+PhaseOffset = 4
+
 [node name="PhaseSpecificControls" type="Control" parent="GamePhaseControls"]
 layout_mode = 1
 anchor_left = 0.22
@@ -233,6 +312,15 @@ anchor_left = 0.875
 anchor_top = 0.5
 anchor_bottom = 0.5
 grow_horizontal = 0
+
+[node name="UnitInfoPanel" parent="." instance=ExtResource("16_awyvp")]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.674479
+anchor_top = 0.180556
+anchor_right = 0.953125
+anchor_bottom = 0.783951
+metadata/_edit_use_anchors_ = true
 
 [node name="OverlayWorldControls" type="Control" parent="."]
 layout_mode = 1

@@ -45,6 +45,7 @@ public partial class WorldControls : Control {
             camera = GetViewport().GetCamera2D();
             if (camera == null) return;
         }
+        Vector2 offset = camera.AnchorMode == Camera2D.AnchorModeEnum.DragCenter ? GetViewport().GetVisibleRect().Size * 0.5f : Vector2.Zero;
         
         foreach ((Control control, PositioningInfo info) in controls) {
             if (info.attachedTo == null || !IsInstanceValid(info.attachedTo))
@@ -52,7 +53,7 @@ public partial class WorldControls : Control {
 
             // Convert attachedTo world position and size to screen coordinates
             Rect2 attachedToGlobalBounds = new Rect2(info.attachedToBounds.Position * info.attachedTo.GlobalScale, info.attachedToBounds.Size * info.attachedTo.GlobalScale);
-            Vector2 attachedToScreenPosition = (info.attachedTo.GlobalPosition + attachedToGlobalBounds.Position - camera.GlobalPosition) * camera.Zoom;
+            Vector2 attachedToScreenPosition = (info.attachedTo.GlobalPosition + attachedToGlobalBounds.Position - camera.GlobalPosition) * camera.Zoom + offset;
             Vector2 attachedToScreenSize = attachedToGlobalBounds.Size * camera.Zoom;
 
             // Apply scaled size and offset (relative to the attached node’s scale)

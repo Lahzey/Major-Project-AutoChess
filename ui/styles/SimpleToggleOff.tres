@@ -1,0 +1,41 @@
+[gd_resource type="StyleBox" script_class="StyleBoxMaterial" load_steps=6 format=3 uid="uid://beq0sda2hcq0g"]
+
+[ext_resource type="Script" path="res://plugins/MaterialTheming/Scripts/PolygonInfo.cs" id="1_fd8tp"]
+[ext_resource type="Shader" path="res://plugins/MaterialTheming/shaders/DecoratedPanelShader.gdshader" id="2_72ky7"]
+[ext_resource type="Script" path="res://plugins/MaterialTheming/Scripts/StyleBoxMaterial.cs" id="3_a3wlk"]
+
+[sub_resource type="Resource" id="Resource_s7ps6"]
+script = ExtResource("1_fd8tp")
+BackgroundColor = Color(0, 0, 0, 0)
+BorderColor = Color(0.0627451, 0.113725, 0.156863, 1)
+BorderThickness = 3.0
+PolygonPoints = PackedVector2Array(0.25, 0, 0.75, 0, 1, 0.25, 1, 0.75, 0.75, 1, 0.25, 1, 0, 0.75, 0, 0.25)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_aqbyq"]
+shader = ExtResource("2_72ky7")
+shader_parameter/animated = null
+shader_parameter/animation_duration = null
+shader_parameter/highlight_color = null
+shader_parameter/loop_animation = null
+shader_parameter/animation_mode = null
+shader_parameter/start_time = null
+shader_parameter/noise_scale = null
+
+[resource]
+resource_local_to_scene = false
+resource_name = ""
+content_margin_left = 5.0
+content_margin_top = 3.0
+content_margin_right = 5.0
+content_margin_bottom = 3.0
+script = ExtResource("3_a3wlk")
+Material = SubResource("ShaderMaterial_aqbyq")
+BackgroundMode = 2
+BackgroundRelativeRect = Rect2(0, 0, 0, 0)
+BackgroundColor = Color(1, 1, 1, 1)
+BackgroundPolygon = SubResource("Resource_s7ps6")
+RelativeContentMargins = true
+AdditionalContentMarginLeft = 2.0
+AdditionalContentMarginTop = 0.0
+AdditionalContentMarginRight = 2.0
+AdditionalContentMarginBottom = 0.0

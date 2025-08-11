@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using Godot.Collections;
+using MPAutoChess.logic.core.environment;
 using MPAutoChess.logic.core.events;
 using MPAutoChess.logic.core.item;
 using MPAutoChess.logic.core.item.consumable;
@@ -29,6 +30,8 @@ public partial class PlayerController : Node {
     private static System.Collections.Generic.Dictionary<Player, PlayerController> playerControllers = new System.Collections.Generic.Dictionary<Player, PlayerController>();
     public static PlayerController Current { get; private set; }
 
+    public Arena CurrentlyShowing { get; private set; }
+
     public PlayerController() { }
 
     public PlayerController(Player player) {
@@ -37,25 +40,33 @@ public partial class PlayerController : Node {
         if (!ServerController.Instance.IsServer) {
             if (Current != null) throw new InvalidOperationException("Only servers can have multiple PlayerController instances.");
             Current = this;
-            EventManager.INSTANCE.AddAfterListener<CombatStartEvent>(OnCombatStart);
+            EventManager.INSTANCE.AddAfterListener<PhaseChangeEvent>(OnPhaseChange);
         }
 
         if (Player == null) throw new ArgumentNullException(nameof(Player), "Player cannot be null.");
         playerControllers.Add(Player, this);
     }
 
-    private void OnCombatStart(CombatStartEvent e) {
-        if (e.Combat.PlayerA != Player && (e.Combat.PlayerB != Player || e.Combat.IsCloneFight)) return; // Not our combat, ignore
-        
-        if (dragProcessor.Running && dragProcessor.UnitInstance.Unit.Container == Player.Board) {
-            dragProcessor.Complete(true);
+    private void OnPhaseChange(PhaseChangeEvent e) {
+        if (GameSession.Instance.IsInCombat(Player)) {
+            if (dragProcessor.Running && dragProcessor.UnitInstance.Unit.Container == Player.Board) {
+                dragProcessor.Complete(true);
+            }
         }
     }
 
     public override void _Ready() {
         if (!ServerController.Instance.IsServer) {
-            CameraController.Instance.Cover(new Rect2(Player.Arena.GlobalPosition, Player.Arena.ArenaSize));
+            GoToArena(Player.Arena);
         }
+    }
+
+    public void GoToArena(Arena arena) {
+        Vector2 halfArenaSize = arena.ArenaSize * arena.GlobalScale * 0.5f;
+        CameraController.Instance.Cover(new Rect2(arena.GlobalPosition - halfArenaSize, halfArenaSize + halfArenaSize));
+        
+        arena.Rotation = arena == Player.Arena ? 0 : Mathf.Pi; // flip the arena if it is not the players arena
+        CurrentlyShowing = arena;
     }
 
     public static PlayerController GetForPlayer(Player player) {
@@ -75,6 +86,8 @@ public partial class PlayerController : Node {
         if (@event is InputEventMouseButton mouseButtonEvent) {
             if (mouseButtonEvent.ButtonIndex == MouseButton.Left) {
                 OnLeftClick(mouseButtonEvent);
+            } else if (mouseButtonEvent.ButtonIndex == MouseButton.Right) {
+                OnRightClick(mouseButtonEvent);
             }
         }
     }
@@ -100,6 +113,21 @@ public partial class PlayerController : Node {
             if ((Environment.TickCount64 - dragProcessor.DragStartTime) > 250) {
                 OnDragEnd?.Invoke(dragProcessor.UnitInstance.Unit);
                 dragProcessor.Complete();
+            }
+        }
+    }
+
+    private void OnRightClick(InputEventMouseButton mouseButtonEvent) {
+        if (mouseButtonEvent.Pressed) {
+            if (UnitInfoPanel.Instance.Visible) {
+                UnitInfoPanel.Instance.Close();
+                return;
+            }
+            
+            UnitInstance? hoveredUnitInstance = HoverChecker.GetHoveredNodeOrNull<UnitInstance>(CollisionLayers.PASSIVE_UNIT_INSTANCE | CollisionLayers.COMBAT_UNIT_INSTANCE, Player);
+            GD.Print($"Right click on Hovered Unit Instance: {hoveredUnitInstance?.Name}");
+            if (hoveredUnitInstance != null) {
+                UnitInfoPanel.Instance.Open(hoveredUnitInstance);
             }
         }
     }
@@ -185,22 +213,40 @@ public partial class PlayerController : Node {
     private void RequestShopReroll() {
         if (!ServerController.Instance.IsServer) throw new InvalidOperationException("RequestShopReroll can only be called on the server.");
         ServerController.Instance.RunInContext(() => {
-            Player.TryPurchase(2, () => Player.Shop.Reroll()); // TODO dynamic cost and fire event
+            ShopRollEvent shopRollEvent = new ShopRollEvent(Player, Player.COST_PER_XP, Player.Shop.GenerateShopOffers());
+            EventManager.INSTANCE.NotifyBefore(shopRollEvent);
+            if (shopRollEvent.IsCancelled) {
+                shopRollEvent.DisposeOffers();
+                return;
+            }
+
+            if (Player.FreeRerolls > 0) {
+                shopRollEvent.Cost = 0;
+                Player.FreeRerolls--;
+            }
+            shopRollEvent.Success = Player.TryPurchase(shopRollEvent.Cost, () => Player.Shop.SetOffers(shopRollEvent.GetOffers()));
+            EventManager.INSTANCE.NotifyAfter(shopRollEvent);
         }, this);
     }
 
-    public void BuyXp() {
+    public void BuyXp(int amount) {
         if (ServerController.Instance.IsServer)
-            RequestBuyXp();
+            RequestBuyXp(amount);
         else
-            this.RpcToServer(MethodName.RequestBuyXp);
+            this.RpcToServer(MethodName.RequestBuyXp, amount);
     }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
-    private void RequestBuyXp() {
+    private void RequestBuyXp(int amount) {
         if (!ServerController.Instance.IsServer) throw new InvalidOperationException("RequestBuyXp can only be called on the server.");
         ServerController.Instance.RunInContext(() => {
-            Player.TryPurchase(1, () => Player.Experience += 1); // TODO dynamic cost and fire event
+            XpPurchaseEvent purchaseEvent = new XpPurchaseEvent(Player, amount, amount * Player.COST_PER_XP);
+            EventManager.INSTANCE.NotifyBefore(purchaseEvent);
+            if (purchaseEvent.IsCancelled) return;
+            
+            Player.TryPurchase(purchaseEvent.Cost, () => Player.AddExperience(purchaseEvent.Amount));
+            
+            EventManager.INSTANCE.NotifyAfter(purchaseEvent);
         }, this);
     }
 
@@ -328,6 +374,25 @@ public partial class PlayerController : Node {
             bool success = consumable.Consume(target, extraChoice);
             if (success) Player.SetConsumableCount(consumable, consumableCount - 1);
             else GD.PrintErr($"Consumable {consumableTypeName} could not be consumed on target at path/id {targetPathOrId} with choice {extraChoice}.");
+        }, this);
+    }
+
+    public void SellItem(int inventoryIndex) {
+        this.RpcToServer(MethodName.RequestSellItem, inventoryIndex);
+    }
+    
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer)]
+    private void RequestSellItem(int inventoryIndex) {
+        if (!ServerController.Instance.IsServer) throw new InvalidOperationException("RequestSellItem can only be called on the server.");
+        ServerController.Instance.RunInContext(() => {
+            Item? item = Player.Inventory.GetItem(inventoryIndex);
+            if (item == null) {
+                GD.PrintErr($"No item found at inventory index {inventoryIndex} for player {Player.Name}");
+                return;
+            }
+
+            Player.AddGold(item.GetSellValue());
+            Player.Inventory.ReplaceItem(inventoryIndex, null);
         }, this);
     }
 }

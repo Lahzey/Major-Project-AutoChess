@@ -23,4 +23,8 @@ public partial class RangerSpell : Spell {
     public override void Cast(UnitInstance caster) {
         throw new System.NotImplementedException();
     }
+
+    public override string GetDescription(UnitInstance forUnit) {
+        return $"Focuses on his attacks, gaining {StatType.BONUS_ATTACK_SPEED.ToString(GetAttackSpeedGain(forUnit))} for {GetDuration(forUnit):1} seconds.";
+    }
 }

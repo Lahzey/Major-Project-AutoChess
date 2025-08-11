@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using MPAutoChess.logic.core.networking;
+using MPAutoChess.logic.menu;
 using ProtoBuf;
 
 namespace MPAutoChess.logic.core.stats;
@@ -179,5 +180,42 @@ public class Calculation : IIdentifiable {
 
     public override string ToString() {
         return $"Base: {BaseValue}\nPreMults: [{string.Join(", ", preMultValues)}]\nAdds: [{string.Join(", ", flatValues)}]\nPostMults: [{string.Join(", ", postMultValues)}]";
+    }
+
+    public List<ContextMenuItem> GenerateContextMenu(StatType statType) {
+        List<ContextMenuItem> contextMenu = new  List<ContextMenuItem>();
+        contextMenu.Add(ContextMenuItem.Label(statType.Name));
+        contextMenu.Add(ContextMenuItem.Label(statType.Description));
+        contextMenu.Add(ContextMenuItem.Separator("Base"));
+        contextMenu.Add(ContextMenuItem.Label(statType.ToString(BaseValue.Get(), 2)));
+
+        if (preMultValues.Count > 0) {
+            contextMenu.Add(ContextMenuItem.Separator("Pre Multipliers"));
+            for (int i = 0; i < preMultValues.Count; i++) {
+                Value value = preMultValues[i];
+                string id = preMultIds[i];
+                contextMenu.Add(ContextMenuItem.Label($"{id}: {statType.ToString(value.Get(), 2)}"));
+            }
+        }
+        if (flatValues.Count > 0) {
+            contextMenu.Add(ContextMenuItem.Separator("Flat Adds"));
+            for (int i = 0; i < flatValues.Count; i++) {
+                Value value = flatValues[i];
+                string id = flatIds[i];
+                contextMenu.Add(ContextMenuItem.Label($"{id}: {statType.ToString(value.Get(), 2)}"));
+            }
+        }
+        if (postMultValues.Count > 0) {
+            contextMenu.Add(ContextMenuItem.Separator("Post Multipliers"));
+            for (int i = 0; i < postMultValues.Count; i++) {
+                Value value = postMultValues[i];
+                string id = postMultIds[i];
+                contextMenu.Add(ContextMenuItem.Label($"{id}: {statType.ToString(value.Get(), 2)}"));
+            }
+        }
+        contextMenu.Add(ContextMenuItem.Separator("Total"));
+        contextMenu.Add(ContextMenuItem.Label(statType.ToString(Evaluate(), 2)));
+        
+        return contextMenu;
     }
 }

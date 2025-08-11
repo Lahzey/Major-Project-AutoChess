@@ -16,6 +16,7 @@ public partial class LootPhase : GamePhase, Choosable {
 
     private const double ALL_COMPLETE_COUNTDOWN = 3.0;
     
+    private static readonly Texture2D ICON = ResourceLoader.Load<Texture2D>("res://assets/ui/phases/loot.png");
     private static readonly PackedScene LOOT_UI_SCENE = ResourceLoader.Load<PackedScene>("res://ui/LootPhaseUI.tscn");
 
     public const int POWER_PER_GOLD = 1;
@@ -48,7 +49,12 @@ public partial class LootPhase : GamePhase, Choosable {
     public override string GetTitle(Player forPlayer) {
         return "Loot";
     }
-    
+
+    public override Texture2D GetIcon(Player forPlayer, out Color modulate) {
+        modulate = new Color("#ad964b");
+        return ICON;
+    }
+
     public override int GetPowerLevel() {
         return powerLevel;
     }
@@ -101,6 +107,7 @@ public partial class LootPhase : GamePhase, Choosable {
         if (ServerController.Instance.IsServer) throw new InvalidOperationException("AfterLootChoose can only be called on the client.");
         lootPhaseUI.LootOptionsContainer.SetVisible(false);
         lootPhaseUI.TitleLabel.Text = "Waiting for other players...";
+        PlayerUI.Instance.GamePhaseControls.SetSemiTransparent(true);
     }
     
     public override void End() {
@@ -172,7 +179,7 @@ public class GoldOffer : LootOption {
     }
     
     public override void Choose() {
-        PlayerController.Current.Player.Gold += goldAmount;
+        PlayerController.Current.Player.AddGold(goldAmount);
     }
 }
 
@@ -238,7 +245,7 @@ public class ItemOffer : LootOption {
             ItemType itemType = GameSession.Instance.GetItemConfig().GetRandomItemType(ItemCategory.COMPONENT);
             PlayerController.Current.Player.Inventory.AddItem(new Item(itemType));
         }
-        PlayerController.Current.Player.Gold += leftOverGold;
+        PlayerController.Current.Player.AddGold(leftOverGold);
         
         // for testing
         PlayerController.Current.Player.Inventory.AddItem(new Item(GD.Load<ItemType>("res://assets/items/heart_of_grease.tres")));

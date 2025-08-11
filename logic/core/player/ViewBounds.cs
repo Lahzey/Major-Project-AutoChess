@@ -12,6 +12,7 @@ public partial class ViewBounds : Control {
     }
 
     private void OnResize() {
-        CameraController.Instance.SetViewBounds(new Rect2(GlobalPosition, Size));
+        Transform2D globalTransform = GetGlobalTransform();
+        CameraController.Instance.SetViewBounds(new Rect2(globalTransform.Origin, Size * globalTransform.Scale));
     }
 }

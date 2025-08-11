@@ -47,9 +47,13 @@ public partial class Combat : Node2D {
         PlayerB = playerB;
         IsCloneFight = isCloneFight;
         
+        Vector2 combatSize = new Vector2(playerA.Board.Columns, playerA.Board.Rows + playerB.Board.Rows);
+        CombatArea = new Rect2(combatSize * -0.5f, combatSize);
+        
         foreach (Unit unit in playerA.Board.GetUnits()) {
             UnitInstance unitInstance = CreateUnitInstance(unit, playerA.Board.GetPlacement(unit), true);
             TeamA.Add(unitInstance);
+            AddChild(unitInstance);
         }
         foreach ((UnitRole role, HashSet<UnitType> unitTypes) in playerA.Board.GetUnitTypesInAllRoles()) {
             TeamARoleCounts[role] = unitTypes.Count;
@@ -58,13 +62,12 @@ public partial class Combat : Node2D {
         foreach (Unit unit in playerB.Board.GetUnits()) {
             UnitInstance unitInstance = CreateUnitInstance(unit, playerB.Board.GetPlacement(unit), false);
             TeamB.Add(unitInstance);
+            AddChild(unitInstance);
         }
         foreach ((UnitRole role, HashSet<UnitType> unitTypes) in playerB.Board.GetUnitTypesInAllRoles()) {
             TeamBRoleCounts[role] = unitTypes.Count;
         }
 
-        Vector2 combatSize = new Vector2(playerA.Board.Columns, playerA.Board.Rows + playerB.Board.Rows);
-        CombatArea = new Rect2(new Vector2(0f, combatSize.Y * -0.5f), combatSize);
         if (!PathFinder.IsValidBounds(CombatArea, NAVIGATION_GRID_SCALE)) {
             throw new ArgumentException($"CombatArea {CombatArea} is not valid for pathfinding with grid scale {NAVIGATION_GRID_SCALE}. Decrease size or increase grid scale.");
         }
@@ -72,13 +75,12 @@ public partial class Combat : Node2D {
 
     private UnitInstance CreateUnitInstance(Unit unit, Vector2 placement, bool teamA) {
         UnitInstance unitInstance = unit.CreateInstance(true);
-        AddChild(unitInstance);
         
-        Vector2 position = placement + (unit.GetSize() * 0.5f);
-        if (teamA) position.Y *= -1f;
+        Vector2 position = new Vector2(CombatArea.Position.X, 0) + placement + (unit.GetSize() * 0.5f);
+        if (!teamA) position = -position; // rotate by 180 degrees
         unitInstance.Position = position;
-        // unitInstance.CurrentCombat = this; // we need by reference serialization to have this replicated on the client (this method is only executed by the server)
-        // unitInstance.IsInTeamA = teamA;
+        unitInstance.CurrentCombat = this; // will only be set on the server, but clients can figure it out on the first call
+        unitInstance.IsInTeamA = teamA;
         
         Dictionary<UnitRole, int> roleCounts = teamA ? TeamARoleCounts : TeamBRoleCounts;
         foreach (UnitRole role in unit.GetRoles()) {
@@ -96,16 +98,6 @@ public partial class Combat : Node2D {
         CombatStartEvent combatStartEvent = new CombatStartEvent(this);
         EventManager.INSTANCE.NotifyBefore(combatStartEvent);
         Started = true;
-        
-        // until by reference serialization is implemented, we need to set these properties manually (this method is executed by client and server)
-        foreach (UnitInstance unit in TeamA) {
-            unit.CurrentCombat = this;
-            unit.IsInTeamA = true;
-        }
-        foreach (UnitInstance unit in TeamB) {
-            unit.CurrentCombat = this;
-            unit.IsInTeamA = false;
-        }
         EventManager.INSTANCE.NotifyAfter(combatStartEvent);
     }
 
@@ -114,6 +106,13 @@ public partial class Combat : Node2D {
         
         CombatTime += delta;
         if (CombatTime < 0) return;
+        
+        // if the combat either starts with no units, or ends with multiple units dying at the same time, process units would not detect combat end
+        bool endCombat = ServerController.Instance.IsServer && !(TeamA.Any(IsValid) || TeamB.Any(IsValid));
+        if (endCombat) {
+            EndCombat();
+            return;
+        }
         
         ProcessUnits(delta, true);
         ProcessUnits(delta, false);
@@ -164,23 +163,7 @@ public partial class Combat : Node2D {
 
         if (closestEnemy == null) {// no enemies left
             if (unitInstance.CurrentTarget != null) unitInstance.SetTarget(null);
-            int playerAUnitCount = TeamA.Count(unit => IsValid(unit) && unit.Unit.Container != null && unit.Unit.Type.Cost > 0); // has a container -> not summoned, has a cost above 0 -> a purchased fighter
-            int playerBUnitCount = TeamB.Count(unit => IsValid(unit) && unit.Unit.Container != null && unit.Unit.Type.Cost > 0); // has a container -> not summoned, has a cost above 0 -> a purchased fighter
-            int survivingUnits = Math.Max(playerAUnitCount, playerBUnitCount);
-            Winner winner = survivingUnits == 0 ? Winner.DRAW : (playerAUnitCount > playerBUnitCount ? Winner.PLAYER_A : Winner.PLAYER_B);
-            Player? winningPlayer = winner switch {
-                Winner.PLAYER_A => PlayerA,
-                Winner.PLAYER_B => PlayerB,
-                _ => null
-            };
-            
-            Result = new CombatResult {
-                PlayerAId = PlayerA.Account.Id,
-                PlayerBId = PlayerB.Account.Id,
-                Winner = winner,
-                SurvivingUnits = Math.Max(playerAUnitCount, playerBUnitCount),
-                DamageDealt = Math.Max((winningPlayer?.GetLevel()??0) + (survivingUnits / 2), MIN_PLAYER_DAMAGE)
-            };
+            EndCombat();
             return;
         }
 
@@ -211,6 +194,37 @@ public partial class Combat : Node2D {
         } else {
             unitInstance.SetTarget(null);
         }
+    }
+
+    private void EndCombat() {
+        int playerAUnitCount = TeamA.Count(unit => IsValid(unit) && unit.Unit.Container != null && unit.Unit.Type.Cost > 0); // has a container -> not summoned, has a cost above 0 -> a purchased fighter
+        int playerBUnitCount = TeamB.Count(unit => IsValid(unit) && unit.Unit.Container != null && unit.Unit.Type.Cost > 0); // has a container -> not summoned, has a cost above 0 -> a purchased fighter
+        int survivingUnits = Math.Max(playerAUnitCount, playerBUnitCount);
+        Winner winner = survivingUnits == 0 ? Winner.DRAW : (playerAUnitCount > playerBUnitCount ? Winner.PLAYER_A : Winner.PLAYER_B);
+        Player? winningPlayer = winner switch {
+            Winner.PLAYER_A => PlayerA,
+            Winner.PLAYER_B => PlayerB,
+            _ => null
+        };
+            
+        Result = new CombatResult {
+            PlayerAId = PlayerA.Account.Id,
+            PlayerBId = PlayerB.Account.Id,
+            Winner = winner,
+            SurvivingUnits = Math.Max(playerAUnitCount, playerBUnitCount),
+            DamageDealt = Math.Max((winningPlayer?.Level??0) + (survivingUnits / 2), MIN_PLAYER_DAMAGE)
+        };
+        
+        CombatEndEvent combatEndEvent = new CombatEndEvent(this, Result);
+        EventManager.INSTANCE.NotifyBefore(combatEndEvent);
+        if ((winner == Winner.PLAYER_A || winner == Winner.DRAW) && !IsCloneFight) { // player B should not take damage if his clone lost
+            PlayerB.TakeDamage(Result.DamageDealt, PlayerA);
+        }
+        if (winner == Winner.PLAYER_B || winner == Winner.DRAW) {
+            PlayerA.TakeDamage(Result.DamageDealt, IsCloneFight ? null : PlayerB); // damage does not count as coming from player B if it is his clone that won the fight
+        }
+        EventManager.INSTANCE.NotifyAfter(combatEndEvent);
+        ServerController.Instance.PublishChange(this);
     }
 
     public IEnumerable<UnitInstance> GetAllUnits() {

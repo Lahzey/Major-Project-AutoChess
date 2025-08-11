@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="100"
+   height="100"
+   viewBox="0 0 100 100"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="reroll_icon.svg"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="8.3085047"
+     inkscape:cx="34.181843"
+     inkscape:cy="61.202349"
+     inkscape:window-width="2560"
+     inkscape:window-height="1377"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1" />
+  <!-- 3/4 circle arc -->
+  <path
+     d="M 87.480209,53.637338 A 38.583543,38.17038 0 1 1 58.542554,15.466957"
+     fill="none"
+     stroke="#ff0000"
+     stroke-width="2.69135"
+     stroke-linecap="butt"
+     stroke-linejoin="miter"
+     id="path1"
+     style="stroke-width:9.67796;stroke-dasharray:none;stroke:#ffffff;stroke-opacity:1" />
+  <!-- Triangle -->
+  <polygon
+     points="50,20 50,0 70,10 "
+     fill="#ff0000"
+     id="polygon1"
+     transform="matrix(1.1980415,0.31317463,-0.31317463,1.1980415,1.3064559,-11.949102)"
+     style="stroke-width:0.9997594;stroke-dasharray:none;fill:#ffffff;fill-opacity:1" />
+</svg>

@@ -21,6 +21,8 @@ namespace MPAutoChess.logic.core.unit;
 [ProtoContract]
 public partial class UnitInstance : CharacterBody2D {
     
+    private const float HALF_PI = Mathf.Pi * 0.5f;
+    
     private const float ATTACK_ANIMATION_SPEED = 5f; // duration of the attack animation relative to the attack cooldown
     private const string IDLE_ANIMATION_NAME = "idle";
     private const string WALK_ANIMATION_NAME = "walk";
@@ -41,6 +43,22 @@ public partial class UnitInstance : CharacterBody2D {
     [ProtoMember(5)] public bool IsDead { get; private set; }
     
     [ProtoMember(6)] public bool IsCombatInstance { get; set; }
+    [ProtoMember(7)] public bool IsInTeamA { get; set; } // true if this unit is part of team A, false if part of team B
+    
+    // because reference tracking does not really work with ProtoBuf, we need to figure out the combat instance on the first call on the client
+    private Combat currentCombat;
+    public Combat CurrentCombat {
+        get {
+            if (!IsCombatInstance || currentCombat != null) return currentCombat;
+            foreach (Combat combat in GameSession.Instance.GetCurrentCombats()) {
+                if (combat.GetAllUnits().Contains(this)) {
+                    currentCombat = combat;
+                }
+            }
+            return currentCombat;
+        }
+        set => currentCombat = value;
+    } 
     
     public AnimatedSprite2D Sprite { get; set; }
     public Spell Spell { get; set; }
@@ -49,8 +67,6 @@ public partial class UnitInstance : CharacterBody2D {
     private Vector2 spritePosition;
     private Vector2 spriteScale;
     
-    public Combat CurrentCombat { get; set; }
-    public bool IsInTeamA { get; set; } // true if this unit is part of team A, false if part of team B
     public UnitInstance? CurrentTarget { get; private set; }
     public PathFinder.Path? CurrentPath { get; private set; }
     public double AttackCooldown { get; set; } = 0.0;
@@ -134,6 +150,8 @@ public partial class UnitInstance : CharacterBody2D {
         if (!IsCombatInstance) {
             SetFieldsFromStats();
         }
+
+        Sprite.GlobalRotation = 0; // prevent the sprite from rotating when arenas are rotated based on persepctive
     }
 
     public void SetTarget(UnitInstance target, PathFinder.Path? path = null) {
@@ -226,7 +244,9 @@ public partial class UnitInstance : CharacterBody2D {
     }
 
     private void FaceTowards(Vector2 target) {
-        Sprite.FlipH = (target - Position).X < 0;
+        bool isFacingLeft = (target - Position).X < 0;
+        if (Sprite.Rotation > HALF_PI || Sprite.Rotation < -HALF_PI) isFacingLeft = !isFacingLeft; // adjust for the sprite rotation
+        Sprite.FlipH = isFacingLeft;
     }
 
     private void TriggerAttack() {

@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using Godot;
+using MPAutoChess.logic.core.combat;
+using MPAutoChess.logic.core.networking;
 using MPAutoChess.logic.core.player;
 using MPAutoChess.logic.core.session;
 using MPAutoChess.logic.core.stats;
@@ -41,13 +43,27 @@ public partial class UnitOverlayUI : ItemDropTarget {
     }
 
     public override void _Ready() {
+        if (ServerController.Instance.IsServer) return; // just to be sure, UnitOverlayUI should not be created on the server side
+        
         HealthBar.Connect(UnitInstance, instance => instance.Stats.GetValue(StatType.MAX_HEALTH), instance => instance.CurrentHealth);
         HealthBar.SetGaps(ResourceBar.HEALTH_SMALL_GAP, ResourceBar.HEALTH_LARGE_GAP);
-        HealthBar.SetFillColor(ResourceBar.HEALTH_COLOR);
+        HealthBar.SetFillColor(GetHealthBarColor());
         ManaBar.Connect(UnitInstance, instance => instance.Stats.GetValue(StatType.MAX_MANA), instance => instance.CurrentMana);
         ManaBar.SetGaps(ResourceBar.NO_GAP, ResourceBar.NO_GAP);
         ManaBar.SetFillColor(ResourceBar.MANA_COLOR);
         SetDefaultCursorShape(UnitInstance.IsCombatInstance ? CursorShape.Arrow : CursorShape.PointingHand);
+    }
+
+    private Color GetHealthBarColor() {
+        if (UnitInstance.IsCombatInstance) {
+            bool teamAIsPlayer = UnitInstance.CurrentCombat.PlayerA == PlayerController.Current.Player;
+            bool teamBIsPlayer = UnitInstance.CurrentCombat.PlayerB == PlayerController.Current.Player;
+            bool teamAIsEnemy = teamBIsPlayer; // by default, team b is the ally and team a is the enemy, but if current player is in team b, that is swapped
+            if ((teamAIsPlayer && UnitInstance.IsInTeamA) || (teamBIsPlayer && !UnitInstance.IsInTeamA)) return ResourceBar.HEALTH_SELF_COLOR;
+            return UnitInstance.IsInTeamA == teamAIsEnemy ? ResourceBar.HEALTH_ENEMY_COLOR : ResourceBar.HEALTH_ALLY_COLOR;
+        } else {
+            return UnitInstance.Unit.Container.GetPlayer() == PlayerController.Current.Player ? ResourceBar.HEALTH_SELF_COLOR : ResourceBar.HEALTH_ENEMY_COLOR;
+        }
     }
 
     public override void _Process(double delta) {

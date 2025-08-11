@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Godot;
 using MPAutoChess.logic.core.player;
@@ -7,9 +6,20 @@ namespace MPAutoChess.logic.core.shop;
 
 public partial class ShopUI : Control {
     
+    private static readonly Color PLAYER_FULL_HEALTH_COLOR = new Color("#114721");
+    private static readonly Color PLAYER_LOW_HEALTH_COLOR = new Color("#4a0108");
+    
     [Export] public BaseButton RerollButton { get; set; }
+    [Export] public Label RerollCost { get; set; }
     [Export] public BaseButton XpButton { get; set; }
+    [Export] public Label XpCost { get; set; }
+    [Export] public BaseButton FiveXpToggle { get; set; }
     [Export] public Label GoldLabel { get; set; }
+    [Export] public ProgressBar PlayerXpBar { get; set; }
+    [Export] public Label PlayerLevelLabel { get; set; }
+    
+    [Export] public TextureProgressBar PlayerHealthBar { get; set; }
+    
     [Export] public Container ShopSlotContainer { get; set; }
     [Export] public PackedScene ShopSlotScene { get; set; }
 
@@ -24,11 +34,30 @@ public partial class ShopUI : Control {
         }
         ShopSlots = slots.ToArray();
         RerollButton.Pressed += () => PlayerController.Current.RerollShop(); // () => instead of adding the method directly to ensure Instance reference is checked each time
-        XpButton.Pressed += () => PlayerController.Current.BuyXp();
+        XpButton.Pressed += () => PlayerController.Current.BuyXp(GetXpAmount());
+    }
+
+    private int GetXpAmount() {
+        return FiveXpToggle.IsPressed() ? 5 : 1;
     }
 
     public override void _Process(double delta) {
-        GoldLabel.Text = PlayerController.Current?.Player?.Gold.ToString() ?? "n/a";
+        if (PlayerController.Current == null) return;
+        Player player = PlayerController.Current.Player;
+        GoldLabel.Text = player.Gold.ToString() ?? "n/a";
+        XpButton.Disabled = player.Gold < GetXpAmount() * Player.COST_PER_XP;
+        RerollButton.Disabled = player.Gold < Player.COST_PER_REROLL && player.FreeRerolls <= 0;
+        RerollCost.Text = player.FreeRerolls > 0 ? $"({player.FreeRerolls}) Free" : Player.COST_PER_REROLL.ToString();
+        XpCost.Text = (GetXpAmount() * Player.COST_PER_XP).ToString();
+
+        PlayerXpBar.MinValue = player.GetXpForLevel(player.Level);
+        PlayerXpBar.MaxValue = player.GetXpForLevel(player.Level + 1);
+        PlayerXpBar.Value = player.Experience;
+        PlayerLevelLabel.Text = "LVL " + player.Level;
+        
+        PlayerHealthBar.MaxValue = player.MaxHealth;
+        PlayerHealthBar.Value = player.CurrentHealth;
+        PlayerHealthBar.Modulate = PLAYER_LOW_HEALTH_COLOR.Lerp(PLAYER_FULL_HEALTH_COLOR, player.MaxHealth / (float) player.CurrentHealth);
     }
     
     public void SetOffers(ShopOffer[] offers) {

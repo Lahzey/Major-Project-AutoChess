@@ -7,9 +7,6 @@ public class CombatStartEvent : Event {
 
     public Combat Combat { get; private set; }
 
-    public override bool RunsOnClient => true;
-    public override bool RunsOnServer => true;
-
     public CombatStartEvent(Combat combat) {
         Combat = combat;
     }
