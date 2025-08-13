@@ -8,10 +8,13 @@ using Godot;
 using MPAutoChess.logic.core.networking;
 using MPAutoChess.logic.core.session;
 using ProtoBuf;
+using Environment = System.Environment;
 
 namespace MPAutoChess.logic.util;
 
 public static class SerializerExtensions {
+
+    public const bool DEBUG = true;
     
     public static byte[] Serialize<T>(T obj) {
         NodeStructure.InitializeRoot();
@@ -22,7 +25,7 @@ public static class SerializerExtensions {
         Serializer.Serialize(contentStream, obj);
         byte[] content = contentStream.ToArray();
         stopwatch.Stop();
-        GD.Print($"Serialized {typeof(T).Name} in {stopwatch.ElapsedMilliseconds}ms, size: {content.Length} bytes");
+        if (DEBUG) GD.Print($"[{Environment.ProcessId}] Serialized {typeof(T).Name} in {stopwatch.ElapsedMilliseconds}ms, size: {content.Length} bytes");
 
         //  serialize the node structure so it can potentially be recreated on the client
         stopwatch.Restart();
@@ -36,7 +39,7 @@ public static class SerializerExtensions {
         Buffer.BlockCopy(header, 0, result, headerLength.Length, header.Length);
         Buffer.BlockCopy(content, 0, result, headerLength.Length + header.Length, content.Length);
         stopwatch.Stop();
-        GD.Print($"Serialization of header and copy to result took {stopwatch.ElapsedMilliseconds}ms, final size: {result.Length} bytes");
+        if (DEBUG) GD.Print($"[{Environment.ProcessId}] Serialization of header and copy to result took {stopwatch.ElapsedMilliseconds}ms, final size: {result.Length} bytes");
         
         NodeStructure.root = null; // allow garbage collection of the root node structure
 
@@ -44,6 +47,10 @@ public static class SerializerExtensions {
     }
     
     public static T Deserialize<T>(byte[] data, Type type = null) {
+        return DeserializeWithInit<T>(data, null, type);
+    }
+
+    public static T DeserializeWithInit<T>(byte[] data, Action<T> initAction, Type type = null) {
         // deserialize the header
         Stopwatch stopwatch = Stopwatch.StartNew();
         int length = BitConverter.ToInt32(data, 0);
@@ -52,14 +59,26 @@ public static class SerializerExtensions {
         NodeStructure.root = root;
         root.EnsureCreated(null);
         stopwatch.Stop();
-        GD.Print($"Deserialized NodeStructure in {stopwatch.ElapsedMilliseconds}ms, size: {length + sizeof(int)} bytes");
+        if (DEBUG) GD.Print($"[{Environment.ProcessId}] Deserialized NodeStructure in {stopwatch.ElapsedMilliseconds}ms, size: {length + sizeof(int)} bytes");
         
         // deserialize the actual data
         stopwatch.Restart();
         using MemoryStream contentStream = new MemoryStream(data, length + sizeof(int), data.Length - length - sizeof(int));
-        T result = type != null ? (T) Serializer.Deserialize(type, contentStream) : Serializer.Deserialize<T>(contentStream);
+        T result;
+        try {
+            result = type != null ? (T) Serializer.Deserialize(type, contentStream) : Serializer.Deserialize<T>(contentStream);
+        } catch (Exception e) {
+            GD.Print($"Failed Deserialize call with generics {typeof(T)} and type {type}.");
+            throw new Exception($"Failed Deserialize call with generics {typeof(T)} and type {type}.", e);
+        }
         stopwatch.Stop();
-        GD.Print($"Deserialized {type?.Name ?? typeof(T).Name} in {stopwatch.ElapsedMilliseconds}ms, size: {data.Length - length - sizeof(int)} bytes");
+        if (DEBUG) GD.Print($"[{Environment.ProcessId}] Deserialized {type?.Name ?? typeof(T).Name} in {stopwatch.ElapsedMilliseconds}ms, size: {data.Length - length - sizeof(int)} bytes");
+
+        if ((type?.Name ?? typeof(T).Name) == "Stats") {
+            GD.Print($"Received Stats object from Deserialize call with generics {typeof(T)} and type {type}, resulting type: {result?.GetType()??null}");
+        }
+        
+        initAction?.Invoke(result);
         
         NodeQueue.AddToSceneTree();
         return result;
@@ -178,7 +197,7 @@ public static class NodeQueue {
         queue.Add(node);
         queueParents.Add(parent);
         nodePaths[path] = node;
-        GD.Print($"Added node {node.GetType()} at path {path} to queue.");
+        if (SerializerExtensions.DEBUG) GD.Print($"[{Environment.ProcessId}] Added node {node.GetType()} at path {path} to queue.");
     }
 
     public static void AddToSceneTree() {

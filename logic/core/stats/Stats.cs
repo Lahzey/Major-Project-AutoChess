@@ -9,12 +9,12 @@ namespace MPAutoChess.logic.core.stats;
 public class Stats : IIdentifiable {
     public string Id { get; set; }
     
-    [ProtoMember(1)] private Dictionary<StatType, Calculation> values = new Dictionary<StatType, Calculation>();
+    [ProtoMember(1)] protected internal Dictionary<StatType, Calculation> values = new Dictionary<StatType, Calculation>();
     private bool autoSendChanges = false;
     
     public IEnumerable<StatType> Types => values.Keys;
-    
-    public Calculation GetCalculation(StatType statType) {
+
+    public virtual Calculation GetCalculation(StatType statType) {
         if (!values.ContainsKey(statType)) {
             values[statType] = new Calculation(0);
             if (autoSendChanges) {
@@ -38,16 +38,8 @@ public class Stats : IIdentifiable {
         }
     }
 
-    private void SendChanges() {
+    protected void SendChanges() {
         if (!ServerController.Instance.IsServer) throw new InvalidOperationException("Only the server can send changes to stats.");
         ServerController.Instance.PublishChange(this);
-    }
-
-    public Stats Clone() {
-        Stats clone = new Stats();
-        foreach (KeyValuePair<StatType, Calculation> kvp in values) {
-            clone.values[kvp.Key] = kvp.Value.Clone();
-        }
-        return clone;
     }
 }

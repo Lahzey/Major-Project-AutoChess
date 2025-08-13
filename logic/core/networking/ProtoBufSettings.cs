@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Godot;
+using MPAutoChess.logic.core.item;
 using ProtoBuf.Meta;
 
 namespace MPAutoChess.logic.core.networking;
@@ -11,6 +12,8 @@ namespace MPAutoChess.logic.core.networking;
 public static class ProtoBufSettings {
     
     private static RuntimeTypeModel model = RuntimeTypeModel.Default;
+    
+    private static int itemEffectSubTypeId = 1000;
 
     public static void Set() {
         RegisterSurrogates();
@@ -45,6 +48,11 @@ public static class ProtoBufSettings {
                 Type surrogateType = typeof(ResourceSurrogate<>).MakeGenericType(type);
                 model.Add(type, true);
                 model[type].SetSurrogate(surrogateType);
+            }
+
+            // I cannot be bothered to add all these subtypes manually
+            if (type.IsAssignableTo(typeof(ItemEffect))) {
+                model[typeof(ItemEffect)].AddSubType(itemEffectSubTypeId++, type);
             }
         }
     }

@@ -1,0 +1,50 @@
+[gd_scene load_steps=8 format=3 uid="uid://4xsvd81x1m61"]
+
+[ext_resource type="Script" path="res://logic/core/projectile/Projectile.cs" id="1_yfjid"]
+[ext_resource type="Texture2D" uid="uid://diowxhuan3k4x" path="res://seasons/season0/units/summoner/summoner_attack_projectile_sheet.png" id="2_jb764"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ufjjb"]
+atlas = ExtResource("2_jb764")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_80uqm"]
+atlas = ExtResource("2_jb764")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3dvw7"]
+atlas = ExtResource("2_jb764")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kef2f"]
+atlas = ExtResource("2_jb764")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_fuplp"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ufjjb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_80uqm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3dvw7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kef2f")
+}],
+"loop": true,
+"name": &"default",
+"speed": 10.0
+}]
+
+[node name="SummonerAttackProjectile" type="Node2D"]
+script = ExtResource("1_yfjid")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+z_index = 100
+scale = Vector2(0.015, 0.015)
+sprite_frames = SubResource("SpriteFrames_fuplp")
+autoplay = "default"
+frame_progress = 0.672389

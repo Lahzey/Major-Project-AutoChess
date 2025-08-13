@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MPAutoChess.logic.core.networking;
 using MPAutoChess.logic.menu;
 using ProtoBuf;
@@ -21,14 +22,14 @@ public class Calculation : IIdentifiable {
         }
     }
     
-    [ProtoMember(2)] private List<Value> preMultValues = new List<Value>();
-    [ProtoMember(3)] private List<string> preMultIds = new List<string>();
+    [ProtoMember(2)] protected List<Value> preMultValues = new List<Value>();
+    [ProtoMember(3)] protected List<string> preMultIds = new List<string>();
     
-    [ProtoMember(4)] private List<Value> flatValues = new List<Value>();
-    [ProtoMember(5)] private List<string> flatIds = new List<string>();
+    [ProtoMember(4)] protected List<Value> flatValues = new List<Value>();
+    [ProtoMember(5)] protected List<string> flatIds = new List<string>();
     
-    [ProtoMember(6)] private List<Value> postMultValues = new List<Value>();
-    [ProtoMember(7)] private List<string> postMultIds = new List<string>();
+    [ProtoMember(6)] protected List<Value> postMultValues = new List<Value>();
+    [ProtoMember(7)] protected List<string> postMultIds = new List<string>();
     
     public Calculation() {} // empty constructor for MessagePack serialization
     
@@ -42,18 +43,46 @@ public class Calculation : IIdentifiable {
         ValuesChanged();
     }
     
+    protected internal virtual float GetBaseValue() {
+        return BaseValue.Get();
+    }
+
+    protected internal virtual IEnumerable<Value> GetPreMultValues() {
+        return preMultValues;
+    }
+
+    protected internal virtual IEnumerable<string> GetPreMultIds() {
+        return preMultIds;
+    }
+    
+    protected internal virtual IEnumerable<Value> GetFlatValues() {
+        return flatValues;
+    }
+    
+    protected internal virtual IEnumerable<string> GetFlatIds() {
+        return flatIds;
+    }
+    
+    protected internal virtual IEnumerable<Value> GetPostMultValues() {
+        return postMultValues;
+    }
+    
+    protected internal virtual IEnumerable<string> GetPostMultIds() {
+        return postMultIds;
+    }
+    
     public float Evaluate() {
-        float result = baseValue.Get();
+        float result = GetBaseValue();
         float preMult = 1;
-        foreach (Value value in preMultValues) {
+        foreach (Value value in GetPreMultValues()) {
             preMult += value.Get();
         }
         result *= preMult;
-        foreach (Value value in flatValues) {
+        foreach (Value value in GetFlatValues()) {
             result += value.Get();
         }
         float postMult = 1;
-        foreach (Value value in postMultValues) {
+        foreach (Value value in GetPostMultValues()) {
             postMult += value.Get();
         }
         result *= postMult;
@@ -153,11 +182,10 @@ public class Calculation : IIdentifiable {
     
     public void SetAutoSendChanges(bool autoSend) {
         if (!ServerController.Instance.IsServer) return; // clients should never send changes, their information is not trusted
-        if (autoSend == autoSendChanges) return;
         autoSendChanges = autoSend;
     }
 
-    public Calculation Clone() {
+    public virtual Calculation Clone() {
         Calculation clone = new Calculation(baseValue.Clone());
         
         foreach (Value preMult in preMultValues) {
@@ -189,6 +217,8 @@ public class Calculation : IIdentifiable {
         contextMenu.Add(ContextMenuItem.Separator("Base"));
         contextMenu.Add(ContextMenuItem.Label(statType.ToString(BaseValue.Get(), 2)));
 
+        List<Value> preMultValues = GetPreMultValues().ToList();
+        List<string> preMultIds = GetPreMultIds().ToList();
         if (preMultValues.Count > 0) {
             contextMenu.Add(ContextMenuItem.Separator("Pre Multipliers"));
             for (int i = 0; i < preMultValues.Count; i++) {
@@ -197,6 +227,9 @@ public class Calculation : IIdentifiable {
                 contextMenu.Add(ContextMenuItem.Label($"{id}: {statType.ToString(value.Get(), 2)}"));
             }
         }
+        
+        List<Value> flatValues = GetFlatValues().ToList();
+        List<string> flatIds = GetFlatIds().ToList();
         if (flatValues.Count > 0) {
             contextMenu.Add(ContextMenuItem.Separator("Flat Adds"));
             for (int i = 0; i < flatValues.Count; i++) {
@@ -205,6 +238,9 @@ public class Calculation : IIdentifiable {
                 contextMenu.Add(ContextMenuItem.Label($"{id}: {statType.ToString(value.Get(), 2)}"));
             }
         }
+        
+        List<Value> postMultValues = GetPostMultValues().ToList();
+        List<string> postMultIds = GetPostMultIds().ToList();
         if (postMultValues.Count > 0) {
             contextMenu.Add(ContextMenuItem.Separator("Post Multipliers"));
             for (int i = 0; i < postMultValues.Count; i++) {

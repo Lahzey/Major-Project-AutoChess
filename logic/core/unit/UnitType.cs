@@ -3,9 +3,11 @@ using ProtoBuf;
 
 namespace MPAutoChess.logic.core.unit;
 
-[GlobalClass]
+[GlobalClass, Tool]
 // resources do not need ProtoContract attribute, they are added all registered automatically (including Godot's built-in resources)
 public partial class UnitType : Resource {
+    
+    public static readonly PackedScene DEFAULT_ATTACK_PROJECTILE = GD.Load<PackedScene>("res://prefabs/DefaultAttackProjectile.tscn");
     
     // DO NOT CHANGE SETTERS TO PRIVATE! Godot silently fails in that case and leaves all the properties to their types default values.
     [Export] public string Name { get; set; }
@@ -26,7 +28,12 @@ public partial class UnitType : Resource {
     [Export] public float MovementSpeed { get; set; } = 2f;
     [ExportCategory("Assets")]
     [Export] public PackedScene UnitInstancePrefab { get; set; }
+    [Export] public PackedScene? AttackProjectilePrefab { get; set; }
     [Export] public Texture2D Icon { get; set; }
+    
+    public PackedScene GetAttackProjectileOrDefault() {
+        return AttackProjectilePrefab ?? DEFAULT_ATTACK_PROJECTILE;
+    }
     
 }
 

@@ -1,5 +1,6 @@
-[gd_resource type="Resource" script_class="UnitType" load_steps=6 format=3 uid="uid://bsfnnltelsj0s"]
+[gd_resource type="Resource" script_class="UnitType" load_steps=7 format=3 uid="uid://bsfnnltelsj0s"]
 
+[ext_resource type="PackedScene" uid="uid://dhnuxd1ua74c4" path="res://seasons/season0/units/ranger/RangerAttackProjectile.tscn" id="1_awe88"]
 [ext_resource type="Texture2D" uid="uid://buln5i3ub41cg" path="res://seasons/season0/units/ranger/ranger_icon.png" id="1_cic5s"]
 [ext_resource type="Script" path="res://logic/core/unit/role/UnitRoleSet.cs" id="2_i6xbb"]
 [ext_resource type="PackedScene" uid="uid://ciphnirn3ae0b" path="res://seasons/season0/units/ranger/ranger_prefab.tscn" id="2_wl7u2"]
@@ -28,4 +29,5 @@ AttackSpeed = 0.75
 Range = 4.0
 MovementSpeed = 2.0
 UnitInstancePrefab = ExtResource("2_wl7u2")
+AttackProjectilePrefab = ExtResource("1_awe88")
 Icon = ExtResource("1_cic5s")

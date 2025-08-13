@@ -74,6 +74,7 @@ public partial class Player : Node2D {
         consumables[Consumable.Get<ItemRemover>()] = 5;
         consumables[Consumable.Get<ItemReroll>()] = 5;
         consumables[Consumable.Get<ItemUpgrade>()] = 5;
+        consumables[Consumable.Get<UnitCloner>()] = 5;
     }
 
     public void SetAccount(Account account) {

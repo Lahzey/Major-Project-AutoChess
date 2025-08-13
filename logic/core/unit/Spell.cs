@@ -4,8 +4,18 @@ using MPAutoChess.logic.util;
 namespace MPAutoChess.logic.core.unit;
 
 public abstract partial class Spell : Node {
+
+    public abstract float GetCastTime(UnitInstance caster);
     
-    public abstract void Cast(UnitInstance caster);
+    public virtual bool RequiresTarget(UnitInstance caster) {
+        return true; // default behavior is to require a target
+    }
+
+    public virtual UnitInstance GetTarget(UnitInstance caster) {
+        return caster.CurrentTarget;
+    }
+    
+    public abstract void Cast(UnitInstance caster, UnitInstance? target);
 
     public virtual string GetName(UnitInstance forUnit) {
         return StringUtil.PascalToReadable(GetType().Name);

@@ -10,12 +10,14 @@ public class DamageInstance {
     
     [ProtoMember(1)] public UnitInstance Source { get; set; }
     [ProtoMember(2)] public UnitInstance Target { get; set; }
+    [ProtoMember(1)] public Medium DamageMedium { get; set; }
     
     [ProtoMember(10)] public float Amount { get; set; }
     [ProtoMember(11)] public DamageType Type { get; set; }
     [ProtoMember(12)] public int CritLevel { get; set; }
     [ProtoMember(13)] public float CritModifier { get; set; }
     [ProtoMember(14)] public bool CritEnabled { get; set; }
+    [ProtoMember(15)] public float Effectiveness { get; set; } = 1f;
     
     public bool IsCrit => CritEnabled && CritLevel > 0;
 
@@ -28,12 +30,16 @@ public class DamageInstance {
     public DamageInstance() { } // for ProtoBuf deserialization
 
 
-    public DamageInstance(UnitInstance source, UnitInstance target, float amount, DamageType type, int critLevel, float critModifier, bool critEnabled) {
+    public DamageInstance(UnitInstance source, UnitInstance target, Medium damageMedium, float amount, DamageType type, int critLevel, float critModifier, float effectiveness = 1f) {
+        Source = source;
+        Target = target;
+        DamageMedium = damageMedium;
         Amount = amount;
         Type = type;
         CritLevel = critLevel;
         CritModifier = critModifier;
-        CritEnabled = critEnabled;
+        CritEnabled = type == DamageType.PHYSICAL; // physical damage can crit by default, other types need some effect to override CritEnabled
+        Effectiveness = effectiveness;
     }
     
     public void SetResistances(float armor, float aegis) {
@@ -72,5 +78,11 @@ public class DamageInstance {
         return damage * Mathf.Pow(2f, -resistance * 0.01f); // halves damage for every 100 resistance (and doubles for every -100 resistance)
     }
     
+    
+    public enum Medium {
+        ATTACK,
+        SPELL,
+        ITEM,
+    }
     
 }

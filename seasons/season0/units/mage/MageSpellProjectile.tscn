@@ -1,0 +1,51 @@
+[gd_scene load_steps=8 format=3 uid="uid://bsvhobrvi4kxs"]
+
+[ext_resource type="Script" path="res://logic/core/projectile/Projectile.cs" id="1_gpcmq"]
+[ext_resource type="Texture2D" uid="uid://redcmytror5c" path="res://seasons/season0/units/mage/mage_spell_projectile_sheet.png" id="2_mefoy"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_poxa0"]
+atlas = ExtResource("2_mefoy")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yasur"]
+atlas = ExtResource("2_mefoy")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e11oy"]
+atlas = ExtResource("2_mefoy")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_n08yu"]
+atlas = ExtResource("2_mefoy")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_156m7"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_poxa0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yasur")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_e11oy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_n08yu")
+}],
+"loop": true,
+"name": &"default",
+"speed": 15.0
+}]
+
+[node name="MageSpellProjectile" type="Node2D"]
+script = ExtResource("1_gpcmq")
+Speed = 15.0
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+z_index = 100
+scale = Vector2(0.03, 0.03)
+sprite_frames = SubResource("SpriteFrames_156m7")
+autoplay = "default"
+frame_progress = 0.268553

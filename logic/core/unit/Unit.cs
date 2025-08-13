@@ -135,6 +135,7 @@ public class Unit : IIdentifiable {
             return false;
         }
         EquippedItems.Add(item);
+        item.Effect?.Apply(item, GetOrCreatePassiveInstance());
         ApplyItemStats();
         ServerController.Instance.PublishChange(this);
         return true;
@@ -143,8 +144,10 @@ public class Unit : IIdentifiable {
     public void ReplaceItem(Item replacedItem, Item newItem) {
         int index = EquippedItems.IndexOf(replacedItem);
         if (index == -1) throw new ArgumentException("Item to replace not found in equipped items.", nameof(replacedItem));
+        replacedItem.Effect?.Remove(replacedItem, GetOrCreatePassiveInstance());
         EquippedItems[index] = newItem;
         ApplyItemStats();
+        newItem.Effect?.Apply(newItem, GetOrCreatePassiveInstance());
         ServerController.Instance.PublishChange(this);
     }
 
@@ -156,6 +159,7 @@ public class Unit : IIdentifiable {
                 if (!player.Inventory.AddItem(item)) {
                     GD.PrintErr($"Item was removed from unit {Type.Name} but could not be added to player inventory: {item.GetName()}");
                 }
+                item.Effect?.Remove(item, GetOrCreatePassiveInstance());
             }
         }
 
@@ -166,11 +170,12 @@ public class Unit : IIdentifiable {
 
     public UnitInstance CreateInstance(bool isCombatInstance, string name = null) {
         if (name == null && !ServerController.Instance.IsServer) throw new InvalidOperationException("Unnamed unit instances can only be created on the server.");
-        
+
+        string id = ((IIdentifiable)this).GetId(); // force ID generation so we can use it in the name (Id property is null if it has never been serialized before)
         UnitInstance instance = Type.UnitInstancePrefab.Instantiate<UnitInstance>();
         instance.Unit = this;
         instance.IsCombatInstance = isCombatInstance;
-        instance.Name = $"{Type.Name}@{Id}_Instance{name ?? (unitInstanceCounter++).ToString()}";
+        instance.Name = $"{Type.Name}@{id}_Instance{name ?? (unitInstanceCounter++).ToString()}";
 
         if (isCombatInstance) {
             // SceneSafeMpSynchronizer synchronizer = new SceneSafeMpSynchronizer();

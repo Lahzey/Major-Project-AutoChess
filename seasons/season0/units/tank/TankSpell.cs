@@ -14,9 +14,13 @@ public partial class TankSpell : Spell {
     private float GetHealAmount(UnitInstance caster) {
         return GetFromLevelArray(caster.Unit, BaseHealAmount) + caster.Stats.GetValue(StatType.MAGIC) * GetFromLevelArray(caster.Unit, HealScaling);
     }
-    
-    public override void Cast(UnitInstance caster) {
-        caster.Heal(GetHealAmount(caster));
+
+    public override float GetCastTime(UnitInstance caster) {
+        return 0.5f;
+    }
+
+    public override void Cast(UnitInstance caster, UnitInstance? target) {
+        caster.Heal(caster, GetHealAmount(caster));
     }
 
     public override string GetDescription(UnitInstance forUnit) {

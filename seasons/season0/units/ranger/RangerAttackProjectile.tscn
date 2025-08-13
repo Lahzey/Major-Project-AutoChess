@@ -1,0 +1,51 @@
+[gd_scene load_steps=8 format=3 uid="uid://dhnuxd1ua74c4"]
+
+[ext_resource type="Script" path="res://logic/core/projectile/Projectile.cs" id="1_6mk03"]
+[ext_resource type="Texture2D" uid="uid://c1yxv76lpwngh" path="res://seasons/season0/units/ranger/ranger_attack_projectile_sheet.png" id="2_x75r7"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4fxnt"]
+atlas = ExtResource("2_x75r7")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qnflt"]
+atlas = ExtResource("2_x75r7")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e23x8"]
+atlas = ExtResource("2_x75r7")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_py0g5"]
+atlas = ExtResource("2_x75r7")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_eoj36"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4fxnt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qnflt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_e23x8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_py0g5")
+}],
+"loop": true,
+"name": &"default",
+"speed": 30.0
+}]
+
+[node name="RangerAttackProjectile" type="Node2D"]
+script = ExtResource("1_6mk03")
+Speed = 25.0
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+z_index = 100
+scale = Vector2(0.015, 0.015)
+sprite_frames = SubResource("SpriteFrames_eoj36")
+autoplay = "default"
+frame_progress = 0.267342

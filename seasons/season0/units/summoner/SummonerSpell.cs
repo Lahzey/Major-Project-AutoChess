@@ -1,4 +1,5 @@
 using Godot;
+using MPAutoChess.logic.core.networking;
 using MPAutoChess.logic.core.stats;
 using MPAutoChess.logic.core.unit;
 using UnitInstance = MPAutoChess.logic.core.unit.UnitInstance;
@@ -7,6 +8,8 @@ namespace MPAutoChess.seasons.season0.units.summoner;
 
 [GlobalClass, Tool]
 public partial class SummonerSpell : Spell {
+    
+    [Export] public UnitType SummonType { get; set; } = ResourceLoader.Load<UnitType>("res://seasons/season0/units/summoner/summoner_pet_type.tres");
     
     private int[] SummonCount { get; set; } = { 2, 3, 20 };
     private float[] SummonBaseHealth { get; set; } = { 100, 150, 1000 };
@@ -26,8 +29,22 @@ public partial class SummonerSpell : Spell {
         return GetFromLevelArray(caster.Unit, SummonBaseStrength) + caster.Stats.GetValue(StatType.STRENGTH) * GetFromLevelArray(caster.Unit, SummonStrengthScaling);
     }
 
-    public override void Cast(UnitInstance caster) {
-        throw new System.NotImplementedException();
+    public override float GetCastTime(UnitInstance caster) {
+        return 0.5f;
+    }
+
+    public override bool RequiresTarget(UnitInstance caster) {
+        return false;
+    }
+
+    public override void Cast(UnitInstance caster, UnitInstance? target) {
+        for (int i = 0; i < GetSummonCount(caster); i++) {
+            Unit unit = new Unit(SummonType, null);
+            unit.Stats.GetCalculation(StatType.MAX_HEALTH).BaseValue = GetSummonBaseHealth(caster);
+            unit.Stats.GetCalculation(StatType.STRENGTH).BaseValue = GetSummonBaseAttack(caster);
+            UnitInstance summon = unit.CreateInstance(true);
+            caster.CurrentCombat.SummonUnit(summon, caster.Position, caster.IsInTeamA);
+        }
     }
 
     public override string GetDescription(UnitInstance forUnit) {

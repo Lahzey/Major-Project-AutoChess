@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://ba1ly080kddtv"]
+
+[ext_resource type="Script" path="res://logic/core/projectile/Projectile.cs" id="1_wwbta"]
+[ext_resource type="SpriteFrames" uid="uid://ywveomtsneui" path="res://assets/sprites/default_projectile_frames.tres" id="2_3rjj2"]
+
+[node name="DefaultAttackProjectile" type="Node2D"]
+script = ExtResource("1_wwbta")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+z_index = 100
+scale = Vector2(0.015, 0.015)
+sprite_frames = ExtResource("2_3rjj2")
+autoplay = "default"

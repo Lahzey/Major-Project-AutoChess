@@ -26,12 +26,14 @@ public class ItemReroll : Consumable {
     public override bool Consume(object target, int extraChoice) {
         if (!IsValidTarget(target, extraChoice)) return false;
         if (target is UnitInstance unitInstance) {
-            foreach (Item item in unitInstance.Unit.EquippedItems) {
+            for (int i = 0; i < unitInstance.Unit.EquippedItems.Count; i++) {
+                Item item = unitInstance.Unit.EquippedItems[i];
                 ItemType newType = GameSession.Instance.Season.GetItemConfig().GetRandomItemType(item.Type.Category, item.Type);
                 Item newItem = new Item(newType);
                 newItem.ComponentLevels = item.ComponentLevels; // keep component levels
                 unitInstance.Unit.ReplaceItem(item, newItem);
             }
+
             unitInstance.Unit.RemoveItems(); // put them back into the inventory for convenience
             return true;
         } else if (target is Inventory inventory) {

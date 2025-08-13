@@ -3,6 +3,7 @@ using Godot;
 using MPAutoChess.logic.core.session;
 using MPAutoChess.logic.util;
 using ProtoBuf;
+using Environment = System.Environment;
 
 namespace MPAutoChess.logic.core.networking;
 

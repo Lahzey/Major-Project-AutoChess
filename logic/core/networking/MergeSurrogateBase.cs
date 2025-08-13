@@ -20,7 +20,7 @@ public abstract class MergeSurrogateBase<T> where T : new() {
 
     private static Type wrapperType;
     
-    protected static ConstructorInfo GetEmptyConstructor() {
+    protected static ConstructorInfo GetEmptyConstructor(Type type) {
         if (emptyConstructor != null) return emptyConstructor;
         
         emptyConstructor = typeof(T).GetConstructor(Type.EmptyTypes);
@@ -70,11 +70,16 @@ public abstract class MergeSurrogateBase<T> where T : new() {
         if (wrapperType != null) return;
         
         List<Type> genericTypes = new List<Type>();
+        List<bool> isDynamicType = new List<bool>();
         foreach (KeyValuePair<int, FieldInfo> fieldEntry in GetFields()) {
             genericTypes.Add(fieldEntry.Value.FieldType);
+            ProtoMemberAttribute attribute = fieldEntry.Value.GetCustomAttribute<ProtoMemberAttribute>();
+            isDynamicType.Add(attribute.DynamicType);
         }
         foreach (KeyValuePair<int, PropertyInfo> propertyEntry in GetProperties()) {
             genericTypes.Add(propertyEntry.Value.PropertyType);
+            ProtoMemberAttribute attribute = propertyEntry.Value.GetCustomAttribute<ProtoMemberAttribute>();
+            isDynamicType.Add(attribute.DynamicType);
         }
 
         if (genericTypes.Count == 0) return;
@@ -95,7 +100,12 @@ public abstract class MergeSurrogateBase<T> where T : new() {
                 _ => throw new NotSupportedException($"GenericWrapper for more than 8 types is not supported, but {typeof(T)} has {genericTypes.Count}.")
         };
 
-        RuntimeTypeModel.Default[typeof(TypeMirror)].AddSubType(TypeMirror.SubTypeFieldNumber++, wrapperType);
+        MetaType subType = RuntimeTypeModel.Default[typeof(TypeMirror)].AddSubType(TypeMirror.SubTypeFieldNumber++, wrapperType);
+        ValueMember[] members = subType.GetFields();
+        for (int i = 0; i < members.Length; i++) {
+            ValueMember field = members[i];
+            field.DynamicType = isDynamicType[i];
+        }
     }
 
     protected static TypeMirror ToMirror(T obj) {

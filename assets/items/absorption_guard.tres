@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=9 format=3 uid="uid://c7umrayerwj0m"]
+
+[ext_resource type="Resource" uid="uid://oll2le0iflsv" path="res://assets/items/components/metal_plate.tres" id="1_hs0pc"]
+[ext_resource type="Resource" uid="uid://cdr5pd15av0vo" path="res://assets/items/components/soft_padding.tres" id="2_48p6y"]
+[ext_resource type="Script" path="res://assets/items/AbsorptionGuard.cs" id="3_kjomw"]
+[ext_resource type="Texture2D" uid="uid://baxf26rvnth55" path="res://assets/items/absorption_guard.jpg" id="3_l4v1u"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="4_8tpsr"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="4_k0sb1"]
+
+[sub_resource type="Resource" id="Resource_u0al1"]
+script = ExtResource("4_8tpsr")
+StatType = "Armor"
+StatValue = 10.0
+
+[sub_resource type="Resource" id="Resource_gdg5y"]
+script = ExtResource("4_8tpsr")
+StatType = "Tenacity"
+StatValue = 0.1
+
+[resource]
+script = ExtResource("4_k0sb1")
+Name = "Absorption Guard"
+Category = 1
+Description = "Nearby allies gain 20 armor and 20% tenacity"
+Icon = ExtResource("3_l4v1u")
+CraftedFromA = ExtResource("1_hs0pc")
+CraftedFromB = ExtResource("2_48p6y")
+Stats = Array[Object]([SubResource("Resource_u0al1"), SubResource("Resource_gdg5y")])
+EffectScript = ExtResource("3_kjomw")

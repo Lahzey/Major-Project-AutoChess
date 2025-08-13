@@ -14,6 +14,7 @@ public class Item : IIdentifiable {
 
     [ProtoMember(1)] public ItemType Type { get; set; }
     [ProtoMember(2)] public Tuple<int, int> ComponentLevels { get; set; }
+    [ProtoMember(3)] public ItemEffect? Effect { get; private set; }
     
     public int Level => ComponentLevels.Item1 + ComponentLevels.Item2;
 
@@ -23,18 +24,25 @@ public class Item : IIdentifiable {
         Type = type;
         int halfLevel = level / 2;
         ComponentLevels = new Tuple<int, int>(halfLevel + (level % 2), halfLevel);
+        Effect = Type.EffectScript?.New().As<ItemEffect>();
     }
 
     public Item(ItemType type, Item fromA, Item fromB) {
         Type = type;
         ComponentLevels = new Tuple<int, int>(fromA.Level, fromB.Level);
+        Effect = Type.EffectScript?.New().As<ItemEffect>();
+    }
+    
+    public float ScaleValue(float value) {
+        // scales the value based on the item level
+        float halfValue = value * 0.5f; // each level increases the stat by 50% of the base value
+        return value + halfValue * Level;
     }
 
     public float GetStat(StatType type) {
         foreach (StatValue stat in Type.Stats) {
             if (stat.Type == type) {
-                float halfValue = stat.Value * 0.5f; // each level increases the stat by 50% of the base value
-                return stat.Value + halfValue * Level;
+                return ScaleValue(stat.Value);
             }
         }
 

@@ -15,9 +15,11 @@ namespace MPAutoChess.logic.core.session;
 
 [ProtoContract]
 public partial class CombatPhase : GamePhase {
-    private const double BOOST_DELAY = 20;
-    private const double BOOST_INTERVAL = 5;
+    private const double BOOST_DELAY = 30; // if combat reaches 30secs we start boosting
+    private const double BOOST_INTERVAL = 10; // further boosts every 10 seconds after that
     private const string BOOST_STAT_ID = "COMBAT_OVERTIME_BOOST";
+    private const double TIE_DELAY = 70; // if combat reaches 70secs it is considered a tie
+    
     private const double AFTER_COMBAT_TIME = 5;
     
     private static readonly Texture2D ICON = ResourceLoader.Load<Texture2D>("res://assets/ui/phases/combat.png");
@@ -38,7 +40,12 @@ public partial class CombatPhase : GamePhase {
                 Rpc(MethodName.StartCombats);
             }
         } else if (!finished) {
-            RemainingTime += delta;
+            RemainingTime += delta; // remaining time is used as combat time, it ticks up here
+
+            if (RemainingTime >= TIE_DELAY) {
+                foreach (Combat combat in Combats) combat.EndCombat();
+            }
+            
             double boostTime = RemainingTime - BOOST_DELAY;
             int boostCounter = boostTime >= 0 ? (1 + (int)(boostTime / BOOST_INTERVAL)) : 0;
 

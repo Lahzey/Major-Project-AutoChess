@@ -249,6 +249,7 @@ public class ItemOffer : LootOption {
         
         // for testing
         PlayerController.Current.Player.Inventory.AddItem(new Item(GD.Load<ItemType>("res://assets/items/heart_of_grease.tres")));
+        PlayerController.Current.Player.Inventory.AddItem(new Item(GD.Load<ItemType>("res://assets/items/absorption_guard.tres")));
         PlayerController.Current.Player.Inventory.AddItem(new Item(GameSession.Instance.GetItemConfig().GetRandomItemType(ItemCategory.COMPONENT)));
         PlayerController.Current.Player.Inventory.AddItem(new Item(GameSession.Instance.GetItemConfig().GetRandomItemType(ItemCategory.COMPONENT)));
     }

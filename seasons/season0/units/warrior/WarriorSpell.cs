@@ -1,4 +1,5 @@
 using Godot;
+using MPAutoChess.logic.core.combat;
 using MPAutoChess.logic.core.stats;
 using MPAutoChess.logic.core.unit;
 using UnitInstance = MPAutoChess.logic.core.unit.UnitInstance;
@@ -19,9 +20,19 @@ public partial class WarriorSpell : Spell {
     private float GetHealing(UnitInstance caster) {
         return GetFromLevelArray(caster.Unit, BaseHealing) + caster.Stats.GetValue(StatType.MAGIC) * GetFromLevelArray(caster.Unit, HealingScaling);
     }
-    
-    public override void Cast(UnitInstance caster) {
-        // TODO: Implement damage logic
+
+    public override float GetCastTime(UnitInstance caster) {
+        return 1f / (caster.GetTotalAttackSpeed() * UnitInstance.ATTACK_ANIMATION_SPEED);
+    }
+
+    public override void Cast(UnitInstance caster, UnitInstance? target) {
+        if (!Combat.IsValid(target)) return;
+
+        DamageInstance damageInstance = caster.CreateDamageInstance(target, DamageInstance.Medium.SPELL, GetDamage(caster), DamageType.PHYSICAL);
+        target.TakeDamage(damageInstance);
+
+        float healingAmount = GetHealing(caster) * damageInstance.Amount;
+        caster.Heal(caster, healingAmount);
     }
 
     public override string GetDescription(UnitInstance forUnit) {

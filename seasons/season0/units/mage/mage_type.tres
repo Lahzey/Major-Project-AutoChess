@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="UnitType" load_steps=6 format=3 uid="uid://cgg2wp7hi636j"]
+[gd_resource type="Resource" script_class="UnitType" load_steps=7 format=3 uid="uid://cgg2wp7hi636j"]
 
 [ext_resource type="Texture2D" uid="uid://62ercc1rk6mk" path="res://seasons/season0/units/mage/mage_icon.png" id="1_djwt3"]
+[ext_resource type="PackedScene" uid="uid://clrtv0l078fvq" path="res://seasons/season0/units/mage/MageAttackProjectile.tscn" id="1_vs6ml"]
 [ext_resource type="PackedScene" uid="uid://cdj41tcujebtk" path="res://seasons/season0/units/mage/mage_prefab.tscn" id="2_5xwtp"]
 [ext_resource type="Script" path="res://logic/core/unit/role/UnitRoleSet.cs" id="2_arro4"]
 [ext_resource type="Script" path="res://logic/core/unit/UnitType.cs" id="3_j4s4v"]
@@ -28,4 +29,5 @@ AttackSpeed = 0.75
 Range = 4.0
 MovementSpeed = 2.0
 UnitInstancePrefab = ExtResource("2_5xwtp")
+AttackProjectilePrefab = ExtResource("1_vs6ml")
 Icon = ExtResource("1_djwt3")

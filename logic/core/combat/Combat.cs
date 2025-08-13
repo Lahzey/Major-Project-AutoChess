@@ -6,9 +6,11 @@ using MPAutoChess.logic.core.events;
 using MPAutoChess.logic.core.networking;
 using MPAutoChess.logic.core.placement;
 using MPAutoChess.logic.core.player;
+using MPAutoChess.logic.core.projectile;
 using MPAutoChess.logic.core.stats;
 using MPAutoChess.logic.core.unit;
 using MPAutoChess.logic.core.unit.role;
+using MPAutoChess.logic.util;
 using ProtoBuf;
 using Environment = System.Environment;
 
@@ -41,6 +43,8 @@ public partial class Combat : Node2D {
     [ProtoMember(11)] public CombatResult? Result { get; private set; }
 
     public Rect2 GlobalBounds => new Rect2(GlobalPosition + CombatArea.Position, CombatArea.Size);
+
+    private int projectileCounter = 0;
 
     public void Prepare(Player playerA, Player playerB, bool isCloneFight) {
         PlayerA = playerA;
@@ -125,18 +129,20 @@ public partial class Combat : Node2D {
         bool hasProcessed = false;
         for (int i = 0; i < units.Count; i++) {
             UnitInstance unitInstance = units[i];
-            if (!unitInstance.IsAlive()) continue;
+            if (!IsValid(unitInstance)) continue;
             
-            bool shouldProcess = ServerController.Instance.IsServer && processingIndex == i && !hasProcessed;
+            bool shouldProcess = processingIndex == i && !hasProcessed;
             if (shouldProcess) processingIndex++;
             if (processingIndex >= units.Count) processingIndex = 0; // reset index for next process cycle
 
-            if (!unitInstance.HasTarget()) {
-                if (ServerController.Instance.IsServer) SelectNewTarget(unitInstance, teamA);
-            } else if (!unitInstance.CanReachTarget()) {
-                if (shouldProcess) {
+            if (ServerController.Instance.IsServer) {
+                if (!unitInstance.HasTarget()) {
                     SelectNewTarget(unitInstance, teamA);
-                    hasProcessed = true;
+                } else if (!unitInstance.CanReachTarget()) {
+                    if (shouldProcess) {
+                        SelectNewTarget(unitInstance, teamA);
+                        hasProcessed = true;
+                    }
                 }
             }
 
@@ -152,7 +158,7 @@ public partial class Combat : Node2D {
 
         // try finding a target within range
         foreach (UnitInstance enemy in enemies) {
-            if (enemy == null || !IsInstanceValid(enemy) || !enemy.IsAlive()) continue;
+            if (!IsValid(enemy)) continue;
 
             float squaredDistance = unitInstance.Position.DistanceSquaredTo(enemy.Position);
             if (squaredDistance < closestSquaredDistance) {
@@ -178,7 +184,7 @@ public partial class Combat : Node2D {
         float radius = Mathf.Max(sizeVec.X, sizeVec.Y) * 0.5f;
         IsWalkableCache isWalkableCache = new IsWalkableCache(TeamA, TeamB, NAVIGATION_GRID_SCALE, unitInstance);
         foreach (UnitInstance enemy in enemies) {
-            if (enemy == null || !IsInstanceValid(enemy) || !enemy.IsAlive()) continue;
+            if (!IsValid(enemy)) continue;
             sizeVec = enemy.GetSize();
             float enemyRadius = Mathf.Max(sizeVec.X, sizeVec.Y) * 0.5f;
             PathFinder.Path path = PathFinder.FindPath(unitInstance.Position, enemy.Position, radius + enemyRadius + range, CombatArea, isWalkableCache.IsWalkable, NAVIGATION_GRID_SCALE);
@@ -196,11 +202,13 @@ public partial class Combat : Node2D {
         }
     }
 
-    private void EndCombat() {
+    public void EndCombat() {
+        if (Result != null) return; // already ended
+        
         int playerAUnitCount = TeamA.Count(unit => IsValid(unit) && unit.Unit.Container != null && unit.Unit.Type.Cost > 0); // has a container -> not summoned, has a cost above 0 -> a purchased fighter
         int playerBUnitCount = TeamB.Count(unit => IsValid(unit) && unit.Unit.Container != null && unit.Unit.Type.Cost > 0); // has a container -> not summoned, has a cost above 0 -> a purchased fighter
         int survivingUnits = Math.Max(playerAUnitCount, playerBUnitCount);
-        Winner winner = survivingUnits == 0 ? Winner.DRAW : (playerAUnitCount > playerBUnitCount ? Winner.PLAYER_A : Winner.PLAYER_B);
+        Winner winner = playerAUnitCount == 0 ? Winner.PLAYER_B : playerBUnitCount == 0 ? Winner.PLAYER_A : Winner.DRAW;
         Player? winningPlayer = winner switch {
             Winner.PLAYER_A => PlayerA,
             Winner.PLAYER_B => PlayerB,
@@ -217,10 +225,10 @@ public partial class Combat : Node2D {
         
         CombatEndEvent combatEndEvent = new CombatEndEvent(this, Result);
         EventManager.INSTANCE.NotifyBefore(combatEndEvent);
-        if ((winner == Winner.PLAYER_A || winner == Winner.DRAW) && !IsCloneFight) { // player B should not take damage if his clone lost
+        if ((winner != Winner.PLAYER_B) && !IsCloneFight) { // player B should not take damage if his clone lost
             PlayerB.TakeDamage(Result.DamageDealt, PlayerA);
         }
-        if (winner == Winner.PLAYER_B || winner == Winner.DRAW) {
+        if (winner != Winner.PLAYER_A) {
             PlayerA.TakeDamage(Result.DamageDealt, IsCloneFight ? null : PlayerB); // damage does not count as coming from player B if it is his clone that won the fight
         }
         EventManager.INSTANCE.NotifyAfter(combatEndEvent);
@@ -228,7 +236,11 @@ public partial class Combat : Node2D {
     }
 
     public IEnumerable<UnitInstance> GetAllUnits() {
-        return TeamA.Concat(TeamB).Where(unit => unit != null && IsInstanceValid(unit) && unit.IsAlive());
+        return TeamA.Concat(TeamB).Where(IsValid);
+    }
+    
+    public IEnumerable<UnitInstance> GetTeamUnits(bool teamA) {
+        return teamA ? TeamA.Where(IsValid) : TeamB.Where(IsValid);
     }
 
     public bool IsFinished() {
@@ -236,9 +248,6 @@ public partial class Combat : Node2D {
     }
 
     public override void _ExitTree() {
-        foreach (UnitInstance unit in GetAllUnits()) {
-            unit.QueueFree();
-        }
         TeamA.Clear();
         TeamB.Clear();
     }
@@ -249,7 +258,7 @@ public partial class Combat : Node2D {
 
     private void RemoveUnit(UnitInstance unitInstance) {
         if (unitInstance == null || !IsInstanceValid(unitInstance)) return;
-        unitInstance.QueueFree();
+        // do NOT remove from scene tree or free the unit instance here, it still needs to be able to do damage etc while dead (with lingering effects and projectiles)
         if (unitInstance.IsInTeamA) {
             TeamA.Remove(unitInstance);
         } else {
@@ -257,13 +266,108 @@ public partial class Combat : Node2D {
         }
     }
 
+    public void SpawnProjectile(Projectile projectile, Vector2 position) {
+        if (ServerController.Instance.IsServer) {
+            projectile.Name = "Projectile" + (projectileCounter++);
+            AddChild(projectile);
+        }
+        projectile.Position = position;
+        
+        if (ServerController.Instance.IsServer) {
+            string projectileType = projectile.GetType().AssemblyQualifiedName;
+            byte[] serializedProjectile = SerializerExtensions.Serialize(projectile);
+            Rpc(MethodName.TransferProjectile, projectileType, serializedProjectile, position);
+        }
+    }
+    
+    [Rpc(MultiplayerApi.RpcMode.Authority)]
+    private void TransferProjectile(string projectileType, byte[] serializedProjectile, Vector2 position) {
+        if (ServerController.Instance.IsServer) throw new InvalidOperationException("TransferProjectile can only be called on the client.");
+        
+        Type type = Type.GetType(projectileType);
+        if (type == null) throw new InvalidOperationException($"Could not find type {projectileType} for projectile.");
+        
+        Projectile projectile = SerializerExtensions.Deserialize<Projectile>(serializedProjectile, type);
+        SpawnProjectile(projectile, position);
+    }
+    
+    public void SummonUnit(UnitInstance unitInstance, Vector2 position, bool teamA) {
+        if (teamA) {
+            TeamA.Add(unitInstance);
+        } else {
+            TeamB.Add(unitInstance);
+        }
+        
+        GD.Print($"Spawning {unitInstance.Name} at {position} for team {(teamA ? "A" : "B")} on {(ServerController.Instance.IsServer ? "server" : "client")}");
+        if (ServerController.Instance.IsServer) {
+            position = FindFreePosition(position, unitInstance.GetSize(), out bool success);
+            if (!success) return; // the combat is completely full, should almost never happen
+            AddChild(unitInstance);
+        }
+
+        unitInstance.Position = position;
+        unitInstance.CurrentCombat = this;
+        unitInstance.IsInTeamA = teamA;
+
+        if (ServerController.Instance.IsServer) {
+            byte[] serializedUnit = SerializerExtensions.Serialize(unitInstance);
+            Rpc(MethodName.TransferUnit, serializedUnit, position, teamA);
+        }
+    }
+
+    [Rpc(MultiplayerApi.RpcMode.Authority)]
+    private void TransferUnit(byte[] serializedUnit, Vector2 position, bool teamA) {
+        if (ServerController.Instance.IsServer) throw new InvalidOperationException("TransferUnit can only be called on the client.");
+        
+        UnitInstance deserializedUnit = SerializerExtensions.DeserializeWithInit<UnitInstance>(serializedUnit, unitInstance => {
+            unitInstance.CurrentCombat = this;
+            unitInstance.IsInTeamA = teamA;
+            if (teamA) {
+                TeamA.Add(unitInstance);
+            } else {
+                TeamB.Add(unitInstance);
+            }
+        });
+        if (!deserializedUnit.IsInsideTree()) throw new InvalidOperationException("Deserialized unit is not inside the tree.");
+        SummonUnit(deserializedUnit, position, teamA);
+    }
+
+    private Vector2 FindFreePosition(Vector2 position, Vector2 requiredSize, out bool success) {
+        success = true;
+        float radius = Mathf.Max(requiredSize.X, requiredSize.Y) * 0.5f;
+        if (IsFree(position, radius)) return position;
+
+        foreach (Vector2 newPos in SpiralHelper.SpiralAround(position, 1f)) {
+            if (!CombatArea.HasPoint(newPos)) {
+                success = false;
+                return Vector2.Zero;
+            }
+            if (IsFree(newPos, radius)) {
+                return newPos;
+            }
+        }
+        
+        return Vector2.Zero; // it will never reach here, SpiralAround is infinite with yield
+    }
+
+    private bool IsFree(Vector2 position, float radius) {
+        foreach (UnitInstance unit in GetAllUnits()) {
+            Vector2 size = unit.GetSize();
+            float requiredRadius = radius + (Mathf.Max(size.X, size.Y) * 0.5f);
+            if (position.DistanceSquaredTo(unit.Position) < requiredRadius * requiredRadius) {
+                return false; // position is occupied by another unit
+            }
+        }
+        return true;
+    }
+
     public int GetRoleCount(UnitRole role, bool teamA) {
         return teamA ? TeamARoleCounts.GetValueOrDefault(role, 0) : TeamBRoleCounts.GetValueOrDefault(role, 0);
     }
     
 
-    public bool IsValid(UnitInstance unit) {
-        return unit != null && IsInstanceValid(unit) && unit.IsAlive();
+    public static bool IsValid(UnitInstance unit) {
+        return unit != null && IsInstanceValid(unit) && unit.IsInsideTree() && unit.IsAlive();
     }
 }
 
@@ -282,6 +386,7 @@ public class IsWalkableCache {
 
     private void AddUnits(List<UnitInstance> units, float oneOverGridScale, UnitInstance activeUnit) {
         foreach (UnitInstance unit in units) {
+            if (!Combat.IsValid(unit)) continue;
             if (unit == activeUnit) continue;
             Vector2I gridPosition = PathFinder.ToGridCoord(unit.Position, oneOverGridScale);
             gridPositions.Add(gridPosition);
