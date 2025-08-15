@@ -672,3 +672,60 @@ public class TypeMirror<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> : Typ
         return $"{typeof(T1).Name}: {value1}\n{typeof(T2).Name}: {value2}\n{typeof(T3).Name}: {value3}\n{typeof(T4).Name}: {value4}\n{typeof(T5).Name}: {value5}\n{typeof(T6).Name}: {value6}\n{typeof(T7).Name}: {value7}\n{typeof(T8).Name}: {value8}\n{typeof(T9).Name}: {value9}\n{typeof(T10).Name}: {value10}\n{typeof(T11).Name}: {value11}\n{typeof(T12).Name}: {value12}";
     }
 }
+
+[ProtoContract]
+public class TypeMirror<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> : TypeMirror {
+    [ProtoMember(1)] public T1 value1;
+    [ProtoMember(2)] public T2 value2;
+    [ProtoMember(3)] public T3 value3;
+    [ProtoMember(4)] public T4 value4;
+    [ProtoMember(5)] public T5 value5;
+    [ProtoMember(6)] public T6 value6;
+    [ProtoMember(7)] public T7 value7;
+    [ProtoMember(8)] public T8 value8;
+    [ProtoMember(9)] public T9 value9;
+    [ProtoMember(10)] public T10 value10;
+    [ProtoMember(11)] public T11 value11;
+    [ProtoMember(12)] public T12 value12;
+    [ProtoMember(13)] public T13 value13;
+
+    public override void Set(params object[] values) {
+        if (values.Length != 12) throw new ArgumentException("GenericWrapper<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> expects exactly twelve values.");
+        value1 = (T1)values[0];
+        value2 = (T2)values[1];
+        value3 = (T3)values[2];
+        value4 = (T4)values[3];
+        value5 = (T5)values[4];
+        value6 = (T6)values[5];
+        value7 = (T7)values[6];
+        value8 = (T8)values[7];
+        value9 = (T9)values[8];
+        value10 = (T10)values[9];
+        value11 = (T11)values[10];
+        value12 = (T12)values[11];
+        value13 = (T13)values[12];
+    }
+
+    public override object Get(int index) {
+        return index switch {
+            0 => value1,
+            1 => value2,
+            2 => value3,
+            3 => value4,
+            4 => value5,
+            5 => value6,
+            6 => value7,
+            7 => value8,
+            8 => value9,
+            9 => value10,
+            10 => value11,
+            11 => value12,
+            12 => value13,
+            _ => throw new ArgumentOutOfRangeException(nameof(index), "GenericWrapper<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> only has twelve values at indices 0 to 11.")
+        };
+    }
+
+    public override string ToString() {
+        return $"{typeof(T1).Name}: {value1}\n{typeof(T2).Name}: {value2}\n{typeof(T3).Name}: {value3}\n{typeof(T4).Name}: {value4}\n{typeof(T5).Name}: {value5}\n{typeof(T6).Name}: {value6}\n{typeof(T7).Name}: {value7}\n{typeof(T8).Name}: {value8}\n{typeof(T9).Name}: {value9}\n{typeof(T10).Name}: {value10}\n{typeof(T11).Name}: {value11}\n{typeof(T12).Name}: {value12}\n{typeof(T13).Name}: {value13}";
+    }
+}

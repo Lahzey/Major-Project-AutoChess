@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using MPAutoChess.logic.core.player;
@@ -20,7 +21,13 @@ public partial class UnitRolePanel : Control {
         Icon.Texture = Role?.GetIcon();
         NameLabel.Text = Role?.GetName() ?? string.Empty;
         if (Role != null && Player != null) {
-            int count = Player.Board.GetUnitTypesInAllRoles()[Role].Count;
+            Dictionary<UnitRole, HashSet<UnitType>> roleMapping = Player.Board.GetUnitTypesInAllRoles();
+            if (!roleMapping.ContainsKey(Role)) {
+                HideContent();
+                return;
+            }
+            
+            int count = roleMapping.Count;
             int currentThreshold = Role.GetCurrentThreshold(count);
             int level = Role.GetLevel(count);
             CountLabel.Text = level > 0 ? count.ToString() : $"{count.ToString()}/{Role.GetCountThresholds()[0]}";
@@ -29,8 +36,12 @@ public partial class UnitRolePanel : Control {
             NameLabel.SizeFlagsVertical = SizeFlags.Expand | (level > 0 ? SizeFlags.ShrinkEnd : SizeFlags.ShrinkCenter);
             NameSize.SizeType = level > 0 ? FontSizeType.NORMAL : FontSizeType.SUBTITLE;
         } else {
-            CountLabel.Text = string.Empty;
-            ThresholdsLabel.Text = string.Empty;
+            HideContent();
         }
+    }
+
+    private void HideContent() {
+        CountLabel.Text = string.Empty;
+        ThresholdsLabel.Text = string.Empty;
     }
 }

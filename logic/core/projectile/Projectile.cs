@@ -17,11 +17,19 @@ public partial class Projectile : Node2D {
     private Action OnHit { get; set; } // not set on client
     private Func<Target> RecalculateTarget { get; set; } // not set on client
     
+    private AnimatedSprite2D animatedSprite;
+    
     public void Initialize(DamageSource source, Target target, Action onHit, Func<Target> recalculateTarget) {
         Source = source;
         Target = target;
         OnHit = onHit;
         RecalculateTarget = recalculateTarget;
+        foreach (Node child in GetChildren()) {
+            if (child is AnimatedSprite2D sprite) {
+                animatedSprite = sprite;
+                break;
+            }
+        }
     }
 
     public override void _Ready() {
@@ -43,6 +51,7 @@ public partial class Projectile : Node2D {
         if (distance > toTravel) {
             Vector2 direction = (targetPosition - position) / distance;
             Position = position + direction * toTravel;
+            FaceTowards(direction);
         } else {
             Position = targetPosition;
             if (ServerController.Instance.IsServer) {
@@ -50,6 +59,12 @@ public partial class Projectile : Node2D {
                 Destroy();
             }
         }
+    }
+
+    private void FaceTowards(Vector2 direction) {
+        if (direction == Vector2.Zero) return;
+        if (animatedSprite != null) animatedSprite.FlipH = direction.X < 0;
+        Rotation = direction.Angle();
     }
 
     [Rpc(MultiplayerApi.RpcMode.Authority)]

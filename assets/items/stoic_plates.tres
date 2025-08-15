@@ -1,16 +1,29 @@
-[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://c80s8pbtdykbl"]
+[gd_resource type="Resource" script_class="ItemType" load_steps=9 format=3 uid="uid://c80s8pbtdykbl"]
 
 [ext_resource type="Resource" uid="uid://d1vnu8i30ujxb" path="res://assets/items/components/lard.tres" id="1_0te5r"]
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_dp565"]
 [ext_resource type="Resource" uid="uid://cdr5pd15av0vo" path="res://assets/items/components/soft_padding.tres" id="2_xsuw7"]
 [ext_resource type="Texture2D" uid="uid://cvcijmdik3187" path="res://assets/items/stoic_plates.jpg" id="3_0me1e"]
+[ext_resource type="Script" path="res://assets/items/StoicPlates.cs" id="3_3b6s4"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="5_8dj38"]
+
+[sub_resource type="Resource" id="Resource_jw1y8"]
+script = ExtResource("5_8dj38")
+Type = "Max Health"
+Value = 250.0
+
+[sub_resource type="Resource" id="Resource_3uoqh"]
+script = ExtResource("5_8dj38")
+Type = "Tenacity"
+Value = 0.2
 
 [resource]
 script = ExtResource("1_dp565")
 Name = "Stoic Plates"
 Category = 1
-Description = ""
+Description = "[color=gray][i]This items effect is currently not implemented.[/i][/color]"
 Icon = ExtResource("3_0me1e")
 CraftedFromA = ExtResource("1_0te5r")
 CraftedFromB = ExtResource("2_xsuw7")
-Stats = null
+Stats = Array[Object]([SubResource("Resource_jw1y8"), SubResource("Resource_3uoqh")])
+EffectScript = ExtResource("3_3b6s4")

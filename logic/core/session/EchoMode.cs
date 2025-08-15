@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 using MPAutoChess.logic.core.combat;
 using MPAutoChess.logic.core.networking;
@@ -39,7 +40,7 @@ public partial class EchoMode : GameMode {
             readyPlayers.Add(player);
         }
 
-        if (readyPlayers.Count == GameSession.Instance.Players.Length) {
+        if (readyPlayers.Count == GameSession.Instance.AlivePlayers.Count()) {
             AdvancePhase();
         }
     }

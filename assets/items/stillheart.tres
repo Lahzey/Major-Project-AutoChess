@@ -1,16 +1,29 @@
-[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://cfdqda6760ukn"]
+[gd_resource type="Resource" script_class="ItemType" load_steps=9 format=3 uid="uid://cfdqda6760ukn"]
 
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_4u3xg"]
 [ext_resource type="Resource" uid="uid://cdr5pd15av0vo" path="res://assets/items/components/soft_padding.tres" id="1_jf37t"]
 [ext_resource type="Resource" uid="uid://cqcj6ce28vc1b" path="res://assets/items/components/power_orb.tres" id="2_1hbw1"]
 [ext_resource type="Texture2D" uid="uid://c3l62i4g1baau" path="res://assets/items/stillheart.jpg" id="3_bs1q1"]
+[ext_resource type="Script" path="res://assets/items/Stillheart.cs" id="3_l1rrl"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="5_ogop0"]
+
+[sub_resource type="Resource" id="Resource_te4v0"]
+script = ExtResource("5_ogop0")
+Type = "Tenacity"
+Value = 0.2
+
+[sub_resource type="Resource" id="Resource_oo1gt"]
+script = ExtResource("5_ogop0")
+Type = "Magic"
+Value = 20.0
 
 [resource]
 script = ExtResource("1_4u3xg")
 Name = "Stillheart"
 Category = 1
-Description = ""
+Description = "[color=gray][i]This items effect is currently not implemented.[/i][/color]"
 Icon = ExtResource("3_bs1q1")
 CraftedFromA = ExtResource("1_jf37t")
 CraftedFromB = ExtResource("2_1hbw1")
-Stats = null
+Stats = Array[Object]([SubResource("Resource_te4v0"), SubResource("Resource_oo1gt")])
+EffectScript = ExtResource("3_l1rrl")

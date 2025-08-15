@@ -9,6 +9,7 @@ using MPAutoChess.logic.core.networking;
 using MPAutoChess.logic.core.player;
 using MPAutoChess.logic.core.stats;
 using MPAutoChess.logic.core.unit;
+using MPAutoChess.logic.util;
 using ProtoBuf;
 
 namespace MPAutoChess.logic.core.session;
@@ -99,16 +100,18 @@ public partial class CombatPhase : GamePhase {
     }
 
     public void CreateCombats() {
-        if (GameSession.Instance.Players.Length <= 1) {
+        List<Player> alivePlayers = GameSession.Instance.AlivePlayers.ToList();
+        if (alivePlayers.Count <= 1) {
             throw new System.InvalidOperationException("Cannot create combats with less than 2 players.");
         }
+        alivePlayers.Shuffle(GameSession.Instance.Random);
 
         Combats = new List<Combat>();
-        for (int i = 0; i < GameSession.Instance.Players.Length; i+=2) {
-            Player playerA = GameSession.Instance.Players[i];
-            Player playerB = GameSession.Instance.Players[(i + 1) % GameSession.Instance.Players.Length];
+        for (int i = 0; i < alivePlayers.Count; i+=2) {
+            Player playerA = alivePlayers[i];
+            Player playerB = alivePlayers[(i + 1) % alivePlayers.Count];
             int combatIndex = Combats.Count;
-            bool isCloneFight = (i + 1) >= GameSession.Instance.Players.Length;
+            bool isCloneFight = (i + 1) >= alivePlayers.Count;
             
             Combat combat = new Combat();
             combat.Prepare(playerA, playerB, isCloneFight);
@@ -187,13 +190,15 @@ public partial class CombatPhase : GamePhase {
     private void SetupLocal() {
         SetBoardsVisible(false);
         Combat playerCombat = GetCombatForPlayer(PlayerController.Current.Player);
+        if (playerCombat == null) return;
+        
         bool isPlayerA = playerCombat.PlayerA == PlayerController.Current.Player;
         PlayerController.Current.GoToArena(playerCombat.PlayerA.Arena);
         playerCombat.Rotation = isPlayerA ? 0 : Mathf.Pi;
     }
 
     private void SetBoardsVisible(bool visible) {
-        foreach (Player player in GameSession.Instance.Players) {
+        foreach (Player player in GameSession.Instance.AlivePlayers) {
             player.Arena.Board.Visible = visible;
         }
     }

@@ -4,10 +4,10 @@
 [ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="1_gfjnr"]
 [ext_resource type="Texture2D" uid="uid://6kfffxg1ifop" path="res://assets/items/components/magical_fabric.jpg" id="1_wx6u0"]
 
-[sub_resource type="Resource" id="Resource_60tfc"]
+[sub_resource type="Resource" id="Resource_2s3a6"]
 script = ExtResource("1_gfjnr")
-StatType = "Aegis"
-StatValue = 10.0
+Type = "Aegis"
+Value = 10.0
 
 [resource]
 script = ExtResource("1_c160n")
@@ -15,4 +15,4 @@ Name = "Magical Fabric"
 Category = 0
 Description = "[color=gray][i]A crafting component that can be turned into various items that provide protection from magic.[/i][/color]"
 Icon = ExtResource("1_wx6u0")
-Stats = Array[Object]([SubResource("Resource_60tfc")])
+Stats = Array[Object]([SubResource("Resource_2s3a6")])

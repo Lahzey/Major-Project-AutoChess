@@ -38,6 +38,10 @@ public abstract partial class GameMode : Node {
         return Math.Min(GetCurrentPhaseIndex() + 1, 5);
     }
 
+    public virtual int GetPhaseStartExperience() {
+        return 2;
+    }
+
     public GamePhase GetCurrentPhase() {
         int currentIndex = GetCurrentPhaseIndex();
         return GetPhaseAt(currentIndex);
@@ -58,6 +62,7 @@ public abstract partial class GameMode : Node {
     }
 
     protected virtual void StartPhase(GamePhase phase) {
+        if (!ServerController.Instance.IsServer && PlayerController.Current.Player.Dead) return;
         GamePhase? currentPhase = GetCurrentPhase();
         PhaseChangeEvent phaseChangeEvent = new PhaseChangeEvent(currentPhase, phase);
         EventManager.INSTANCE.NotifyBefore(phaseChangeEvent);
@@ -75,8 +80,10 @@ public abstract partial class GameMode : Node {
             phase.Name = $"Phase{phases.Count}";
             AddChild(phase);
             Rpc(MethodName.TriggerClientStartPhase, SerializerExtensions.Serialize(phase));
-            foreach (Player player in GameSession.Instance.Players) {
+            foreach (Player player in GameSession.Instance.AlivePlayers) {
+                player.AddExperience(GetPhaseStartExperience());
                 player.AddGold(GetPhaseStartGold());
+                player.AddInterest();
             }
         } else {
             PlayerUI.Instance.GamePhaseControls.SetPhaseControls(null);

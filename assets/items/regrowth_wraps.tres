@@ -1,15 +1,23 @@
-[gd_resource type="Resource" script_class="ItemType" load_steps=4 format=3 uid="uid://il444dtabisx"]
+[gd_resource type="Resource" script_class="ItemType" load_steps=7 format=3 uid="uid://il444dtabisx"]
 
 [ext_resource type="Resource" uid="uid://cvyfbw5oepnmu" path="res://assets/items/components/bandages.tres" id="1_ewun8"]
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_mlngj"]
 [ext_resource type="Texture2D" uid="uid://cmmvd4p2xo2ua" path="res://assets/items/regrowth_wraps.jpg" id="2_b3pq0"]
+[ext_resource type="Script" path="res://assets/items/RegrowthWraps.cs" id="2_wi38g"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="4_jcjkr"]
+
+[sub_resource type="Resource" id="Resource_r4bdm"]
+script = ExtResource("4_jcjkr")
+Type = "Health Regeneration"
+Value = 25.0
 
 [resource]
 script = ExtResource("1_mlngj")
 Name = "Regrowth Wraps"
 Category = 1
-Description = ""
+Description = "[color=gray][i]This items effect is currently not implemented.[/i][/color]"
 Icon = ExtResource("2_b3pq0")
 CraftedFromA = ExtResource("1_ewun8")
 CraftedFromB = ExtResource("1_ewun8")
-Stats = null
+Stats = Array[Object]([SubResource("Resource_r4bdm")])
+EffectScript = ExtResource("2_wi38g")

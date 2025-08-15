@@ -38,8 +38,8 @@ public partial class ItemTooltip : Control {
         }
         foreach (StatValue statValue in item.Type.Stats) {
             StatDisplay statDisplay = (StatDisplay) StatDisplayScene.Instantiate();
-            statDisplay.StatType = statValue.Type;
-            statDisplay.StatValue = () => item.GetStat(statValue.Type);
+            statDisplay.StatType = statValue.StatType;
+            statDisplay.StatValue = () => item.GetStat(statValue.StatType);
             StatsContainer.AddChild(statDisplay);
         }
         

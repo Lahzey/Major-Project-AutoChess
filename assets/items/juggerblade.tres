@@ -1,16 +1,29 @@
-[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://bqi2beky4vg2t"]
+[gd_resource type="Resource" script_class="ItemType" load_steps=9 format=3 uid="uid://bqi2beky4vg2t"]
 
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_1lg8b"]
 [ext_resource type="Resource" uid="uid://d1vnu8i30ujxb" path="res://assets/items/components/lard.tres" id="1_10r2g"]
 [ext_resource type="Resource" uid="uid://c7tf56toxso2w" path="res://assets/items/components/sharp_blade.tres" id="2_d3y3x"]
+[ext_resource type="Script" path="res://assets/items/Juggerblade.cs" id="3_gg3ix"]
 [ext_resource type="Texture2D" uid="uid://bslpvutpg8ms1" path="res://assets/items/juggerblade.jpg" id="3_o53vt"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="5_ec66k"]
+
+[sub_resource type="Resource" id="Resource_vsgk2"]
+script = ExtResource("5_ec66k")
+Type = "Max Health"
+Value = 250.0
+
+[sub_resource type="Resource" id="Resource_jmepg"]
+script = ExtResource("5_ec66k")
+Type = "Strength"
+Value = 10.0
 
 [resource]
 script = ExtResource("1_1lg8b")
 Name = "Juggerblade"
 Category = 1
-Description = ""
+Description = "Attacks deal bonus damage on hit, scaling with max health."
 Icon = ExtResource("3_o53vt")
 CraftedFromA = ExtResource("1_10r2g")
 CraftedFromB = ExtResource("2_d3y3x")
-Stats = null
+Stats = Array[Object]([SubResource("Resource_vsgk2"), SubResource("Resource_jmepg")])
+EffectScript = ExtResource("3_gg3ix")

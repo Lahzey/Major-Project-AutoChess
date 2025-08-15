@@ -32,7 +32,7 @@ public partial class LootPhase : GamePhase, Choosable {
     public static LootPhase Random() {
         LootPhase lootPhase = new LootPhase();
         lootPhase.powerLevel = GameSession.Instance.Random.Next(5, 51); // Random power level between 1 and 100
-        foreach (Player player in GameSession.Instance.Players) {
+        foreach (Player player in GameSession.Instance.AlivePlayers) {
             LootOption[] lootOptions = new LootOption[] {
                 new GoldOffer(lootPhase.powerLevel),
                 new ItemOffer(lootPhase.powerLevel)
@@ -248,8 +248,7 @@ public class ItemOffer : LootOption {
         PlayerController.Current.Player.AddGold(leftOverGold);
         
         // for testing
-        PlayerController.Current.Player.Inventory.AddItem(new Item(GD.Load<ItemType>("res://assets/items/heart_of_grease.tres")));
-        PlayerController.Current.Player.Inventory.AddItem(new Item(GD.Load<ItemType>("res://assets/items/absorption_guard.tres")));
+        PlayerController.Current.Player.Inventory.AddItem(new Item(GD.Load<ItemType>("res://assets/items/juggerblade.tres")));
         PlayerController.Current.Player.Inventory.AddItem(new Item(GameSession.Instance.GetItemConfig().GetRandomItemType(ItemCategory.COMPONENT)));
         PlayerController.Current.Player.Inventory.AddItem(new Item(GameSession.Instance.GetItemConfig().GetRandomItemType(ItemCategory.COMPONENT)));
     }

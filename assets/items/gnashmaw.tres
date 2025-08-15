@@ -1,16 +1,29 @@
-[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://i70bm5py63r5"]
+[gd_resource type="Resource" script_class="ItemType" load_steps=9 format=3 uid="uid://i70bm5py63r5"]
 
 [ext_resource type="Resource" uid="uid://cdr5pd15av0vo" path="res://assets/items/components/soft_padding.tres" id="1_jm2c4"]
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_mt0q6"]
 [ext_resource type="Texture2D" uid="uid://dd46nqpsx2fgi" path="res://assets/items/gnashmaw.jpg" id="1_tnhy7"]
 [ext_resource type="Resource" uid="uid://c7tf56toxso2w" path="res://assets/items/components/sharp_blade.tres" id="2_ct7r5"]
+[ext_resource type="Script" path="res://assets/items/Gnashmaw.cs" id="3_sno4y"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="4_3s1xy"]
+
+[sub_resource type="Resource" id="Resource_nwj6k"]
+script = ExtResource("4_3s1xy")
+Type = "Tenacity"
+Value = 0.2
+
+[sub_resource type="Resource" id="Resource_vccv5"]
+script = ExtResource("4_3s1xy")
+Type = "Strength"
+Value = 30.0
 
 [resource]
 script = ExtResource("1_mt0q6")
 Name = "Gnashmaw"
 Category = 1
-Description = ""
+Description = "The holder deals bonus damage to stunned units."
 Icon = ExtResource("1_tnhy7")
 CraftedFromA = ExtResource("1_jm2c4")
 CraftedFromB = ExtResource("2_ct7r5")
-Stats = Array[Object]([])
+Stats = Array[Object]([SubResource("Resource_nwj6k"), SubResource("Resource_vccv5")])
+EffectScript = ExtResource("3_sno4y")

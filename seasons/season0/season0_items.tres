@@ -27,7 +27,7 @@
 [ext_resource type="Resource" uid="uid://n6m26e0olmv3" path="res://assets/items/blooddrinker.tres" id="24_8q0nt"]
 [ext_resource type="Resource" uid="uid://bwrgmav5wju2d" path="res://assets/items/spirit_mender.tres" id="25_pv1xq"]
 [ext_resource type="Resource" uid="uid://cwqyggiuxs2ou" path="res://assets/items/splinterknuckles.tres" id="26_luihm"]
-[ext_resource type="Resource" uid="uid://coetvkf4ctpq7" path="res://assets/items/bullwark_shell.tres" id="27_kmwxb"]
+[ext_resource type="Resource" uid="uid://coetvkf4ctpq7" path="res://assets/items/bulwark_shell.tres" id="27_kmwxb"]
 [ext_resource type="Resource" uid="uid://4t2t36j6luwn" path="res://assets/items/winters_ward.tres" id="28_kp844"]
 [ext_resource type="Resource" uid="uid://c7umrayerwj0m" path="res://assets/items/absorption_guard.tres" id="29_01wxp"]
 [ext_resource type="Resource" uid="uid://dky1nwaq1f6uq" path="res://assets/items/forgehammer.tres" id="30_8bgwr"]

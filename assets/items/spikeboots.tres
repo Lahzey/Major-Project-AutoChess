@@ -1,16 +1,29 @@
-[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://cfod51pfn5syv"]
+[gd_resource type="Resource" script_class="ItemType" load_steps=9 format=3 uid="uid://cfod51pfn5syv"]
 
 [ext_resource type="Resource" uid="uid://oll2le0iflsv" path="res://assets/items/components/metal_plate.tres" id="1_7kvg0"]
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_wji88"]
 [ext_resource type="Resource" uid="uid://pys1hufuwj3k" path="res://assets/items/components/glass_shard.tres" id="2_0hqa6"]
 [ext_resource type="Texture2D" uid="uid://csg8w77g4cdbo" path="res://assets/items/spikeboots.jpg" id="3_g0x2p"]
+[ext_resource type="Script" path="res://assets/items/Spikeboots.cs" id="3_kx4kt"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="5_6kc5a"]
+
+[sub_resource type="Resource" id="Resource_l0s8o"]
+script = ExtResource("5_6kc5a")
+Type = "Armor"
+Value = 10.0
+
+[sub_resource type="Resource" id="Resource_vtb6o"]
+script = ExtResource("5_6kc5a")
+Type = "Crit Chance"
+Value = 0.25
 
 [resource]
 script = ExtResource("1_wji88")
 Name = "Spikeboots"
 Category = 1
-Description = ""
+Description = "[color=gray][i]This items effect is currently not implemented.[/i][/color]"
 Icon = ExtResource("3_g0x2p")
 CraftedFromA = ExtResource("1_7kvg0")
 CraftedFromB = ExtResource("2_0hqa6")
-Stats = null
+Stats = Array[Object]([SubResource("Resource_l0s8o"), SubResource("Resource_vtb6o")])
+EffectScript = ExtResource("3_kx4kt")

@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="ItemType" load_steps=7 format=3 uid="uid://coetvkf4ctpq7"]
+
+[ext_resource type="Resource" uid="uid://oll2le0iflsv" path="res://assets/items/components/metal_plate.tres" id="1_jb41r"]
+[ext_resource type="Texture2D" uid="uid://c7uh8xwqphhck" path="res://assets/items/bulwark_shell.jpg" id="2_4gtuh"]
+[ext_resource type="Script" path="res://assets/items/BulwarkShell.cs" id="2_yqvov"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="3_7n26t"]
+[ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="3_qgb6v"]
+
+[sub_resource type="Resource" id="Resource_asblv"]
+script = ExtResource("3_7n26t")
+Type = "Armor"
+Value = 100.0
+
+[resource]
+script = ExtResource("3_qgb6v")
+Name = "Bulwark Shell"
+Category = 1
+Description = "Reflects a portion of incoming damage."
+Icon = ExtResource("2_4gtuh")
+CraftedFromA = ExtResource("1_jb41r")
+CraftedFromB = ExtResource("1_jb41r")
+Stats = Array[Object]([SubResource("Resource_asblv")])
+EffectScript = ExtResource("2_yqvov")

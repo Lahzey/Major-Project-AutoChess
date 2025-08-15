@@ -41,7 +41,7 @@ public class Item : IIdentifiable {
 
     public float GetStat(StatType type) {
         foreach (StatValue stat in Type.Stats) {
-            if (stat.Type == type) {
+            if (stat.StatType == type) {
                 return ScaleValue(stat.Value);
             }
         }

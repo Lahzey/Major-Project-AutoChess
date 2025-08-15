@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 using MPAutoChess.logic.core.environment;
 using MPAutoChess.logic.core.events;
@@ -31,6 +32,8 @@ public partial class Player : Node2D {
     [Export] [ProtoMember(6)] public int Gold { get; private set; }
     [Export] [ProtoMember(7)] public int FreeRerolls { get; set; } = 10; // TODO reset to 0 (just for testing)
     [ProtoMember(8)] public Shop Shop { get; private set; }
+
+    public bool Dead => CurrentHealth <= 0;
 
     private Inventory inventory;
 
@@ -192,6 +195,29 @@ public partial class Player : Node2D {
             return;
         }
         CurrentHealth = 0;
+        
+        foreach (Unit unit in Board.GetUnits().ToList()) {
+            Board.RemoveUnit(unit);
+            unit.Dispose();
+        }
+        
+        foreach (SingleUnitSlot benchSlot in Bench.GetSlots()) {
+            if (benchSlot.Unit != null) {
+                Unit unit = benchSlot.Unit;
+                benchSlot.RemoveUnit(unit);
+                unit.Dispose();
+            }
+        }
+        
+        EventManager.INSTANCE.NotifyAfter(deathEvent);
+        Rpc(MethodName.NotifyDeath);
+    }
+
+    [Rpc(MultiplayerApi.RpcMode.Authority)]
+    private void NotifyDeath() {
+        CurrentHealth = 0;
+        PlayerDeathEvent deathEvent = new PlayerDeathEvent(this);
+        EventManager.INSTANCE.NotifyBefore(deathEvent);
         EventManager.INSTANCE.NotifyAfter(deathEvent);
     }
 
@@ -214,5 +240,11 @@ public partial class Player : Node2D {
         } else {
             // TODO experience gain animation
         }
+    }
+
+    public void AddInterest() {
+        int interest = Mathf.FloorToInt(Gold * 0.1f);
+        if (interest > 5) interest = 5;
+        AddGold(interest);
     }
 }

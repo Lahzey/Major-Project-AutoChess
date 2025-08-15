@@ -18,7 +18,7 @@ border_width_right = 2
 border_width_bottom = 2
 border_color = Color(0.0627451, 0.113725, 0.156863, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mq2ma"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cysp8"]
 bg_color = Color(0.0862745, 0.431373, 0.0588235, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sgoip"]
@@ -29,7 +29,7 @@ border_width_right = 2
 border_width_bottom = 2
 border_color = Color(0.0627451, 0.113725, 0.156863, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ko2jo"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rr6fr"]
 bg_color = Color(0, 0.24, 0.4, 1)
 
 [node name="UnitInfoPanel" type="PanelContainer" node_paths=PackedStringArray("SplashArt", "NameLabel", "RoleIcons", "RoleLabels", "SellPriceLabel", "HealthBar", "HealthBarLabel", "ManaBar", "ManaBarLabel", "ItemIconsContainer", "SpellNameLabel", "SpellCostLabel", "SpellDescriptionLabel", "StatLabels")]
@@ -173,7 +173,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_v6u24")
 [node name="HealthBar" type="ProgressBar" parent="VBoxContainer/HealthBarContainer"]
 layout_mode = 2
 size_flags_vertical = 1
-theme_override_styles/fill = SubResource("StyleBoxFlat_mq2ma")
+theme_override_styles/fill = SubResource("StyleBoxFlat_cysp8")
 value = 50.0
 show_percentage = false
 script = ExtResource("6_bujft")
@@ -205,7 +205,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_sgoip")
 [node name="ManaBar" type="ProgressBar" parent="VBoxContainer/ManaBarContainer"]
 layout_mode = 2
 size_flags_vertical = 1
-theme_override_styles/fill = SubResource("StyleBoxFlat_ko2jo")
+theme_override_styles/fill = SubResource("StyleBoxFlat_rr6fr")
 value = 50.0
 show_percentage = false
 script = ExtResource("6_bujft")

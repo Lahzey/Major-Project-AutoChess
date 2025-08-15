@@ -4,10 +4,10 @@
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_aqgjy"]
 [ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="1_byxl8"]
 
-[sub_resource type="Resource" id="Resource_vthoo"]
+[sub_resource type="Resource" id="Resource_nxcc3"]
 script = ExtResource("1_byxl8")
-StatType = "Armor"
-StatValue = 10.0
+Type = "Armor"
+Value = 10.0
 
 [resource]
 script = ExtResource("1_aqgjy")
@@ -15,4 +15,4 @@ Name = "Metal Plate"
 Category = 0
 Description = "[color=gray][i]A crafting component that can be turned into various items that provide protection from physical attacks.[/i][/color]"
 Icon = ExtResource("1_a3tsy")
-Stats = Array[Object]([SubResource("Resource_vthoo")])
+Stats = Array[Object]([SubResource("Resource_nxcc3")])

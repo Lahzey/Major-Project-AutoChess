@@ -1,15 +1,23 @@
-[gd_resource type="Resource" script_class="ItemType" load_steps=4 format=3 uid="uid://bf7qkqbq0nsa1"]
+[gd_resource type="Resource" script_class="ItemType" load_steps=7 format=3 uid="uid://bf7qkqbq0nsa1"]
 
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_dq5vp"]
 [ext_resource type="Resource" uid="uid://cqcj6ce28vc1b" path="res://assets/items/components/power_orb.tres" id="1_v6rjm"]
 [ext_resource type="Texture2D" uid="uid://ctg33xdi7t50" path="res://assets/items/mindflare.jpg" id="2_d2h1r"]
+[ext_resource type="Script" path="res://assets/items/Mindflare.cs" id="2_tychk"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="4_0lgej"]
+
+[sub_resource type="Resource" id="Resource_ognps"]
+script = ExtResource("4_0lgej")
+Type = "Magic"
+Value = 50.0
 
 [resource]
 script = ExtResource("1_dq5vp")
 Name = "Mindflare"
 Category = 1
-Description = ""
+Description = "[color=gray][i]This items effect is currently not implemented.[/i][/color]"
 Icon = ExtResource("2_d2h1r")
 CraftedFromA = ExtResource("1_v6rjm")
 CraftedFromB = ExtResource("1_v6rjm")
-Stats = null
+Stats = Array[Object]([SubResource("Resource_ognps")])
+EffectScript = ExtResource("2_tychk")

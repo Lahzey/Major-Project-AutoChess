@@ -7,13 +7,8 @@ namespace MPAutoChess.assets.items;
 [ProtoContract]
 public partial class HoardersPot : ItemEffect {
 
-	public override void Apply(Item item, UnitInstance unit) {
-		//TODO
-	}
-	public override void Process(Item item, UnitInstance unit, double delta) {
-		//TODO
-	}
-	public override void Remove(Item item, UnitInstance unit) {
-		//TODO
-	}
+    // only gives stats
+    protected override void Apply(Item item, UnitInstance unit) {}
+    protected override void Process(Item item, UnitInstance unit, double delta) {}
+    protected override void Remove(Item item, UnitInstance unit) {}
 }

@@ -37,7 +37,7 @@ public class StatType {
         throw new System.ArgumentException($"StatType with name '{name}' does not exist.");
     }
 
-    public static StatType[] GetAllValues() {
+    public static IEnumerable<StatType> GetAllValues() {
         return STAT_TYPES.Values.ToArray();
     }
 

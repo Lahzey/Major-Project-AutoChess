@@ -7,23 +7,23 @@
 [ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="4_8tpsr"]
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="4_k0sb1"]
 
-[sub_resource type="Resource" id="Resource_u0al1"]
+[sub_resource type="Resource" id="Resource_2ndaq"]
 script = ExtResource("4_8tpsr")
-StatType = "Armor"
-StatValue = 10.0
+Type = "Armor"
+Value = 10.0
 
-[sub_resource type="Resource" id="Resource_gdg5y"]
+[sub_resource type="Resource" id="Resource_bk4ea"]
 script = ExtResource("4_8tpsr")
-StatType = "Tenacity"
-StatValue = 0.1
+Type = "Tenacity"
+Value = 0.1
 
 [resource]
 script = ExtResource("4_k0sb1")
 Name = "Absorption Guard"
 Category = 1
-Description = "Nearby allies gain 20 armor and 20% tenacity"
+Description = "Nearby allies gain armor and tenacity."
 Icon = ExtResource("3_l4v1u")
 CraftedFromA = ExtResource("1_hs0pc")
 CraftedFromB = ExtResource("2_48p6y")
-Stats = Array[Object]([SubResource("Resource_u0al1"), SubResource("Resource_gdg5y")])
+Stats = Array[Object]([SubResource("Resource_2ndaq"), SubResource("Resource_bk4ea")])
 EffectScript = ExtResource("3_kjomw")

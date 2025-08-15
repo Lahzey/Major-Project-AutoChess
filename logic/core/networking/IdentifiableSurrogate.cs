@@ -35,10 +35,6 @@ public class IdentifiableSurrogate<T> : MergeSurrogateBase<T> where T : class, I
         if (surrogate.id == null) throw new ArgumentException("IdentifiableSurrogate must have an ID set.");
         if (surrogate.data == null) throw new ArgumentException("IdentifiableSurrogate must have data set to non-null value (empty is ok).");
 
-        if (typeof(T).IsAssignableTo(typeof(Stats))) {
-            GD.Print($"[{Environment.ProcessId}]: Received IdentifiableSurrogate for {typeof(T)} with ID {surrogate.id}");
-        }
-
         return surrogate.FromMirror(surrogate.data);
     }
 
@@ -47,10 +43,6 @@ public class IdentifiableSurrogate<T> : MergeSurrogateBase<T> where T : class, I
         if (obj.GetId() == null) throw new ArgumentException("Cannot serialize Identifiable without an ID.");
 
         if (typeof(T) != obj.GetType()) throw new InvalidOperationException($"[{Environment.ProcessId}]: Tried to create IdentifiableSurrogate for {typeof(T)} (actual type: {obj.GetType()}) with ID {obj.GetId()}");
-
-        if (typeof(T).IsAssignableTo(typeof(Stats))) {
-            GD.Print($"[{Environment.ProcessId}]: Creating IdentifiableSurrogate for {typeof(T)} (actual type: {obj.GetType()}) with ID {obj.GetId()}");
-        }
         
         var result = new IdentifiableSurrogate<T> {
             id = obj.GetId(),

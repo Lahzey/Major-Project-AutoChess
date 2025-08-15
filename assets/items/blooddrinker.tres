@@ -1,16 +1,29 @@
-[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://n6m26e0olmv3"]
+[gd_resource type="Resource" script_class="ItemType" load_steps=9 format=3 uid="uid://n6m26e0olmv3"]
 
 [ext_resource type="Resource" uid="uid://cvyfbw5oepnmu" path="res://assets/items/components/bandages.tres" id="1_dnr8n"]
 [ext_resource type="Texture2D" uid="uid://c7dpdclhcqwxe" path="res://assets/items/blooddrinker.jpg" id="1_kqwx3"]
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_qcih4"]
 [ext_resource type="Resource" uid="uid://bcj4yay71ptoa" path="res://assets/items/components/leather_handle.tres" id="2_4mocx"]
+[ext_resource type="Script" path="res://assets/items/Blooddrinker.cs" id="3_lucxs"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="5_fj3xf"]
+
+[sub_resource type="Resource" id="Resource_55jrn"]
+script = ExtResource("5_fj3xf")
+Type = "Health Regeneration"
+Value = 10.0
+
+[sub_resource type="Resource" id="Resource_mj1up"]
+script = ExtResource("5_fj3xf")
+Type = "Bonus Attack Speed"
+Value = 0.1
 
 [resource]
 script = ExtResource("1_qcih4")
 Name = "Blooddrinker"
 Category = 1
-Description = ""
+Description = "Basic attacks heal for a portion of the damage they deal."
 Icon = ExtResource("1_kqwx3")
 CraftedFromA = ExtResource("1_dnr8n")
 CraftedFromB = ExtResource("2_4mocx")
-Stats = null
+Stats = Array[Object]([SubResource("Resource_55jrn"), SubResource("Resource_mj1up")])
+EffectScript = ExtResource("3_lucxs")

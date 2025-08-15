@@ -1,16 +1,29 @@
-[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://dril22g8uk0uy"]
+[gd_resource type="Resource" script_class="ItemType" load_steps=9 format=3 uid="uid://dril22g8uk0uy"]
 
 [ext_resource type="Texture2D" uid="uid://5jg6qcuavhe" path="res://assets/items/meatshield_harness.jpg" id="1_bqynd"]
 [ext_resource type="Resource" uid="uid://d1vnu8i30ujxb" path="res://assets/items/components/lard.tres" id="1_ij2q2"]
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_v8svx"]
 [ext_resource type="Resource" uid="uid://oll2le0iflsv" path="res://assets/items/components/metal_plate.tres" id="2_t25i4"]
+[ext_resource type="Script" path="res://assets/items/MeatshieldHarness.cs" id="3_s236r"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="4_umsu6"]
+
+[sub_resource type="Resource" id="Resource_i6w5d"]
+script = ExtResource("4_umsu6")
+Type = "Max Health"
+Value = 250.0
+
+[sub_resource type="Resource" id="Resource_cth2w"]
+script = ExtResource("4_umsu6")
+Type = "Armor"
+Value = 25.0
 
 [resource]
 script = ExtResource("1_v8svx")
 Name = "Meatshield Harness"
 Category = 1
-Description = ""
+Description = "[color=gray][i]This items effect is currently not implemented.[/i][/color]"
 Icon = ExtResource("1_bqynd")
 CraftedFromA = ExtResource("1_ij2q2")
 CraftedFromB = ExtResource("2_t25i4")
-Stats = null
+Stats = Array[Object]([SubResource("Resource_i6w5d"), SubResource("Resource_cth2w")])
+EffectScript = ExtResource("3_s236r")

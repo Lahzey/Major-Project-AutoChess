@@ -1,4 +1,5 @@
 using Godot;
+using MPAutoChess.logic.core.combat;
 using MPAutoChess.logic.core.stats;
 using MPAutoChess.logic.core.unit;
 using UnitInstance = MPAutoChess.logic.core.unit.UnitInstance;
@@ -20,7 +21,7 @@ public partial class TankSpell : Spell {
     }
 
     public override void Cast(UnitInstance caster, UnitInstance? target) {
-        caster.Heal(caster, GetHealAmount(caster));
+        caster.Heal(caster.CreateDamageInstance(caster, DamageInstance.Medium.SPELL, GetHealAmount(caster), DamageType.HEALING));
     }
 
     public override string GetDescription(UnitInstance forUnit) {

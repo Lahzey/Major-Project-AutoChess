@@ -1,16 +1,29 @@
-[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://cgiht84tbym83"]
+[gd_resource type="Resource" script_class="ItemType" load_steps=9 format=3 uid="uid://cgiht84tbym83"]
 
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_3rdpw"]
 [ext_resource type="Texture2D" uid="uid://ddlafsen3mw5n" path="res://assets/items/edgewhirl.jpg" id="1_fpwqh"]
 [ext_resource type="Resource" uid="uid://c7tf56toxso2w" path="res://assets/items/components/sharp_blade.tres" id="1_sxok7"]
 [ext_resource type="Resource" uid="uid://bcj4yay71ptoa" path="res://assets/items/components/leather_handle.tres" id="2_xdusw"]
+[ext_resource type="Script" path="res://assets/items/Edgewhirl.cs" id="3_nh8qq"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="5_u0c2c"]
+
+[sub_resource type="Resource" id="Resource_slffg"]
+script = ExtResource("5_u0c2c")
+Type = "Strength"
+Value = 10.0
+
+[sub_resource type="Resource" id="Resource_csg2f"]
+script = ExtResource("5_u0c2c")
+Type = "Bonus Attack Speed"
+Value = 0.1
 
 [resource]
 script = ExtResource("1_3rdpw")
 Name = "Edgewhirl"
 Category = 1
-Description = ""
+Description = "The holders attacks grant strength on hit."
 Icon = ExtResource("1_fpwqh")
 CraftedFromA = ExtResource("1_sxok7")
 CraftedFromB = ExtResource("2_xdusw")
-Stats = null
+Stats = Array[Object]([SubResource("Resource_slffg"), SubResource("Resource_csg2f")])
+EffectScript = ExtResource("3_nh8qq")

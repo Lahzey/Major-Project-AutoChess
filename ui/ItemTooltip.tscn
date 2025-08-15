@@ -99,7 +99,7 @@ _data = {
 auto_translate_mode = 1
 visible = false
 offset_right = 264.0
-offset_bottom = 88.0
+offset_bottom = 1351.0
 script = ExtResource("1_7h2ks")
 Icon = NodePath("HBoxContainer/Icon")
 NameLabel = NodePath("HBoxContainer/VBoxContainer/HBoxContainer/Name")
@@ -193,6 +193,7 @@ theme_override_font_sizes/normal_font_size = 8
 theme_override_font_sizes/bold_font_size = 8
 bbcode_enabled = true
 text = "This is a very long description of an item and what its functions are now and when crafted into other items."
+fit_content = true
 scroll_active = false
 
 [node name="AutoFontSizeBI" type="Node" parent="HBoxContainer/VBoxContainer/Description"]

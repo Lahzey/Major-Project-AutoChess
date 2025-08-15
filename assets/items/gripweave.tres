@@ -1,16 +1,29 @@
-[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://bihatcmcbd7uc"]
+[gd_resource type="Resource" script_class="ItemType" load_steps=9 format=3 uid="uid://bihatcmcbd7uc"]
 
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_3ui1a"]
 [ext_resource type="Resource" uid="uid://cdr5pd15av0vo" path="res://assets/items/components/soft_padding.tres" id="1_12ud5"]
 [ext_resource type="Texture2D" uid="uid://dcgo5rtsd3fip" path="res://assets/items/gripweave.jpg" id="1_lsj0n"]
 [ext_resource type="Resource" uid="uid://bcj4yay71ptoa" path="res://assets/items/components/leather_handle.tres" id="2_7u6i1"]
+[ext_resource type="Script" path="res://assets/items/Gripweave.cs" id="3_pakct"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="5_447u7"]
+
+[sub_resource type="Resource" id="Resource_3fjpk"]
+script = ExtResource("5_447u7")
+Type = "Tenacity"
+Value = 0.1
+
+[sub_resource type="Resource" id="Resource_ndw0t"]
+script = ExtResource("5_447u7")
+Type = "Bonus Attack Speed"
+Value = 0.25
 
 [resource]
 script = ExtResource("1_3ui1a")
 Name = "Gripweave"
 Category = 1
-Description = ""
+Description = "[b]NOT IMPLEMENTED[/b] Attacks briefly stun targets on hit."
 Icon = ExtResource("1_lsj0n")
 CraftedFromA = ExtResource("1_12ud5")
 CraftedFromB = ExtResource("2_7u6i1")
-Stats = null
+Stats = Array[Object]([SubResource("Resource_3fjpk"), SubResource("Resource_ndw0t")])
+EffectScript = ExtResource("3_pakct")

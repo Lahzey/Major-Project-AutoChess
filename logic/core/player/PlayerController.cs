@@ -12,6 +12,7 @@ using MPAutoChess.logic.core.placement;
 using MPAutoChess.logic.core.session;
 using MPAutoChess.logic.core.shop;
 using MPAutoChess.logic.core.unit;
+using MPAutoChess.logic.menu;
 using MPAutoChess.logic.util;
 using Environment = System.Environment;
 using UnitInstance = MPAutoChess.logic.core.unit.UnitInstance;
@@ -41,10 +42,11 @@ public partial class PlayerController : Node {
             if (Current != null) throw new InvalidOperationException("Only servers can have multiple PlayerController instances.");
             Current = this;
             EventManager.INSTANCE.AddAfterListener<PhaseChangeEvent>(OnPhaseChange);
+        } else {
+            playerControllers.Add(Player, this);
         }
 
         if (Player == null) throw new ArgumentNullException(nameof(Player), "Player cannot be null.");
-        playerControllers.Add(Player, this);
     }
 
     private void OnPhaseChange(PhaseChangeEvent e) {
@@ -58,6 +60,27 @@ public partial class PlayerController : Node {
     public override void _Ready() {
         if (!ServerController.Instance.IsServer) {
             GoToArena(Player.Arena);
+        }
+    }
+
+    public override void _EnterTree() {
+        if (!ServerController.Instance.IsServer) EventManager.INSTANCE.AddAfterListener<PlayerDeathEvent>(OnPlayerDeath);
+    }
+
+    public override void _ExitTree() {
+        if (!ServerController.Instance.IsServer) EventManager.INSTANCE.RemoveAfterListener<PlayerDeathEvent>(OnPlayerDeath);
+        else playerControllers.Remove(Player);
+        if (Current == this) Current = null;
+    }
+
+    private void OnPlayerDeath(PlayerDeathEvent e) {
+        int remainingPlayerCount = GameSession.Instance.AlivePlayers.Count();
+        GD.Print("Player " + e.Player.Name + " has died. Remaining players: " + remainingPlayerCount);
+        if (e.Player == Player || remainingPlayerCount <= 1) {
+            if (dragProcessor.Running) dragProcessor.Complete(true);
+            
+            int placement = e.Player == Player ? remainingPlayerCount + 1 : remainingPlayerCount;
+            GameOverPanel.Instance.ShowGameOver(placement);
         }
     }
 
@@ -82,6 +105,7 @@ public partial class PlayerController : Node {
 
     public override void _UnhandledInput(InputEvent @event) {
         if (ServerController.Instance.IsServer) return; // Server sho1uld not receive input events, but just to be sure
+        if (Player.CurrentHealth <= 0) return; // player is dead, no input should be processed
 
         if (@event is InputEventMouseButton mouseButtonEvent) {
             if (mouseButtonEvent.ButtonIndex == MouseButton.Left) {

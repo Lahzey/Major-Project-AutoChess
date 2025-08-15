@@ -1,16 +1,29 @@
-[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://bibrn6lu6qp1c"]
+[gd_resource type="Resource" script_class="ItemType" load_steps=9 format=3 uid="uid://bibrn6lu6qp1c"]
 
 [ext_resource type="Resource" uid="uid://cvyfbw5oepnmu" path="res://assets/items/components/bandages.tres" id="1_e0t8u"]
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_ihmde"]
 [ext_resource type="Resource" uid="uid://oll2le0iflsv" path="res://assets/items/components/metal_plate.tres" id="2_s2qcl"]
+[ext_resource type="Script" path="res://assets/items/NatureGauntlets.cs" id="3_q70uy"]
 [ext_resource type="Texture2D" uid="uid://gp1kuuniwaq2" path="res://assets/items/nature_gauntlets.jpg" id="3_ukmt8"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="5_epd2v"]
+
+[sub_resource type="Resource" id="Resource_23nyq"]
+script = ExtResource("5_epd2v")
+Type = "Health Regeneration"
+Value = 10.0
+
+[sub_resource type="Resource" id="Resource_xblfa"]
+script = ExtResource("5_epd2v")
+Type = "Armor"
+Value = 10.0
 
 [resource]
 script = ExtResource("1_ihmde")
 Name = "Nature Gauntlets"
 Category = 1
-Description = ""
+Description = "[color=gray][i]This items effect is currently not implemented.[/i][/color]"
 Icon = ExtResource("3_ukmt8")
 CraftedFromA = ExtResource("1_e0t8u")
 CraftedFromB = ExtResource("2_s2qcl")
-Stats = null
+Stats = Array[Object]([SubResource("Resource_23nyq"), SubResource("Resource_xblfa")])
+EffectScript = ExtResource("3_q70uy")

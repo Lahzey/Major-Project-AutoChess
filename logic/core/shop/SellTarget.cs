@@ -52,20 +52,16 @@ public partial class SellTarget : Area2D, IUnitDropTarget {
         return PlayerController.Current.Player;
     }
     public Vector2 ConvertToPlacement(Vector2 position, Unit forUnit) {
-        GD.PrintErr("SellTarget.ConvertToPlacement(position, forUnit).");
         return Vector2.Zero;
     }
     public bool IsValidDrop(Unit unit, Vector2 placement, Unit replacedUnit = null) {
-        GD.PrintErr("SellTarget.IsValidDrop(unit, placement, replacedUnit).");
         return true;
     }
     public void OnUnitDrop(Unit unit, Vector2 placement) {
-        GD.PrintErr("SellTarget.OnUnitDrop(unit, placement).");
         if (!ServerController.Instance.IsServer) throw new InvalidOperationException("SellTarget.OnDrop(unit, placement) should only be called on the server side.");
-        
-        unit.Container?.RemoveUnit(unit);
-        PlayerController.Current.Player.AddGold(unit.GetSellValue());
-        unit.Dispose();
+        if (unit.Container.GetPlayer() != PlayerController.Current.Player) return;
+
+        unit.Sell();
     }
     
     public partial class ItemSellTarget : ItemDropTarget {

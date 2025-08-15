@@ -77,11 +77,11 @@ public class EventManager {
         public readonly List<int> afterPriorities = new List<int>();
         
         public void SortBeforeListeners() {
-            beforeListeners.Sort((a, b) => beforePriorities[beforeListeners.IndexOf(a)].CompareTo(beforePriorities[beforeListeners.IndexOf(b)]));
+            beforeListeners.Sort((a, b) => beforePriorities[beforeListeners.IndexOf(b)].CompareTo(beforePriorities[beforeListeners.IndexOf(a)]));
         }
         
         public void SortAfterListeners() {
-            afterListeners.Sort((a, b) => afterPriorities[afterListeners.IndexOf(a)].CompareTo(afterPriorities[afterListeners.IndexOf(b)]));
+            afterListeners.Sort((a, b) => afterPriorities[afterListeners.IndexOf(b)].CompareTo(afterPriorities[afterListeners.IndexOf(a)]));
         }
 
         public void Before(T e) {

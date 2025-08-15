@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 using MPAutoChess.logic.core.combat;
+using MPAutoChess.logic.core.events;
 using MPAutoChess.logic.core.item;
 using MPAutoChess.logic.core.networking;
 using MPAutoChess.logic.core.player;
@@ -25,8 +27,29 @@ public partial class GameSession : Node {
     
     public Random Random { get; private set; } = new  Random();
 
+    public IEnumerable<Player> AlivePlayers => Players.Where(player => player.CurrentHealth > 0);
+
     public override void _EnterTree() {
         Instance = this;
+        EventManager.INSTANCE.AddAfterListener<PlayerDeathEvent>(OnPlayerDeath);
+    }
+
+    private async void OnPlayerDeath(PlayerDeathEvent e) {
+        // TODO record death order for placement
+        if (AlivePlayers.Count() <= 1) {
+            Started = false; // prevent further processing
+            if (!ServerController.Instance.IsServer) return;
+            // TODO store that placement in the db
+            
+            // wait a bit to let the last information to be sent to the clients
+            await ToSignal(GetTree().CreateTimer(5.0f), "timeout");
+            
+            GetTree().Quit();
+        }
+    }
+
+    public override void _ExitTree() {
+        EventManager.INSTANCE.RemoveAfterListener<PlayerDeathEvent>(OnPlayerDeath);
     }
 
     public void Initialize(Season season, GameMode gameMode, Player[] players) {

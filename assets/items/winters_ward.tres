@@ -1,16 +1,27 @@
-[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://4t2t36j6luwn"]
+[gd_resource type="Resource" script_class="ItemType" load_steps=8 format=3 uid="uid://4t2t36j6luwn"]
 
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_etykn"]
 [ext_resource type="Resource" uid="uid://oll2le0iflsv" path="res://assets/items/components/metal_plate.tres" id="1_tfi2t"]
 [ext_resource type="Resource" uid="uid://cj6b31eh3cniv" path="res://assets/items/components/magical_fabric.tres" id="2_jmuof"]
 [ext_resource type="Texture2D" uid="uid://5harxxh8co25" path="res://assets/items/winters_ward.jpg" id="3_vbhit"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="4_xl5en"]
+
+[sub_resource type="Resource" id="Resource_ebnoq"]
+script = ExtResource("4_xl5en")
+Type = "Armor"
+Value = 50.0
+
+[sub_resource type="Resource" id="Resource_mo6t8"]
+script = ExtResource("4_xl5en")
+Type = "Aegis"
+Value = 50.0
 
 [resource]
 script = ExtResource("1_etykn")
 Name = "Winters Ward"
 Category = 1
-Description = ""
+Description = "[color=gray][i]This items effect is currently not implemented.[/i][/color]"
 Icon = ExtResource("3_vbhit")
 CraftedFromA = ExtResource("1_tfi2t")
 CraftedFromB = ExtResource("2_jmuof")
-Stats = null
+Stats = Array[Object]([SubResource("Resource_ebnoq"), SubResource("Resource_mo6t8")])

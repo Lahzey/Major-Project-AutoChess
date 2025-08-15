@@ -1,16 +1,29 @@
-[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://c35bs1dtc55md"]
+[gd_resource type="Resource" script_class="ItemType" load_steps=9 format=3 uid="uid://c35bs1dtc55md"]
 
 [ext_resource type="Texture2D" uid="uid://3d1wcqoryvg0" path="res://assets/items/jagged_mace.jpg" id="1_4b53a"]
 [ext_resource type="Resource" uid="uid://cvyfbw5oepnmu" path="res://assets/items/components/bandages.tres" id="1_22dys"]
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_rvg2m"]
 [ext_resource type="Resource" uid="uid://c7tf56toxso2w" path="res://assets/items/components/sharp_blade.tres" id="2_qb085"]
+[ext_resource type="Script" path="res://assets/items/JaggedMace.cs" id="3_e5vlr"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="5_rmabx"]
+
+[sub_resource type="Resource" id="Resource_addyk"]
+script = ExtResource("5_rmabx")
+Type = "Health Regeneration"
+Value = 10.0
+
+[sub_resource type="Resource" id="Resource_tvlti"]
+script = ExtResource("5_rmabx")
+Type = "Strength"
+Value = 25.0
 
 [resource]
 script = ExtResource("1_rvg2m")
 Name = "Jagged Mace"
 Category = 1
-Description = ""
+Description = "Gain vampirism, increased for each time the holder has damaged its current target."
 Icon = ExtResource("1_4b53a")
 CraftedFromA = ExtResource("1_22dys")
 CraftedFromB = ExtResource("2_qb085")
-Stats = null
+Stats = Array[Object]([SubResource("Resource_addyk"), SubResource("Resource_tvlti")])
+EffectScript = ExtResource("3_e5vlr")

@@ -82,4 +82,11 @@ public partial class CameraController : Node {
         Vector2 offset = camera.AnchorMode == Camera2D.AnchorModeEnum.DragCenter ? GetViewport().GetVisibleRect().Size * 0.5f : Vector2.Zero;
         return (viewportPosition - offset) / camera.Zoom + camera.GlobalPosition;
     }
+    
+    public Vector2 ToViewportPosition(Vector2 worldPosition) {
+        if (camera == null) return worldPosition;
+
+        Vector2 offset = camera.AnchorMode == Camera2D.AnchorModeEnum.DragCenter ? GetViewport().GetVisibleRect().Size * 0.5f : Vector2.Zero;
+        return (worldPosition - camera.GlobalPosition) * camera.Zoom + offset;
+    }
 }

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dftnoeh0eb158"
-path="res://.godot/imported/pocked_crossbow.jpg-c9d3b408c0cdf4a4961d8926a65a6ccc.ctex"
+uid="uid://b6hdffexdlybf"
+path="res://.godot/imported/placement.png-18d046873d2f0b171826a981523f20a3.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/items/pocked_crossbow.jpg"
-dest_files=["res://.godot/imported/pocked_crossbow.jpg-c9d3b408c0cdf4a4961d8926a65a6ccc.ctex"]
+source_file="res://assets/ui/menu/tutorial/placement.png"
+dest_files=["res://.godot/imported/placement.png-18d046873d2f0b171826a981523f20a3.ctex"]
 
 [params]
 

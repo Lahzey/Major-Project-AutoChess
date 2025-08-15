@@ -1,5 +1,6 @@
 using Godot;
 
+#if TOOLS
 [Tool]
 public partial class RegisterPlugin : EditorPlugin {
     public override void _EnterTree() {
@@ -26,3 +27,4 @@ public partial class RegisterPlugin : EditorPlugin {
         RemoveAutoloadSingleton("SceneSafeMultiplayer");
     }
 }
+#endif

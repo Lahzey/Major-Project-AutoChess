@@ -10,9 +10,9 @@ public class DamageInstance {
     
     [ProtoMember(1)] public UnitInstance Source { get; set; }
     [ProtoMember(2)] public UnitInstance Target { get; set; }
-    [ProtoMember(1)] public Medium DamageMedium { get; set; }
+    [ProtoMember(3)] public Medium DamageMedium { get; set; }
     
-    [ProtoMember(10)] public float Amount { get; set; }
+    [ProtoMember(10)] public float Amount { get; private set; }
     [ProtoMember(11)] public DamageType Type { get; set; }
     [ProtoMember(12)] public int CritLevel { get; set; }
     [ProtoMember(13)] public float CritModifier { get; set; }
@@ -23,6 +23,7 @@ public class DamageInstance {
 
     [ProtoMember(20)] public float Armor { get; set; } = -1f;
     [ProtoMember(21)] public float Aegis { get; set; } = -1f;
+    [ProtoMember(22)] public float MitigationMod { get; set; } = 1f;
 
     [ProtoMember(30)] public float PreMitigationAmount { get; set; } = -1f;
     [ProtoMember(31)] public float FinalAmount { get; set; } = -1f;
@@ -60,7 +61,7 @@ public class DamageInstance {
             throw new InvalidOperationException("PreMitigationAmount must be calculated before FinalAmount.");
         }
         
-        FinalAmount = PreMitigationAmount;
+        FinalAmount = PreMitigationAmount * MitigationMod;
 
         switch (Type) {
             case DamageType.PHYSICAL:
@@ -70,6 +71,8 @@ public class DamageInstance {
                 FinalAmount = ApplyResistance(FinalAmount, Aegis);
                 break;
         }
+        
+        if (IsCrit) FinalAmount *= (1 + CritModifier * CritLevel);
         
         FinalAmount = Mathf.Max(FinalAmount, 0f); // ensure damage is not negative
     }

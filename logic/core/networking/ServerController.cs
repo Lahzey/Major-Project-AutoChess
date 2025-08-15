@@ -13,10 +13,8 @@ namespace MPAutoChess.logic.core.networking;
 
 public partial class ServerController : Node {
 
-    public const string SERVER_IP = "127.0.0.1";
-    // TODO: to run multiple lobbies (and therefore servers) on the same machine, this needs to be loaded from the command line params
-    // and a matchmaking server (probably with NodeJS) starts servers on free ports and sends the port to the client
-    public const int SERVER_PORT = 8080;
+    public const string SERVER_IP = LobbyController.LOBBY_IP;
+    public static int SERVER_PORT = -1; // will be set via command line argument for server, or by the response from the lobby server for clients
     
     [Export] public PackedScene PlayerScene { get; set; }
     
@@ -60,12 +58,18 @@ public partial class ServerController : Node {
         GD.Print("Setting up server...");
         
         PlayerUI.Instance.QueueFree();
-        
-        ENetMultiplayerPeer serverPeer = new ENetMultiplayerPeer();
-        serverPeer.CreateServer(SERVER_PORT);
-        GetTree().GetMultiplayer().MultiplayerPeer = serverPeer;
             
         string[] args = OS.GetCmdlineArgs();
+        
+        string? portArg = args.FirstOrDefault(arg => arg.StartsWith("port="));
+        if (portArg == null) throw new ArgumentException("No port argument found in command line arguments. Expected format: mode=GameModeName");
+        int port = int.Parse(portArg.Substring("port=".Length));
+        
+        ENetMultiplayerPeer serverPeer = new ENetMultiplayerPeer();
+        serverPeer.CreateServer(port);
+        GetTree().GetMultiplayer().MultiplayerPeer = serverPeer;
+        
+        GD.Print("Connected to port " + port);
         
         string? gameModeArg = args.FirstOrDefault(arg => arg.StartsWith("mode="));
         if (gameModeArg == null) throw new ArgumentException("No game mode argument found in command line arguments. Expected format: mode=GameModeName");
@@ -75,20 +79,20 @@ public partial class ServerController : Node {
         // read the secret codes of players that are passed via command line arguments
         // the format is: players=accountId:secretCode,accountId:secretCode,...
         string? playersArg = args.FirstOrDefault(arg => arg.StartsWith("players="));
-        if (playersArg == null) throw new ArgumentException("No players argument found in command line arguments. Expected format: players=accountId:secretCode,accountId:secretCode,...");
+        if (playersArg == null) throw new ArgumentException("No players argument found in command line arguments. Expected format: players=accountId:secretCode:accountName,accountId:secretCode:accountName,...");
         string playersString = playersArg.Substring("players=".Length);
         string[] playerPairs = playersString.Split(',');
         Players = new Player[playerPairs.Length];
         for (int i = 0; i < Players.Length; i++) {
             string[] parts = playerPairs[i].Split(':');
-            if (parts.Length != 2) {
-                throw new ArgumentException($"Invalid player format: {playerPairs[i]}. Expected format: accountId:secretCode");
+            if (parts.Length != 3) {
+                throw new ArgumentException($"Invalid player format: {playerPairs[i]}. Expected format: accountId:secretCode:accountName");
             }
             if (!long.TryParse(parts[0], out long accountId)) {
                 throw new ArgumentException($"Invalid account ID: {parts[0]}");
             }
             Player player = PlayerScene.Instantiate<Player>();
-            player.SetAccount(Account.FindById(accountId));
+            player.SetAccount(new Account(accountId, parts[2], parts[1]));
             PlayerController controller = new PlayerController(player);
             controller.Name = $"Player{i}Controller";
             player.AddChild(controller);
@@ -97,6 +101,7 @@ public partial class ServerController : Node {
             accountIdToPlayer[accountId] = player;
             secretToPlayer[parts[1]] = player;
             readyPlayers[player] = false;
+            GD.Print($"Added player {player.Account.Name} with id {player.Account.Id} to the game.");
         }
         
         GameSession.Initialize(new Season0(), gameMode, Players); // TODO: read season and mode from command line arguments
@@ -251,5 +256,13 @@ public partial class ServerController : Node {
             throw new InvalidOperationException($"Action can only be run in the context of the player {allowedController.Player.Name}, not {controller.Player.Name}.");
         
         allowedController.RunInContext(action);
+    }
+    
+    public void Disconnect() {
+        if (IsServer) throw new InvalidOperationException("Disconnect can only be called on the client.");
+        
+        GD.Print("Disconnecting from server...");
+        GetTree().GetMultiplayer().MultiplayerPeer.Close();
+        GetTree().GetMultiplayer().MultiplayerPeer = null;
     }
 }

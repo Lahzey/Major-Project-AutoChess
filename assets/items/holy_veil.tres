@@ -1,15 +1,23 @@
-[gd_resource type="Resource" script_class="ItemType" load_steps=4 format=3 uid="uid://drtqlthxd20an"]
+[gd_resource type="Resource" script_class="ItemType" load_steps=7 format=3 uid="uid://drtqlthxd20an"]
 
 [ext_resource type="Resource" uid="uid://cj6b31eh3cniv" path="res://assets/items/components/magical_fabric.tres" id="1_dtv3w"]
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_ehnca"]
 [ext_resource type="Texture2D" uid="uid://83w3exq1x7u4" path="res://assets/items/holy_veil.jpg" id="2_5q0rd"]
+[ext_resource type="Script" path="res://assets/items/HolyVeil.cs" id="2_aslop"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="4_bbtm1"]
+
+[sub_resource type="Resource" id="Resource_1fc4q"]
+script = ExtResource("4_bbtm1")
+Type = "Aegis"
+Value = 50.0
 
 [resource]
 script = ExtResource("1_ehnca")
 Name = "Holy Veil"
 Category = 1
-Description = ""
+Description = "The holder takes reduced magic damage."
 Icon = ExtResource("2_5q0rd")
 CraftedFromA = ExtResource("1_dtv3w")
 CraftedFromB = ExtResource("1_dtv3w")
-Stats = null
+Stats = Array[Object]([SubResource("Resource_1fc4q")])
+EffectScript = ExtResource("2_aslop")

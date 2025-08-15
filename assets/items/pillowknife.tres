@@ -1,16 +1,29 @@
-[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://bhkpgatcjv5pr"]
+[gd_resource type="Resource" script_class="ItemType" load_steps=9 format=3 uid="uid://bhkpgatcjv5pr"]
 
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_c1pku"]
 [ext_resource type="Resource" uid="uid://cdr5pd15av0vo" path="res://assets/items/components/soft_padding.tres" id="1_yc5jk"]
 [ext_resource type="Resource" uid="uid://pys1hufuwj3k" path="res://assets/items/components/glass_shard.tres" id="2_yekyj"]
 [ext_resource type="Texture2D" uid="uid://bl0r8lk3g746c" path="res://assets/items/pillowknife.jpg" id="3_rpiua"]
+[ext_resource type="Script" path="res://assets/items/Pillowknife.cs" id="3_xathr"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="5_bn7nd"]
+
+[sub_resource type="Resource" id="Resource_hdu84"]
+script = ExtResource("5_bn7nd")
+Type = "Tenacity"
+Value = 0.2
+
+[sub_resource type="Resource" id="Resource_isasm"]
+script = ExtResource("5_bn7nd")
+Type = "Crit Chance"
+Value = 0.2
 
 [resource]
 script = ExtResource("1_c1pku")
 Name = "Pillowknife"
 Category = 1
-Description = ""
+Description = "[color=gray][i]This items effect is currently not implemented.[/i][/color]"
 Icon = ExtResource("3_rpiua")
 CraftedFromA = ExtResource("1_yc5jk")
 CraftedFromB = ExtResource("2_yekyj")
-Stats = null
+Stats = Array[Object]([SubResource("Resource_hdu84"), SubResource("Resource_isasm")])
+EffectScript = ExtResource("3_xathr")

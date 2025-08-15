@@ -13,7 +13,7 @@ public class Placeholder : UnitRole {
     private static readonly Texture2D ICON = ResourceLoader.Load<Texture2D>("res://seasons/season0/roles/placeholder.png");
     
     private static readonly int[] THRESHOLDS = { 2, 4 }; // Example thresholds, can be adjusted as needed
-    private static readonly float[] DOUBLE_ATTACK_CHANCES = { 0.25f, 0.5f, };
+    private static readonly float[] DOUBLE_ATTACK_CHANCES = { 0.15f, 0.25f, };
 
     public Placeholder() {
         if (Engine.IsEditorHint()) return;

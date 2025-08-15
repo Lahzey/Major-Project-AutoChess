@@ -59,7 +59,6 @@ public partial class UnitRoleSet : Resource {
             while (roleNames.Count > roleLength)
                 roleNames.RemoveAt(roleNames.Count - 1);
             NotifyPropertyListChanged();
-            GD.Print("Set role count to " + roleLength);
             return true;
         }
     

@@ -32,7 +32,7 @@ public partial class WarriorSpell : Spell {
         target.TakeDamage(damageInstance);
 
         float healingAmount = GetHealing(caster) * damageInstance.Amount;
-        caster.Heal(caster, healingAmount);
+        caster.Heal(caster.CreateDamageInstance(caster, DamageInstance.Medium.SPELL, healingAmount, DamageType.HEALING));
     }
 
     public override string GetDescription(UnitInstance forUnit) {

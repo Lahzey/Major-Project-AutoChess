@@ -4,10 +4,10 @@
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_dw8gq"]
 [ext_resource type="Texture2D" uid="uid://bv10l1vdkh42x" path="res://assets/items/components/sharp_blade.jpg" id="1_ma7o7"]
 
-[sub_resource type="Resource" id="Resource_bi40s"]
+[sub_resource type="Resource" id="Resource_s6f8d"]
 script = ExtResource("1_58qds")
-StatType = "Strength"
-StatValue = 10.0
+Type = "Strength"
+Value = 10.0
 
 [resource]
 script = ExtResource("1_dw8gq")
@@ -15,4 +15,4 @@ Name = "Sharp Blade"
 Category = 0
 Description = "[color=gray][i]A crafting component that can be turned into various strength boosting items.[/i][/color]"
 Icon = ExtResource("1_ma7o7")
-Stats = Array[Object]([SubResource("Resource_bi40s")])
+Stats = Array[Object]([SubResource("Resource_s6f8d")])

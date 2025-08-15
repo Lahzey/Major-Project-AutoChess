@@ -1,16 +1,29 @@
-[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://bkeefyf8eylio"]
+[gd_resource type="Resource" script_class="ItemType" load_steps=9 format=3 uid="uid://bkeefyf8eylio"]
 
 [ext_resource type="Resource" uid="uid://c7tf56toxso2w" path="res://assets/items/components/sharp_blade.tres" id="1_5l3ji"]
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_tkh6i"]
 [ext_resource type="Resource" uid="uid://cqcj6ce28vc1b" path="res://assets/items/components/power_orb.tres" id="2_talwb"]
 [ext_resource type="Texture2D" uid="uid://b3crletrcukf7" path="res://assets/items/fanlight.jpg" id="3_8ye6s"]
+[ext_resource type="Script" path="res://assets/items/Fanlight.cs" id="3_utfsh"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="5_qeuq8"]
+
+[sub_resource type="Resource" id="Resource_sfopw"]
+script = ExtResource("5_qeuq8")
+Type = "Strength"
+Value = 25.0
+
+[sub_resource type="Resource" id="Resource_ar62f"]
+script = ExtResource("5_qeuq8")
+Type = "Magic"
+Value = 25.0
 
 [resource]
 script = ExtResource("1_tkh6i")
 Name = "Fanlight"
 Category = 1
-Description = ""
+Description = "The holder periodically shoots a fire at his current target, repeating a portion of all damage dealt since the last fire."
 Icon = ExtResource("3_8ye6s")
 CraftedFromA = ExtResource("1_5l3ji")
 CraftedFromB = ExtResource("2_talwb")
-Stats = null
+Stats = Array[Object]([SubResource("Resource_sfopw"), SubResource("Resource_ar62f")])
+EffectScript = ExtResource("3_utfsh")

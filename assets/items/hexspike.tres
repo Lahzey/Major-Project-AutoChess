@@ -1,16 +1,29 @@
-[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://cst46armv2smd"]
+[gd_resource type="Resource" script_class="ItemType" load_steps=9 format=3 uid="uid://cst46armv2smd"]
 
 [ext_resource type="Texture2D" uid="uid://dsv1oas340pch" path="res://assets/items/hexspike.jpg" id="1_4qcxt"]
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_bsjwr"]
 [ext_resource type="Resource" uid="uid://cj6b31eh3cniv" path="res://assets/items/components/magical_fabric.tres" id="1_xqmhh"]
 [ext_resource type="Resource" uid="uid://c7tf56toxso2w" path="res://assets/items/components/sharp_blade.tres" id="2_068jq"]
+[ext_resource type="Script" path="res://assets/items/Hexspike.cs" id="3_ubkp0"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="5_jr8oi"]
+
+[sub_resource type="Resource" id="Resource_7s06b"]
+script = ExtResource("5_jr8oi")
+Type = "Aegis"
+Value = 10.0
+
+[sub_resource type="Resource" id="Resource_h4u6l"]
+script = ExtResource("5_jr8oi")
+Type = "Strength"
+Value = 10.0
 
 [resource]
 script = ExtResource("1_bsjwr")
 Name = "Hexspike"
 Category = 1
-Description = ""
+Description = "The holder deals bonus damage to targets that have damaged him this combat."
 Icon = ExtResource("1_4qcxt")
 CraftedFromA = ExtResource("1_xqmhh")
 CraftedFromB = ExtResource("2_068jq")
-Stats = null
+Stats = Array[Object]([SubResource("Resource_7s06b"), SubResource("Resource_h4u6l")])
+EffectScript = ExtResource("3_ubkp0")

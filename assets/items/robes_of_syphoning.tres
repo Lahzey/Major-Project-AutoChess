@@ -1,16 +1,29 @@
-[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://dpcewijfs0lto"]
+[gd_resource type="Resource" script_class="ItemType" load_steps=9 format=3 uid="uid://dpcewijfs0lto"]
 
 [ext_resource type="Resource" uid="uid://d1vnu8i30ujxb" path="res://assets/items/components/lard.tres" id="1_4mfa6"]
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_67iaq"]
 [ext_resource type="Resource" uid="uid://cj6b31eh3cniv" path="res://assets/items/components/magical_fabric.tres" id="2_jfmkp"]
+[ext_resource type="Script" path="res://assets/items/RobesOfSyphoning.cs" id="3_e21au"]
 [ext_resource type="Texture2D" uid="uid://c0f2d41vlev80" path="res://assets/items/robes_of_syphoning.jpg" id="3_v2yoe"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="5_vqfmf"]
+
+[sub_resource type="Resource" id="Resource_d1lva"]
+script = ExtResource("5_vqfmf")
+Type = "Max Health"
+Value = 250.0
+
+[sub_resource type="Resource" id="Resource_i6dds"]
+script = ExtResource("5_vqfmf")
+Type = "Aegis"
+Value = 25.0
 
 [resource]
 script = ExtResource("1_67iaq")
 Name = "Robes of Syphoning"
 Category = 1
-Description = ""
+Description = "[color=gray][i]This items effect is currently not implemented.[/i][/color]"
 Icon = ExtResource("3_v2yoe")
 CraftedFromA = ExtResource("1_4mfa6")
 CraftedFromB = ExtResource("2_jfmkp")
-Stats = null
+Stats = Array[Object]([SubResource("Resource_d1lva"), SubResource("Resource_i6dds")])
+EffectScript = ExtResource("3_e21au")

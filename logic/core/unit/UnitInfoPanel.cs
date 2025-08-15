@@ -99,8 +99,8 @@ public partial class UnitInfoPanel : Control {
         }
         
         SellPriceLabel.Text = unitInstance.Unit.GetSellValue().ToString();
-        HealthBarLabel.Text = $"{unitInstance.CurrentHealth}/{unitInstance.Stats.GetValue(StatType.MAX_HEALTH)}";
-        ManaBarLabel.Text = $"{unitInstance.CurrentMana}/{unitInstance.Stats.GetValue(StatType.MAX_MANA)}";
+        HealthBarLabel.Text = $"{StatType.MAX_HEALTH.ToString(unitInstance.CurrentHealth)}/{StatType.MAX_HEALTH.ToString(unitInstance.Stats.GetValue(StatType.MAX_HEALTH))}";
+        ManaBarLabel.Text = $"{StatType.MAX_MANA.ToString(unitInstance.CurrentMana)}/{StatType.MAX_MANA.ToString(unitInstance.Stats.GetValue(StatType.MAX_MANA))}";
         SpellNameLabel.Text = unitInstance.Spell?.GetName(unitInstance) ?? "No Spell";
         // SpellCostLabel.Text = unitInstance.Spell?.GetCost().ToString() ?? string.Empty; // TODO: is this needed?
         SpellDescriptionLabel.Text = unitInstance.Spell?.GetDescription(unitInstance) ?? "[i]This unit does not have a spell.[/i]";

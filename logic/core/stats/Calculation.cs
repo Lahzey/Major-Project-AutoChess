@@ -118,10 +118,11 @@ public class Calculation : IIdentifiable {
         return true;
     }
     
-    public void AddFlat(Value value, string id) {
+    public void AddFlat(Value value, string id, bool increaseIfPresent = false) {
         int index = flatIds.IndexOf(id);
         if (index >= 0) {
-            flatValues[index] = value;
+            if (increaseIfPresent) flatValues[index] = new ConstantValue(flatValues[index].Get() + value.Get());
+            else flatValues[index] = value;
         } else {
             flatValues.Add(value);
             flatIds.Add(id);

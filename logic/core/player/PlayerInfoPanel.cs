@@ -5,6 +5,7 @@ namespace MPAutoChess.logic.core.player;
 public partial class PlayerInfoPanel : Control {
     
     private static readonly Color PLAYER_BACKGROUND_COLOR = new Color("#00000049");
+    private static readonly Color CURRENT_PLAYER_BACKGROUND_COLOR = new Color("#2a693349");
     private static readonly Color SELECTED_PLAYER_BACKGROUND_COLOR = new Color("#1d3faa83");
     
     [Export] public ProgressBar HealthBar { get; set; }
@@ -46,8 +47,10 @@ public partial class PlayerInfoPanel : Control {
         NameLabel.Text = Player.Account.Name;
         ProfilePicture.Texture = Player.Account.ProfilePicture;
         
-        Color backgroundColor = PlayerController.Current.CurrentlyShowing.Player == Player ? SELECTED_PLAYER_BACKGROUND_COLOR : PLAYER_BACKGROUND_COLOR;
+        Color backgroundColor = PlayerController.Current.CurrentlyShowing.Player == Player ? SELECTED_PLAYER_BACKGROUND_COLOR : PlayerController.Current.Player == Player ? CURRENT_PLAYER_BACKGROUND_COLOR : PLAYER_BACKGROUND_COLOR;
         HealthStyleBox.BgColor = backgroundColor;
         ProfileBackgroundStyleBox.BgColor = backgroundColor;
+        
+        Modulate = Player.CurrentHealth > 0 ? Colors.White : new Color(1f, 1f, 1f, 0.5f);
     }
 }

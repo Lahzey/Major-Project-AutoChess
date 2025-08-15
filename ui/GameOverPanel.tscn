@@ -1,0 +1,70 @@
+[gd_scene load_steps=4 format=3 uid="uid://chr5ia7ggcal6"]
+
+[ext_resource type="Script" path="res://logic/menu/GameOverPanel.cs" id="1_15n87"]
+[ext_resource type="Texture2D" uid="uid://bon5pix2ghl2" path="res://assets/white.png" id="1_50doi"]
+[ext_resource type="Script" path="res://logic/util/AutoFontSize.cs" id="2_dpnai"]
+
+[node name="GameOverPanel" type="Control" node_paths=PackedStringArray("TitleLabel", "MainMenuButton")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_15n87")
+TitleLabel = NodePath("Panel/Label")
+MainMenuButton = NodePath("Panel/Button")
+
+[node name="BackgroundDarken" type="TextureRect" parent="."]
+modulate = Color(0, 0, 0, 0.290196)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_50doi")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.25
+anchor_top = 0.3
+anchor_right = 0.75
+anchor_bottom = 0.7
+offset_bottom = -0.175995
+metadata/_edit_use_anchors_ = true
+
+[node name="Label" type="Label" parent="Panel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 23
+text = "Victory
+1st Place"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AutoFontSize" type="Node" parent="Panel/Label"]
+script = ExtResource("2_dpnai")
+SizeType = 3
+
+[node name="Button" type="Button" parent="Panel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.3
+anchor_top = 0.6
+anchor_right = 0.7
+anchor_bottom = 0.9
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 23
+text = "Main Menu"
+metadata/_edit_use_anchors_ = true
+
+[node name="AutoFontSize" type="Node" parent="Panel/Button"]
+script = ExtResource("2_dpnai")
+SizeType = 3

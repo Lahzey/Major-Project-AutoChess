@@ -156,7 +156,7 @@ public partial class UnitInstance : CharacterBody2D {
 
         if (!initialized) {
             foreach (Item item in Unit.EquippedItems) {
-                item.Effect?.Apply(item, this);
+                item.Effect?.TryApply(item, this);
             }
             initialized = true;
         }
@@ -166,7 +166,7 @@ public partial class UnitInstance : CharacterBody2D {
         }
         
         foreach (Item item in Unit.EquippedItems) {
-            item.Effect?.Process(item, this, delta);
+            item.Effect?.TryProcess(item, this, delta);
         }
 
         Sprite.GlobalRotation = 0; // prevent the sprite from rotating when arenas are rotated based on persepctive
@@ -174,9 +174,15 @@ public partial class UnitInstance : CharacterBody2D {
 
     public void SetTarget(UnitInstance target, PathFinder.Path? path = null) {
         if (!ServerController.Instance.IsServer) return; // ignored if called on the client
+        
+        TargetChangeEvent targetChangeEvent = target != CurrentTarget ? new TargetChangeEvent(this, CurrentTarget, target) : null;
+        if (targetChangeEvent != null) EventManager.INSTANCE.NotifyBefore(targetChangeEvent);
+        
         CurrentTarget = target;
         CurrentPath = path;
         Rpc(MethodName.TransferTarget, target?.GetPath(), path != null ? SerializerExtensions.Serialize(path) : null);
+        
+        if (targetChangeEvent != null) EventManager.INSTANCE.NotifyAfter(targetChangeEvent);
     }
     
     [Rpc(MultiplayerApi.RpcMode.Authority)]
@@ -325,15 +331,16 @@ public partial class UnitInstance : CharacterBody2D {
     }
 
     private void ExecuteAttack(AttackEvent attackEvent) {
-        DamageInstance damageInstance = CreateDamageInstance(attackEvent.Target, DamageInstance.Medium.ATTACK, Stats.GetValue(StatType.STRENGTH), DamageType.PHYSICAL);
+        attackEvent.Damage = CreateDamageInstance(attackEvent.Target, DamageInstance.Medium.ATTACK, Stats.GetValue(StatType.STRENGTH), DamageType.PHYSICAL);
         if (Stats.GetValue(StatType.RANGE) > 0.01f) {
             Projectile projectile = Unit.Type.GetAttackProjectileOrDefault().Instantiate<Projectile>();
             projectile.Initialize(this, attackEvent.Target, () => {
-                HitTarget(attackEvent, damageInstance);
+                attackEvent.Target = projectile.Target.UnitInstance; // in case of target recalculation by the projectile
+                if (attackEvent.Target != null) HitTarget(attackEvent, attackEvent.Damage);
             }, () => CurrentTarget);
             CurrentCombat.SpawnProjectile(projectile, Position);
         } else {
-            HitTarget(attackEvent, damageInstance);
+            HitTarget(attackEvent, attackEvent.Damage);
         }
 
         EventManager.INSTANCE.NotifyAfter(attackEvent);
@@ -383,29 +390,37 @@ public partial class UnitInstance : CharacterBody2D {
         DamageEvent damageEvent = new DamageEvent(damageInstance);
         EventManager.INSTANCE.NotifyBefore(damageEvent);
         if (damageEvent.IsCancelled) {
-            damageInstance.Amount = 0;
+            damageInstance.FinalAmount = 0;
+            GD.PrintErr("Damage event cancelled");
             return;
         }
         damageInstance.CalculateFinalAmount();
-        Rpc(MethodName.TakeDamage, damageInstance.FinalAmount);
+        Rpc(MethodName.TakeDamage, SerializerExtensions.Serialize(damageInstance));
         EventManager.INSTANCE.NotifyAfter(damageEvent);
     }
 
-    public void Heal(DamageSource source, float amount) {
-        HealEvent healEvent = new HealEvent(source, this, amount);
+    public void Heal(DamageInstance healingInstance) {
+        healingInstance.CalculatePreMitigation();
+        healingInstance.CalculateFinalAmount();
+        HealEvent healEvent = new HealEvent(healingInstance);
         EventManager.INSTANCE.NotifyBefore(healEvent);
         if (healEvent.IsCancelled) return;
-        Rpc(MethodName.TakeDamage, healEvent.Amount * -1);
+        Rpc(MethodName.TakeDamage, SerializerExtensions.Serialize(healingInstance));
         EventManager.INSTANCE.NotifyAfter(healEvent);
     }
 
     [Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true)]
-    private void TakeDamage(float amount) {
-        CurrentHealth -= amount;
+    private void TakeDamage(byte[] serializedDamageInstance) {
+        DamageInstance damageInstance = SerializerExtensions.Deserialize<DamageInstance>(serializedDamageInstance);
+        if (damageInstance.Type == DamageType.HEALING) {
+            CurrentHealth = Mathf.Min(CurrentHealth + damageInstance.Amount, Stats.GetValue(StatType.MAX_HEALTH));
+        } else {
+            CurrentHealth -= damageInstance.FinalAmount;
+        }
         if (ServerController.Instance.IsServer) {
             if (CurrentHealth <= 0) Rpc(MethodName.Kill);
         } else {
-            // TODO: show damage numbers
+            DamageNumbers.Instance.ShowDamage(damageInstance);
         }
     }
 

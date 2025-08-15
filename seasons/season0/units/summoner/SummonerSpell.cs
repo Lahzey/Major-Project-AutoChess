@@ -9,7 +9,7 @@ namespace MPAutoChess.seasons.season0.units.summoner;
 [GlobalClass, Tool]
 public partial class SummonerSpell : Spell {
     
-    [Export] public UnitType SummonType { get; set; } = ResourceLoader.Load<UnitType>("res://seasons/season0/units/summoner/summoner_pet_type.tres");
+    private static readonly UnitType SUMMON_TYPE = ResourceLoader.Load<UnitType>("res://seasons/season0/units/summoner/summoner_pet_type.tres");
     
     private int[] SummonCount { get; set; } = { 2, 3, 20 };
     private float[] SummonBaseHealth { get; set; } = { 100, 150, 1000 };
@@ -39,7 +39,7 @@ public partial class SummonerSpell : Spell {
 
     public override void Cast(UnitInstance caster, UnitInstance? target) {
         for (int i = 0; i < GetSummonCount(caster); i++) {
-            Unit unit = new Unit(SummonType, null);
+            Unit unit = new Unit(SUMMON_TYPE, null);
             unit.Stats.GetCalculation(StatType.MAX_HEALTH).BaseValue = GetSummonBaseHealth(caster);
             unit.Stats.GetCalculation(StatType.STRENGTH).BaseValue = GetSummonBaseAttack(caster);
             UnitInstance summon = unit.CreateInstance(true);

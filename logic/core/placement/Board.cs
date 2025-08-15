@@ -35,19 +35,21 @@ public partial class Board : UnitContainer {
     private Dictionary<UnitRole, HashSet<UnitType>> unitTypesInRole = new Dictionary<UnitRole, HashSet<UnitType>>();
 
     public override void _Ready() {
+        if (ServerController.Instance.IsServer) return;
+        
         GridTexture.Scale = new Vector2(Columns, Rows);
         ((ShaderMaterial) GridTexture.Material).SetShaderParameter("columns", Columns);
         ((ShaderMaterial) GridTexture.Material).SetShaderParameter("rows", Rows);
         GridTexture.Visible = false;
 
-        if (PlayerController.Current == null) return; // this is a server, no user input to be handled
         PlayerController.Current.OnDragStart += OnDragStart;
         PlayerController.Current.OnDragProcess += OnDragProcess;
         PlayerController.Current.OnDragEnd += OnDragEnd;
     }
 
     public override void _ExitTree() {
-        if (PlayerController.Current == null) return; // this is a server, no user input to be handled
+        if (ServerController.Instance.IsServer) return;
+        
         PlayerController.Current.OnDragStart -= OnDragStart;
         PlayerController.Current.OnDragProcess -= OnDragProcess;
         PlayerController.Current.OnDragEnd -= OnDragEnd;

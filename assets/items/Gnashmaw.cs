@@ -6,14 +6,15 @@ namespace MPAutoChess.assets.items;
 
 [ProtoContract]
 public partial class Gnashmaw : ItemEffect {
+    protected override void Apply(Item item, UnitInstance unit) {
+        //TODO, tenacity and stuns not yet implemented
+	}
 
-	public override void Apply(Item item, UnitInstance unit) {
-		//TODO
+    protected override void Process(Item item, UnitInstance unit, double delta) {
+        //TODO, tenacity and stuns not yet implemented
 	}
-	public override void Process(Item item, UnitInstance unit, double delta) {
-		//TODO
-	}
-	public override void Remove(Item item, UnitInstance unit) {
-		//TODO
+
+    protected override void Remove(Item item, UnitInstance unit) {
+        //TODO, tenacity and stuns not yet implemented
 	}
 }

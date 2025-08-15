@@ -14,7 +14,7 @@ namespace MPAutoChess.logic.util;
 
 public static class SerializerExtensions {
 
-    public const bool DEBUG = true;
+    public const bool DEBUG = false;
     
     public static byte[] Serialize<T>(T obj) {
         NodeStructure.InitializeRoot();

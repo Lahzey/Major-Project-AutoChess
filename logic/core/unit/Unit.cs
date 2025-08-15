@@ -65,10 +65,10 @@ public class Unit : IIdentifiable {
         Dictionary<StatType, float> itemStats = new Dictionary<StatType, float>();
         foreach (Item item in EquippedItems) {
             foreach (StatValue stat in item.Type.Stats) {
-                if (itemStats.ContainsKey(stat.Type)) {
-                    itemStats[stat.Type] += item.GetStat(stat.Type);
+                if (itemStats.ContainsKey(stat.StatType)) {
+                    itemStats[stat.StatType] += item.GetStat(stat.StatType);
                 } else {
-                    itemStats[stat.Type] = item.GetStat(stat.Type);
+                    itemStats[stat.StatType] = item.GetStat(stat.StatType);
                 }
             }
         }
@@ -99,7 +99,12 @@ public class Unit : IIdentifiable {
     public void LevelUp(params Unit[] copies) {
         UnitLevelUpEvent levelUpEvent = new UnitLevelUpEvent(this, copies);
         EventManager.INSTANCE.NotifyBefore(levelUpEvent);
+        List<Item> copyItems = new List<Item>();
         foreach (Unit copy in copies) {
+            foreach (Item item in copy.EquippedItems.ToArray()) {
+                if (EquipItem(item)) copy.RemoveItem(item, false);
+            }
+            copy.RemoveItems();
             copy.Container?.RemoveUnit(copy);
             
             // keep a reference to the merged copy to prevent it from being destructed (which returns it to the pool)
@@ -135,7 +140,7 @@ public class Unit : IIdentifiable {
             return false;
         }
         EquippedItems.Add(item);
-        item.Effect?.Apply(item, GetOrCreatePassiveInstance());
+        item.Effect?.TryApply(item, GetOrCreatePassiveInstance());
         ApplyItemStats();
         ServerController.Instance.PublishChange(this);
         return true;
@@ -144,23 +149,40 @@ public class Unit : IIdentifiable {
     public void ReplaceItem(Item replacedItem, Item newItem) {
         int index = EquippedItems.IndexOf(replacedItem);
         if (index == -1) throw new ArgumentException("Item to replace not found in equipped items.", nameof(replacedItem));
-        replacedItem.Effect?.Remove(replacedItem, GetOrCreatePassiveInstance());
+        replacedItem.Effect?.TryRemove(replacedItem, GetOrCreatePassiveInstance());
         EquippedItems[index] = newItem;
         ApplyItemStats();
-        newItem.Effect?.Apply(newItem, GetOrCreatePassiveInstance());
+        newItem.Effect?.TryApply(newItem, GetOrCreatePassiveInstance());
+        ServerController.Instance.PublishChange(this);
+    }
+
+    public void RemoveItem(Item item, bool addToInventory = true) {
+        int index = EquippedItems.IndexOf(item);
+        if (index == -1) throw new ArgumentException("Item to remove not found in equipped items.", nameof(item));
+        
+        if (addToInventory) {
+            Player player = Container.GetPlayer();
+            if (!player.Inventory.AddItem(item)) {
+                GD.PrintErr($"Item was removed from unit {Type.Name} but could not be added to player inventory: {item.GetName()}");
+            }
+        }
+        
+        item.Effect?.TryRemove(item, GetOrCreatePassiveInstance());
+        EquippedItems.RemoveAt(index);
+        ApplyItemStats();
         ServerController.Instance.PublishChange(this);
     }
 
     public void RemoveItems(bool addToInventory = true) {
-        if (addToInventory) {
-            Player player = Container.GetPlayer();
-            foreach (Item item in EquippedItems) {
-                if (item == null) continue; // skip null items, just in case
+        Player player = Container.GetPlayer();
+        foreach (Item item in EquippedItems) {
+            // not calling RemoveItem repeatedly here to avoid multiple calls to ApplyItemStats and PublishChange
+            if (addToInventory) {
                 if (!player.Inventory.AddItem(item)) {
                     GD.PrintErr($"Item was removed from unit {Type.Name} but could not be added to player inventory: {item.GetName()}");
                 }
-                item.Effect?.Remove(item, GetOrCreatePassiveInstance());
             }
+            item.Effect?.TryRemove(item, GetOrCreatePassiveInstance());
         }
 
         EquippedItems.Clear();
@@ -226,5 +248,12 @@ public class Unit : IIdentifiable {
     public int GetSellValue() {
         int level = (int)Level;
         return level * Type.Cost - (level - 1);
+    }
+
+    public void Sell() {
+        RemoveItems();
+        Container?.RemoveUnit(this);
+        PlayerController.Current.Player.AddGold(GetSellValue());
+        Dispose();
     }
 }

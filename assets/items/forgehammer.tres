@@ -1,16 +1,29 @@
-[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://dky1nwaq1f6uq"]
+[gd_resource type="Resource" script_class="ItemType" load_steps=9 format=3 uid="uid://dky1nwaq1f6uq"]
 
 [ext_resource type="Texture2D" uid="uid://balnxlit0he5v" path="res://assets/items/forgehammer.jpg" id="1_cireh"]
 [ext_resource type="Resource" uid="uid://oll2le0iflsv" path="res://assets/items/components/metal_plate.tres" id="1_hbjwn"]
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_jpnej"]
 [ext_resource type="Resource" uid="uid://c7tf56toxso2w" path="res://assets/items/components/sharp_blade.tres" id="2_kxmv4"]
+[ext_resource type="Script" path="res://assets/items/Forgehammer.cs" id="3_gh0tg"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="5_2owcf"]
+
+[sub_resource type="Resource" id="Resource_hppp4"]
+script = ExtResource("5_2owcf")
+Type = "Armor"
+Value = 10.0
+
+[sub_resource type="Resource" id="Resource_8ufkg"]
+script = ExtResource("5_2owcf")
+Type = "Strength"
+Value = 10.0
 
 [resource]
 script = ExtResource("1_jpnej")
 Name = "Forgehammer"
 Category = 1
-Description = ""
+Description = "Gain armor and aegis based on the current targets armor and aegis."
 Icon = ExtResource("1_cireh")
 CraftedFromA = ExtResource("1_hbjwn")
 CraftedFromB = ExtResource("2_kxmv4")
-Stats = null
+Stats = Array[Object]([SubResource("Resource_hppp4"), SubResource("Resource_8ufkg")])
+EffectScript = ExtResource("3_gh0tg")

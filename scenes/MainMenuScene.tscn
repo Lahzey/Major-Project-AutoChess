@@ -1,0 +1,275 @@
+[gd_scene load_steps=14 format=3 uid="uid://rkx14xc85mum"]
+
+[ext_resource type="Script" path="res://logic/menu/MainMenu.cs" id="1_b7dip"]
+[ext_resource type="PackedScene" uid="uid://dwn3j7yo8jn1a" path="res://scenes/InGameScene.tscn" id="2_ldoys"]
+[ext_resource type="Texture2D" uid="uid://p0nn8kedg44m" path="res://assets/ui/menu/main_menu_background.png" id="3_3vf74"]
+[ext_resource type="Script" path="res://logic/util/AutoFontSize.cs" id="4_inbn0"]
+[ext_resource type="Script" path="res://logic/core/networking/LobbyController.cs" id="5_3vmav"]
+[ext_resource type="Texture2D" uid="uid://df2ouvl4ogxwc" path="res://assets/ui/quit.png" id="6_mn3q0"]
+[ext_resource type="Texture2D" uid="uid://bon5pix2ghl2" path="res://assets/white.png" id="7_44mky"]
+[ext_resource type="Texture2D" uid="uid://bh2s0qbg8nv1l" path="res://assets/ui/help.png" id="7_454xy"]
+[ext_resource type="Texture2D" uid="uid://rw2ag5tu1iv3" path="res://assets/ui/fullscreen.png" id="9_lfj4a"]
+[ext_resource type="Texture2D" uid="uid://beryfkc0uk75b" path="res://assets/ui/fullscreen_hover.png" id="10_5s20g"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rign2"]
+content_margin_left = 20.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 20.0
+bg_color = Color(0, 0, 0, 0.717647)
+corner_radius_top_left = 25
+corner_radius_bottom_left = 25
+
+[sub_resource type="InputEventKey" id="InputEventKey_40t6d"]
+device = -1
+keycode = 4194342
+
+[sub_resource type="Shortcut" id="Shortcut_xmvsb"]
+events = [SubResource("InputEventKey_40t6d")]
+
+[node name="MainMenu" type="Control" node_paths=PackedStringArray("QuitButton", "TutorialButton", "FullScreenButton", "PlayerNameInput", "ConnectButton", "StartGameButton", "LobbyController")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_b7dip")
+QuitButton = NodePath("QuitButtonContainer/QuitButton")
+TutorialButton = NodePath("TutorialButtonContainer/TutorialButton")
+FullScreenButton = NodePath("FullScreenButton")
+PlayerNameInput = NodePath("PlayerNameInput")
+ConnectButton = NodePath("ConnectButton")
+StartGameButton = NodePath("PlayButton")
+LobbyController = NodePath("LobbyController")
+InGameScene = ExtResource("2_ldoys")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_3vf74")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="PlayButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.25
+anchor_top = 0.75
+anchor_right = 0.75
+anchor_bottom = 0.9
+offset_right = 0.415998
+offset_bottom = -0.200001
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 23
+text = "Play"
+metadata/_edit_use_anchors_ = true
+
+[node name="AutoFontSize" type="Node" parent="PlayButton"]
+script = ExtResource("4_inbn0")
+SizeType = 3
+
+[node name="ConnectButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.631944
+anchor_top = 0.597222
+anchor_right = 0.748771
+anchor_bottom = 0.682407
+offset_right = 0.415998
+offset_bottom = -0.200001
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 14
+text = "Connect"
+metadata/_edit_use_anchors_ = true
+
+[node name="AutoFontSize" type="Node" parent="ConnectButton"]
+script = ExtResource("4_inbn0")
+SizeType = 2
+
+[node name="PlayerNameInput" type="LineEdit" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.250868
+anchor_top = 0.612654
+anchor_right = 0.609425
+anchor_bottom = 0.671456
+offset_right = -0.0575027
+offset_bottom = -0.104
+theme_override_font_sizes/font_size = 14
+placeholder_text = "Player Name"
+metadata/_edit_use_anchors_ = true
+
+[node name="AutoFontSize" type="Node" parent="PlayerNameInput"]
+script = ExtResource("4_inbn0")
+SizeType = 2
+
+[node name="LobbyController" type="Control" parent="."]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("5_3vmav")
+
+[node name="QuitButtonContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.05
+anchor_top = 0.05
+anchor_right = 0.05
+anchor_bottom = 0.05
+
+[node name="QuitButton" type="Button" parent="QuitButtonContainer"]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="QuitButtonContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="QuitButtonContainer/MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="TextureRect" type="TextureRect" parent="QuitButtonContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("6_mn3q0")
+expand_mode = 3
+
+[node name="Label" type="Label" parent="QuitButtonContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 23
+text = "Quit"
+
+[node name="AutoFontSize" type="Node" parent="QuitButtonContainer/MarginContainer/HBoxContainer/Label"]
+script = ExtResource("4_inbn0")
+SizeType = 3
+
+[node name="TutorialButtonContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.95
+anchor_top = 0.05
+anchor_right = 0.95
+anchor_bottom = 0.05
+grow_horizontal = 0
+
+[node name="TutorialButton" type="Button" parent="TutorialButtonContainer"]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="TutorialButtonContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="TutorialButtonContainer/MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="TutorialButtonContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 23
+text = "Tutorial"
+
+[node name="AutoFontSize" type="Node" parent="TutorialButtonContainer/MarginContainer/HBoxContainer/Label"]
+script = ExtResource("4_inbn0")
+SizeType = 3
+
+[node name="TextureRect" type="TextureRect" parent="TutorialButtonContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("7_454xy")
+expand_mode = 3
+
+[node name="TestingNote" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.8
+anchor_top = 0.4
+anchor_right = 1.0
+anchor_bottom = 0.4
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_rign2")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TestingNote"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="TestingNote/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 23
+text = "Testing Alone?"
+
+[node name="AutoFontSize" type="Node" parent="TestingNote/VBoxContainer/Label"]
+script = ExtResource("4_inbn0")
+SizeType = 3
+
+[node name="TextureRect" type="TextureRect" parent="TestingNote/VBoxContainer"]
+layout_mode = 2
+texture = ExtResource("7_44mky")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="TestingNote/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/bold_italics_font_size = 9
+theme_override_font_sizes/italics_font_size = 9
+theme_override_font_sizes/mono_font_size = 9
+theme_override_font_sizes/normal_font_size = 9
+theme_override_font_sizes/bold_font_size = 9
+bbcode_enabled = true
+text = "This is an online game requiring 8 players to start a game. If you wish to test this game, either get 7 other people to test with you, or start 7 more instance of this game.
+
+[i]Note: This game uses a dedicated server, so friends can be anywhere in the world![/i]"
+fit_content = true
+autowrap_mode = 2
+
+[node name="AutoFontSizeBI" type="Node" parent="TestingNote/VBoxContainer/RichTextLabel"]
+script = ExtResource("4_inbn0")
+FontSizeProperty = "bold_italics_font_size"
+
+[node name="AutoFontSizeI" type="Node" parent="TestingNote/VBoxContainer/RichTextLabel"]
+script = ExtResource("4_inbn0")
+FontSizeProperty = "italics_font_size"
+
+[node name="AutoFontSizeM" type="Node" parent="TestingNote/VBoxContainer/RichTextLabel"]
+script = ExtResource("4_inbn0")
+FontSizeProperty = "mono_font_size"
+
+[node name="AutoFontSize" type="Node" parent="TestingNote/VBoxContainer/RichTextLabel"]
+script = ExtResource("4_inbn0")
+FontSizeProperty = "normal_font_size"
+
+[node name="AutoFontSizeB" type="Node" parent="TestingNote/VBoxContainer/RichTextLabel"]
+script = ExtResource("4_inbn0")
+FontSizeProperty = "bold_font_size"
+
+[node name="FullScreenButton" type="TextureButton" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.880208
+anchor_top = 0.828704
+anchor_right = 0.958333
+anchor_bottom = 0.91358
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Toggle Fullscreen"
+mouse_default_cursor_shape = 2
+toggle_mode = true
+shortcut = SubResource("Shortcut_xmvsb")
+texture_normal = ExtResource("9_lfj4a")
+texture_pressed = ExtResource("10_5s20g")
+texture_hover = ExtResource("10_5s20g")
+ignore_texture_size = true
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true

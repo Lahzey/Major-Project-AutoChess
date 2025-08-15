@@ -1,8 +1,9 @@
-[gd_scene load_steps=22 format=3 uid="uid://c2fryil7qt0qx"]
+[gd_scene load_steps=24 format=3 uid="uid://c2fryil7qt0qx"]
 
 [ext_resource type="Script" path="res://logic/core/player/PlayerUI.cs" id="1_gfa4k"]
 [ext_resource type="Script" path="res://logic/menu/WorldControls.cs" id="2_f4nfe"]
 [ext_resource type="PackedScene" uid="uid://b1mjtwvjjws5j" path="res://ui/ShopUI.tscn" id="2_vb6bc"]
+[ext_resource type="Script" path="res://logic/core/combat/DamageNumbers.cs" id="3_0owi4"]
 [ext_resource type="Script" path="res://logic/core/player/ViewBounds.cs" id="3_mh5rr"]
 [ext_resource type="PackedScene" uid="uid://dc6pkfnhwi4qo" path="res://ui/InventoryPanel.tscn" id="4_qij4o"]
 [ext_resource type="Texture2D" uid="uid://bon5pix2ghl2" path="res://assets/white.png" id="5_2uqml"]
@@ -17,6 +18,7 @@
 [ext_resource type="PackedScene" uid="uid://b3yhkspgyhkaw" path="res://ui/RoleList.tscn" id="11_frthg"]
 [ext_resource type="PackedScene" uid="uid://bki55krvbhqnt" path="res://ui/PlayerList.tscn" id="12_ihqlf"]
 [ext_resource type="PackedScene" uid="uid://463r56msr1t3" path="res://ui/UnitInfoPanel.tscn" id="16_awyvp"]
+[ext_resource type="PackedScene" uid="uid://chr5ia7ggcal6" path="res://ui/GameOverPanel.tscn" id="19_1k3ug"]
 
 [sub_resource type="Resource" id="Resource_tmwpu"]
 script = ExtResource("6_yluh8")
@@ -106,6 +108,16 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("2_f4nfe")
+
+[node name="DamageNumbers" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_0owi4")
 
 [node name="Shop" parent="." instance=ExtResource("2_vb6bc")]
 layout_mode = 1
@@ -343,3 +355,7 @@ mouse_filter = 2
 
 [node name="ItemTooltip" parent="ItemTooltipContainer" instance=ExtResource("5_jl212")]
 layout_mode = 2
+
+[node name="GameOverPanel" parent="." instance=ExtResource("19_1k3ug")]
+visible = false
+layout_mode = 1

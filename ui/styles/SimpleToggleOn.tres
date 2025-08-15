@@ -13,11 +13,11 @@ PolygonPoints = PackedVector2Array(0.25, 0, 0.75, 0, 1, 0.25, 1, 0.75, 0.75, 1, 
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_owgeb"]
 shader = ExtResource("2_tpl4d")
-shader_parameter/animated = true
-shader_parameter/animation_duration = 2.0
-shader_parameter/highlight_color = Color(0.658824, 0.482353, 0.329412, 1)
-shader_parameter/loop_animation = true
-shader_parameter/animation_mode = 1
+shader_parameter/animated = null
+shader_parameter/animation_duration = null
+shader_parameter/highlight_color = null
+shader_parameter/loop_animation = null
+shader_parameter/animation_mode = null
 shader_parameter/start_time = null
 shader_parameter/noise_scale = null
 

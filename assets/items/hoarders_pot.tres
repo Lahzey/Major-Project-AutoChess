@@ -1,16 +1,59 @@
-[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://dep5mx5ydgevr"]
+[gd_resource type="Resource" script_class="ItemType" load_steps=15 format=3 uid="uid://dep5mx5ydgevr"]
 
 [ext_resource type="Resource" uid="uid://d1vnu8i30ujxb" path="res://assets/items/components/lard.tres" id="1_1vwjm"]
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_x8c0w"]
 [ext_resource type="Resource" uid="uid://pys1hufuwj3k" path="res://assets/items/components/glass_shard.tres" id="2_jvkxu"]
 [ext_resource type="Texture2D" uid="uid://dh765up54pvik" path="res://assets/items/hoarders_pot.jpg" id="3_pyc81"]
+[ext_resource type="Script" path="res://assets/items/HoardersPot.cs" id="3_wy0ci"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="5_133hm"]
+
+[sub_resource type="Resource" id="Resource_8j1f7"]
+script = ExtResource("5_133hm")
+Type = "Max Health"
+Value = 150.0
+
+[sub_resource type="Resource" id="Resource_pxh10"]
+script = ExtResource("5_133hm")
+Type = "Health Regeneration"
+Value = 15.0
+
+[sub_resource type="Resource" id="Resource_drv4q"]
+script = ExtResource("5_133hm")
+Type = "Armor"
+Value = 15.0
+
+[sub_resource type="Resource" id="Resource_2uw5w"]
+script = ExtResource("5_133hm")
+Type = "Aegis"
+Value = 15.0
+
+[sub_resource type="Resource" id="Resource_6xncj"]
+script = ExtResource("5_133hm")
+Type = "Strength"
+Value = 15.0
+
+[sub_resource type="Resource" id="Resource_klepv"]
+script = ExtResource("5_133hm")
+Type = "Magic"
+Value = 15.0
+
+[sub_resource type="Resource" id="Resource_fg1j4"]
+script = ExtResource("5_133hm")
+Type = "Bonus Attack Speed"
+Value = 0.15
+
+[sub_resource type="Resource" id="Resource_6w35p"]
+script = ExtResource("5_133hm")
+Type = "Crit Chance"
+Value = 0.15
 
 [resource]
 script = ExtResource("1_x8c0w")
 Name = "Hoarders Pot"
 Category = 1
-Description = ""
+Description = "[i]Do you really need all these stats?[/i]"
 Icon = ExtResource("3_pyc81")
 CraftedFromA = ExtResource("1_1vwjm")
 CraftedFromB = ExtResource("2_jvkxu")
-Stats = null
+Stats = Array[Object]([SubResource("Resource_8j1f7"), SubResource("Resource_pxh10"), SubResource("Resource_drv4q"), SubResource("Resource_2uw5w"), SubResource("Resource_6xncj"), SubResource("Resource_klepv"), SubResource("Resource_fg1j4"), SubResource("Resource_6w35p")])
+EffectScript = ExtResource("3_wy0ci")

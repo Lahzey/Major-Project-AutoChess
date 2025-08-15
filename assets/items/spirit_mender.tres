@@ -1,16 +1,29 @@
-[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://bwrgmav5wju2d"]
+[gd_resource type="Resource" script_class="ItemType" load_steps=9 format=3 uid="uid://bwrgmav5wju2d"]
 
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_i5f6w"]
 [ext_resource type="Resource" uid="uid://cvyfbw5oepnmu" path="res://assets/items/components/bandages.tres" id="1_wpaya"]
 [ext_resource type="Resource" uid="uid://cqcj6ce28vc1b" path="res://assets/items/components/power_orb.tres" id="2_64p36"]
+[ext_resource type="Script" path="res://assets/items/SpiritMender.cs" id="3_0uoo0"]
 [ext_resource type="Texture2D" uid="uid://b1jma6pdhxxgo" path="res://assets/items/spirit_mender.jpg" id="3_htu3k"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="5_hruw8"]
+
+[sub_resource type="Resource" id="Resource_tqani"]
+script = ExtResource("5_hruw8")
+Type = "Health Regeneration"
+Value = 10.0
+
+[sub_resource type="Resource" id="Resource_am03v"]
+script = ExtResource("5_hruw8")
+Type = "Magic"
+Value = 20.0
 
 [resource]
 script = ExtResource("1_i5f6w")
 Name = "Spirit Mender"
 Category = 1
-Description = ""
+Description = "[color=gray][i]This items effect is currently not implemented.[/i][/color]"
 Icon = ExtResource("3_htu3k")
 CraftedFromA = ExtResource("1_wpaya")
 CraftedFromB = ExtResource("2_64p36")
-Stats = null
+Stats = Array[Object]([SubResource("Resource_tqani"), SubResource("Resource_am03v")])
+EffectScript = ExtResource("3_0uoo0")

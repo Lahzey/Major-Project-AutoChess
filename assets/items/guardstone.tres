@@ -1,16 +1,29 @@
-[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://b7pyt8648sisn"]
+[gd_resource type="Resource" script_class="ItemType" load_steps=9 format=3 uid="uid://b7pyt8648sisn"]
 
 [ext_resource type="Resource" uid="uid://d1vnu8i30ujxb" path="res://assets/items/components/lard.tres" id="1_5kpms"]
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_hq62g"]
 [ext_resource type="Resource" uid="uid://cqcj6ce28vc1b" path="res://assets/items/components/power_orb.tres" id="2_6wm3j"]
+[ext_resource type="Script" path="res://assets/items/Guardstone.cs" id="3_wr37w"]
 [ext_resource type="Texture2D" uid="uid://xm7d7evppj2y" path="res://assets/items/guardstone.jpg" id="3_ylp0j"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="5_0hi7g"]
+
+[sub_resource type="Resource" id="Resource_u0sp7"]
+script = ExtResource("5_0hi7g")
+Type = "Max Health"
+Value = 150.0
+
+[sub_resource type="Resource" id="Resource_cbejs"]
+script = ExtResource("5_0hi7g")
+Type = "Magic"
+Value = 25.0
 
 [resource]
 script = ExtResource("1_hq62g")
 Name = "Guardstone"
 Category = 1
-Description = ""
+Description = "[b]NOT IMPLEMENTED[/b] The holder gains a shield whenever he casts and has increased magic while shielded."
 Icon = ExtResource("3_ylp0j")
 CraftedFromA = ExtResource("1_5kpms")
 CraftedFromB = ExtResource("2_6wm3j")
-Stats = null
+Stats = Array[Object]([SubResource("Resource_u0sp7"), SubResource("Resource_cbejs")])
+EffectScript = ExtResource("3_wr37w")

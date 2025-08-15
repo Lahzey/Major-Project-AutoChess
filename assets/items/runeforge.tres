@@ -1,16 +1,29 @@
-[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://buix3c8hiib8b"]
+[gd_resource type="Resource" script_class="ItemType" load_steps=9 format=3 uid="uid://buix3c8hiib8b"]
 
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_4fuvc"]
 [ext_resource type="Resource" uid="uid://oll2le0iflsv" path="res://assets/items/components/metal_plate.tres" id="1_d35wg"]
 [ext_resource type="Resource" uid="uid://cqcj6ce28vc1b" path="res://assets/items/components/power_orb.tres" id="2_ryeql"]
 [ext_resource type="Texture2D" uid="uid://cx7us3vjtokrq" path="res://assets/items/runeforge.jpg" id="3_aljmx"]
+[ext_resource type="Script" path="res://assets/items/Runeforge.cs" id="3_why11"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="5_6jdx8"]
+
+[sub_resource type="Resource" id="Resource_wh0u7"]
+script = ExtResource("5_6jdx8")
+Type = "Armor"
+Value = 20.0
+
+[sub_resource type="Resource" id="Resource_0uh4t"]
+script = ExtResource("5_6jdx8")
+Type = "Magic"
+Value = 20.0
 
 [resource]
 script = ExtResource("1_4fuvc")
 Name = "Runeforge"
 Category = 1
-Description = ""
+Description = "[color=gray][i]This items effect is currently not implemented.[/i][/color]"
 Icon = ExtResource("3_aljmx")
 CraftedFromA = ExtResource("1_d35wg")
 CraftedFromB = ExtResource("2_ryeql")
-Stats = null
+Stats = Array[Object]([SubResource("Resource_wh0u7"), SubResource("Resource_0uh4t")])
+EffectScript = ExtResource("3_why11")

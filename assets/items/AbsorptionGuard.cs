@@ -20,21 +20,12 @@ public partial class AbsorptionGuard : ItemEffect {
     
     private const double RECALCULATE_INTERVAL = 0.25;
     
-    private int instanceCounter = 0; // used for a more readable id in the stats
-    [ProtoMember(1)] private int instanceId;
-    
     private string StatsId => STATS_PREFIX + instanceId;
     
     private double accumulatedDelta = 0.0;
     private List<Unit> appliedTo = new List<Unit>();
 
-    public AbsorptionGuard() {
-        if (ServerController.Instance.IsServer) {
-            instanceId = instanceCounter++;
-        }
-    }
-
-    public override void Apply(Item item, UnitInstance unit) {
+    protected override void Apply(Item item, UnitInstance unit) {
         if (!ServerController.Instance.IsServer) return;
         if (!unit.IsCombatInstance) return;
         
@@ -46,7 +37,7 @@ public partial class AbsorptionGuard : ItemEffect {
         }
     }
 
-	public override void Process(Item item, UnitInstance unit, double delta) {
+    protected override void Process(Item item, UnitInstance unit, double delta) {
         if (!ServerController.Instance.IsServer) return;
         if (unit.IsCombatInstance) return;
 
@@ -93,7 +84,7 @@ public partial class AbsorptionGuard : ItemEffect {
         // }
     }
 
-    public override void Remove(Item item, UnitInstance unit) {
+    protected override void Remove(Item item, UnitInstance unit) {
         if (!ServerController.Instance.IsServer) return;
         if (unit.IsCombatInstance) return;
         

@@ -1,16 +1,29 @@
-[gd_resource type="Resource" script_class="ItemType" load_steps=5 format=3 uid="uid://dtsi7qtbvl3b5"]
+[gd_resource type="Resource" script_class="ItemType" load_steps=9 format=3 uid="uid://dtsi7qtbvl3b5"]
 
 [ext_resource type="Script" path="res://logic/core/item/ItemType.cs" id="1_3gvde"]
 [ext_resource type="Resource" uid="uid://d1vnu8i30ujxb" path="res://assets/items/components/lard.tres" id="1_w8tlh"]
 [ext_resource type="Resource" uid="uid://bcj4yay71ptoa" path="res://assets/items/components/leather_handle.tres" id="2_amo54"]
-[ext_resource type="Texture2D" uid="uid://dftnoeh0eb158" path="res://assets/items/pocked_crossbow.jpg" id="3_siswb"]
+[ext_resource type="Script" path="res://assets/items/PocketCrossbow.cs" id="3_gu54n"]
+[ext_resource type="Texture2D" uid="uid://dftnoeh0eb158" path="res://assets/items/pocket_crossbow.jpg" id="4_6i4tr"]
+[ext_resource type="Script" path="res://logic/core/stats/StatValue.cs" id="5_mii5b"]
+
+[sub_resource type="Resource" id="Resource_bcxnj"]
+script = ExtResource("5_mii5b")
+Type = "Max Health"
+Value = 150.0
+
+[sub_resource type="Resource" id="Resource_mhshc"]
+script = ExtResource("5_mii5b")
+Type = "Bonus Attack Speed"
+Value = 0.1
 
 [resource]
 script = ExtResource("1_3gvde")
 Name = "Pocket Crossbow"
 Category = 1
-Description = ""
-Icon = ExtResource("3_siswb")
+Description = "[color=gray][i]This items effect is currently not implemented.[/i][/color]"
+Icon = ExtResource("4_6i4tr")
 CraftedFromA = ExtResource("1_w8tlh")
 CraftedFromB = ExtResource("2_amo54")
-Stats = null
+Stats = Array[Object]([SubResource("Resource_bcxnj"), SubResource("Resource_mhshc")])
+EffectScript = ExtResource("3_gu54n")

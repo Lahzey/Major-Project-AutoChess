@@ -1,0 +1,480 @@
+[gd_scene load_steps=21 format=3 uid="uid://b5j213rfotp5s"]
+
+[ext_resource type="Script" path="res://logic/menu/Tutorial.cs" id="1_rnbuq"]
+[ext_resource type="Texture2D" uid="uid://d1okb457f7m1d" path="res://assets/ui/menu/tutorial_background.png" id="1_swgbk"]
+[ext_resource type="Script" path="res://logic/util/AutoFontSize.cs" id="2_amt0d"]
+[ext_resource type="Texture2D" uid="uid://bon5pix2ghl2" path="res://assets/white.png" id="3_7mkuq"]
+[ext_resource type="Script" path="res://logic/menu/Carousel.cs" id="4_wp1hf"]
+[ext_resource type="Texture2D" uid="uid://vwynpheqk62v" path="res://assets/ui/menu/tutorial/shop.png" id="5_s3ncy"]
+[ext_resource type="Texture2D" uid="uid://b6hdffexdlybf" path="res://assets/ui/menu/tutorial/placement.png" id="6_wueci"]
+[ext_resource type="Texture2D" uid="uid://drsswl41bha0i" path="res://assets/ui/menu/tutorial/combat.png" id="7_078ox"]
+[ext_resource type="Texture2D" uid="uid://du8sp0osim7b1" path="res://assets/ui/menu/tutorial/loot.png" id="8_4laqr"]
+[ext_resource type="Texture2D" uid="uid://djwye57d36q7o" path="res://assets/ui/menu/tutorial/player_damage.png" id="8_wte3w"]
+[ext_resource type="Texture2D" uid="uid://b70pqbutlhr8n" path="res://assets/ui/menu/tutorial/items.png" id="9_l6r5j"]
+[ext_resource type="Texture2D" uid="uid://dqbuw8aheyf0i" path="res://assets/ui/menu/tutorial/crafting.png" id="10_dmhxm"]
+[ext_resource type="Texture2D" uid="uid://bc5qqtndsr5rt" path="res://assets/ui/menu/tutorial/inspect.png" id="11_yfjwv"]
+[ext_resource type="Texture2D" uid="uid://6hfx0uaerd0b" path="res://assets/ui/menu/tutorial/experience.png" id="12_bk5la"]
+[ext_resource type="Texture2D" uid="uid://d3byrmr8mq5mh" path="res://assets/ui/menu/tutorial/upgrade.png" id="13_hlgmg"]
+
+[sub_resource type="InputEventKey" id="InputEventKey_cgqmd"]
+device = -1
+keycode = 4194319
+
+[sub_resource type="Shortcut" id="Shortcut_pqs37"]
+events = [SubResource("InputEventKey_cgqmd")]
+
+[sub_resource type="InputEventKey" id="InputEventKey_ineqw"]
+device = -1
+keycode = 32
+unicode = 32
+
+[sub_resource type="InputEventKey" id="InputEventKey_50vsx"]
+device = -1
+keycode = 4194321
+
+[sub_resource type="Shortcut" id="Shortcut_85mvj"]
+events = [SubResource("InputEventKey_ineqw"), SubResource("InputEventKey_50vsx")]
+
+[node name="TutorialScene" type="Control" node_paths=PackedStringArray("BackButton")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_rnbuq")
+BackButton = NodePath("Button")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+modulate = Color(0.0475576, 0.0475577, 0.0475576, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_swgbk")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.1
+anchor_top = 0.1
+anchor_right = 0.9
+anchor_bottom = 0.9
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 23
+text = "Tutorial"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Title"]
+script = ExtResource("2_amt0d")
+SizeType = 3
+
+[node name="Separator" type="TextureRect" parent="VBoxContainer"]
+layout_mode = 2
+texture = ExtResource("3_7mkuq")
+
+[node name="Control" type="HBoxContainer" parent="VBoxContainer" node_paths=PackedStringArray("Container", "PrevButton", "NextButton")]
+layout_mode = 2
+size_flags_vertical = 3
+script = ExtResource("4_wp1hf")
+Container = NodePath("Images")
+PrevButton = NodePath("PrevButton")
+NextButton = NodePath("NextButton")
+
+[node name="PrevButton" type="Button" parent="VBoxContainer/Control"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 23
+shortcut = SubResource("Shortcut_pqs37")
+text = "<"
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Control/PrevButton"]
+script = ExtResource("2_amt0d")
+SizeType = 3
+
+[node name="Images" type="MarginContainer" parent="VBoxContainer/Control"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="1-Shop" type="VBoxContainer" parent="VBoxContainer/Control/Images"]
+visible = false
+layout_mode = 2
+
+[node name="Title" type="Label" parent="VBoxContainer/Control/Images/1-Shop"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "(1/10) Purchasing Units"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Control/Images/1-Shop/Title"]
+script = ExtResource("2_amt0d")
+SizeType = 2
+
+[node name="Text" type="Label" parent="VBoxContainer/Control/Images/1-Shop"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 9
+text = "When the game starts, you will find a shop filled with units at the bottom of your screen. Purchase some to add them to your arsenal.
+Units you cannot afford are greyed out."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Control/Images/1-Shop/Text"]
+script = ExtResource("2_amt0d")
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/Control/Images/1-Shop"]
+layout_mode = 2
+size_flags_vertical = 3
+texture = ExtResource("5_s3ncy")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="2-Placement" type="VBoxContainer" parent="VBoxContainer/Control/Images"]
+visible = false
+layout_mode = 2
+
+[node name="Title" type="Label" parent="VBoxContainer/Control/Images/2-Placement"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "(2/10) Placing Units"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Control/Images/2-Placement/Title"]
+script = ExtResource("2_amt0d")
+SizeType = 2
+
+[node name="Text" type="Label" parent="VBoxContainer/Control/Images/2-Placement"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 9
+text = "Once you have purchased some units. You may place them on your board.
+At the start, you may only place one unit. Increasing this will be explained later."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Control/Images/2-Placement/Text"]
+script = ExtResource("2_amt0d")
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/Control/Images/2-Placement"]
+layout_mode = 2
+size_flags_vertical = 3
+texture = ExtResource("6_wueci")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="3-Combat" type="VBoxContainer" parent="VBoxContainer/Control/Images"]
+visible = false
+layout_mode = 2
+
+[node name="Title" type="Label" parent="VBoxContainer/Control/Images/3-Combat"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "(3/10) Combat"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Control/Images/3-Combat/Title"]
+script = ExtResource("2_amt0d")
+SizeType = 2
+
+[node name="Text" type="Label" parent="VBoxContainer/Control/Images/3-Combat"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 9
+text = "Sometimes your units will have to fight against those of an enemy player. You will be warned about this at the top of the screen.
+Units placed on your board will autoatically attack those of your opponent. You do not have to do anything, combats are fully automatic.
+Once all of a players units have died, he loses and the other wins.
+Don't worry, any dead units will be back once the combat ends."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Control/Images/3-Combat/Text"]
+script = ExtResource("2_amt0d")
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/Control/Images/3-Combat"]
+layout_mode = 2
+size_flags_vertical = 3
+texture = ExtResource("7_078ox")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="4-Player Damage" type="VBoxContainer" parent="VBoxContainer/Control/Images"]
+visible = false
+layout_mode = 2
+
+[node name="Title" type="Label" parent="VBoxContainer/Control/Images/4-Player Damage"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "(4/10) Player Damage"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Control/Images/4-Player Damage/Title"]
+script = ExtResource("2_amt0d")
+SizeType = 2
+
+[node name="Text" type="Label" parent="VBoxContainer/Control/Images/4-Player Damage"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 9
+text = "Loosing a combat will cost you Player Health. You can see your and other players health at the right side of your screen.
+Once your health reaches 0, you loose. The last player standing wins!"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Control/Images/4-Player Damage/Text"]
+script = ExtResource("2_amt0d")
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/Control/Images/4-Player Damage"]
+layout_mode = 2
+size_flags_vertical = 3
+texture = ExtResource("8_wte3w")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="5-Loot" type="VBoxContainer" parent="VBoxContainer/Control/Images"]
+visible = false
+layout_mode = 2
+
+[node name="Title" type="Label" parent="VBoxContainer/Control/Images/5-Loot"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "(5/10) Loot Phases"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Control/Images/5-Loot/Title"]
+script = ExtResource("2_amt0d")
+SizeType = 2
+
+[node name="Text" type="Label" parent="VBoxContainer/Control/Images/5-Loot"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 9
+text = "During some phases of the game you may choose some loot for yourself.
+Hovering over a choice will give you more information about what you will receive."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Control/Images/5-Loot/Text"]
+script = ExtResource("2_amt0d")
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/Control/Images/5-Loot"]
+layout_mode = 2
+size_flags_vertical = 3
+texture = ExtResource("8_4laqr")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="6-Items" type="VBoxContainer" parent="VBoxContainer/Control/Images"]
+visible = false
+layout_mode = 2
+
+[node name="Title" type="Label" parent="VBoxContainer/Control/Images/6-Items"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "(6/10) Items"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Control/Images/6-Items/Title"]
+script = ExtResource("2_amt0d")
+SizeType = 2
+
+[node name="Text" type="Label" parent="VBoxContainer/Control/Images/6-Items"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 9
+text = "When you choose a loot option that gives you items, they will appear in your inventory.
+You may drag those items over a unit to equip it on on that unit, improving its powers in various ways."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Control/Images/6-Items/Text"]
+script = ExtResource("2_amt0d")
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/Control/Images/6-Items"]
+layout_mode = 2
+size_flags_vertical = 3
+texture = ExtResource("9_l6r5j")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="7-Crafting" type="VBoxContainer" parent="VBoxContainer/Control/Images"]
+visible = false
+layout_mode = 2
+
+[node name="Title" type="Label" parent="VBoxContainer/Control/Images/7-Crafting"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "(7/10) Crafting"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Control/Images/7-Crafting/Title"]
+script = ExtResource("2_amt0d")
+SizeType = 2
+
+[node name="Text" type="Label" parent="VBoxContainer/Control/Images/7-Crafting"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 9
+text = "Some items are mere components, giving very weak bonuses.
+However, two components can be crafted into a full item by hovering one over another. Wait for bit to let the green border fill up, then drop it, to confirm the craft.
+Now you are left with an item that is much stronger than its components."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Control/Images/7-Crafting/Text"]
+script = ExtResource("2_amt0d")
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/Control/Images/7-Crafting"]
+layout_mode = 2
+size_flags_vertical = 3
+texture = ExtResource("10_dmhxm")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="8-UnitInfo" type="VBoxContainer" parent="VBoxContainer/Control/Images"]
+visible = false
+layout_mode = 2
+
+[node name="Title" type="Label" parent="VBoxContainer/Control/Images/8-UnitInfo"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "(8/10) Unit Info"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Control/Images/8-UnitInfo/Title"]
+script = ExtResource("2_amt0d")
+SizeType = 2
+
+[node name="Text" type="Label" parent="VBoxContainer/Control/Images/8-UnitInfo"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 9
+text = "All units do different things and have different stats.
+To find out more about one of your units, righ click it to open an inspect window.
+Right click again to close it."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Control/Images/8-UnitInfo/Text"]
+script = ExtResource("2_amt0d")
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/Control/Images/8-UnitInfo"]
+layout_mode = 2
+size_flags_vertical = 3
+texture = ExtResource("11_yfjwv")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="9-SpendingGold" type="VBoxContainer" parent="VBoxContainer/Control/Images"]
+visible = false
+layout_mode = 2
+
+[node name="Title" type="Label" parent="VBoxContainer/Control/Images/9-SpendingGold"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "(9/10) Spending Gold"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Control/Images/9-SpendingGold/Title"]
+script = ExtResource("2_amt0d")
+SizeType = 2
+
+[node name="Text" type="Label" parent="VBoxContainer/Control/Images/9-SpendingGold"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 9
+text = "While units cost gold, that is not the only way to spend it. In the shop you find a buy experience and reroll button.
+Buying experience increases your level. Each level allows you to field an additional unit and gives you greater odds of finding rare units in the shop.
+You may reroll the shop to get a new selection of buyable units by pressing the reroll button."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Control/Images/9-SpendingGold/Text"]
+script = ExtResource("2_amt0d")
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/Control/Images/9-SpendingGold"]
+layout_mode = 2
+size_flags_vertical = 3
+texture = ExtResource("12_bk5la")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="10-UpgradingUnits" type="VBoxContainer" parent="VBoxContainer/Control/Images"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="VBoxContainer/Control/Images/10-UpgradingUnits"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "(10/10) Upgrading Units"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Control/Images/10-UpgradingUnits/Title"]
+script = ExtResource("2_amt0d")
+SizeType = 2
+
+[node name="Text" type="Label" parent="VBoxContainer/Control/Images/10-UpgradingUnits"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 9
+text = "Each unit has a level. Once you own 3 of the same unit they merge into a level 2 unit.
+Owning 3 level 2 units will merge them into a level 3 unit and so on.
+Higher unit levels improve their stats and spell."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Control/Images/10-UpgradingUnits/Text"]
+script = ExtResource("2_amt0d")
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/Control/Images/10-UpgradingUnits"]
+layout_mode = 2
+size_flags_vertical = 3
+texture = ExtResource("13_hlgmg")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="NextButton" type="Button" parent="VBoxContainer/Control"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 23
+shortcut = SubResource("Shortcut_85mvj")
+text = ">"
+
+[node name="AutoFontSize" type="Node" parent="VBoxContainer/Control/NextButton"]
+script = ExtResource("2_amt0d")
+SizeType = 3
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.05
+anchor_top = 0.05
+anchor_right = 0.05
+anchor_bottom = 0.05
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 23
+text = "< Back"
+
+[node name="AutoFontSize" type="Node" parent="Button"]
+script = ExtResource("2_amt0d")
+SizeType = 3
