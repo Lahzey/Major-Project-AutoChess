@@ -67,11 +67,11 @@ public class UnitOffer : GoldCostingOffer {
     [Export] [ProtoMember(2)] public Unit Unit { get; set; }
     
     public override Texture2D GetTexture() {
-        return Unit.Type.Icon;
+        return Unit?.Type.Icon;
     }
 
     public override bool IsEnabled() {
-        return PlayerController.Current.Player.Gold >= Unit.Type.Cost;
+        return Unit != null && PlayerController.Current.Player.Gold >= Unit.Type.Cost;
     }
 
     public override bool TryPurchase() {

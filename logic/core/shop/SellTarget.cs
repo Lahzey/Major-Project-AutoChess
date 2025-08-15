@@ -20,8 +20,12 @@ public partial class SellTarget : Area2D, IUnitDropTarget {
     private bool dragging = false;
     
     public override void _Process(double delta) {
+        if (!ServerController.Instance.IsServer) {
+            SellSprite.GlobalRotation = 0; // make sure sprite does not rotate with perspective
+        }
+        
         if (setupComplete) return;
-        if (PlayerController.Current == null) return;
+        if (PlayerController.Current == null || ServerController.Instance.IsServer) return;
         
         SellSprite.Texture = IDLE_IMAGE;
         PlayerController.Current.OnDragStart += _ => OnDragStart();

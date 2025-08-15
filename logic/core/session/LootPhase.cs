@@ -296,6 +296,7 @@ public class ItemOffer : LootOption {
     }
 }
 
+[ProtoContract]
 public class ComponentOffer : LootOption {
     
     private static readonly Texture2D COMPONENT_TEXTURE = ResourceLoader.Load<Texture2D>("res://assets/ui/any_item_icon");
