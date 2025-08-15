@@ -81,9 +81,12 @@ public abstract partial class GameMode : Node {
             AddChild(phase);
             Rpc(MethodName.TriggerClientStartPhase, SerializerExtensions.Serialize(phase));
             foreach (Player player in GameSession.Instance.AlivePlayers) {
-                player.AddExperience(GetPhaseStartExperience());
-                player.AddGold(GetPhaseStartGold());
-                player.AddInterest();
+                PlayerController.GetForPlayer(player).RunInContext(() => {
+                    player.AddExperience(GetPhaseStartExperience());
+                    player.AddGold(GetPhaseStartGold());
+                    player.AddInterest();
+                    player.Shop.SetOffers(player.Shop.GenerateShopOffers());
+                });
             }
         } else {
             PlayerUI.Instance.GamePhaseControls.SetPhaseControls(null);

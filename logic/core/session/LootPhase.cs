@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using MPAutoChess.logic.core.item;
+using MPAutoChess.logic.core.item.consumable;
 using MPAutoChess.logic.core.networking;
 using MPAutoChess.logic.core.player;
 using MPAutoChess.logic.core.shop;
@@ -18,10 +19,17 @@ public partial class LootPhase : GamePhase, Choosable {
     
     private static readonly Texture2D ICON = ResourceLoader.Load<Texture2D>("res://assets/ui/phases/loot.png");
     private static readonly PackedScene LOOT_UI_SCENE = ResourceLoader.Load<PackedScene>("res://ui/LootPhaseUI.tscn");
+    
+    private const int MIN_POWER_LEVEL = 3; // minimum power level for loot options
+    private const int MAX_POWER_LEVEL = 30; // maximum power level for loot options
+    private const float POWER_LEVEL_CURVE = 5f; // the lower this value, the more likely that higher power levels are chosen. 1 = all power levels are equally likely
+    private const int LOOT_OPTIONS_PER_PLAYER = 3;
 
     public const int POWER_PER_GOLD = 1;
     public const int POWER_PER_COMPONENT = 5;
     public const int POWER_PER_ITEM = 9;
+    public const int POWER_PER_ITEM_UPGRADE = 15;
+    public const int POWER_PER_UTILITY = 3;
 
     [ProtoMember(1)] private Dictionary<long, LootOption[]> options = new Dictionary<long, LootOption[]>(); // account ID to loot options mapping (saves us from serializing a duplicate of each Player since reference tracking is not turned on due to reliability issues)
     [ProtoMember(2)] private int powerLevel;
@@ -31,12 +39,15 @@ public partial class LootPhase : GamePhase, Choosable {
 
     public static LootPhase Random() {
         LootPhase lootPhase = new LootPhase();
-        lootPhase.powerLevel = GameSession.Instance.Random.Next(5, 51); // Random power level between 1 and 100
+        lootPhase.powerLevel = Mathf.RoundToInt(Mathf.Pow(GameSession.Instance.Random.NextSingle(), POWER_LEVEL_CURVE) * (MAX_POWER_LEVEL - MIN_POWER_LEVEL) + MIN_POWER_LEVEL);
+
+        List<LootOption> possibleLootOptions = GetAllPossibleLootOptions(lootPhase.powerLevel);
         foreach (Player player in GameSession.Instance.AlivePlayers) {
-            LootOption[] lootOptions = new LootOption[] {
-                new GoldOffer(lootPhase.powerLevel),
-                new ItemOffer(lootPhase.powerLevel)
-            };
+            possibleLootOptions.Shuffle(GameSession.Instance.Random);
+            LootOption[] lootOptions = new LootOption[Mathf.Min(LOOT_OPTIONS_PER_PLAYER, possibleLootOptions.Count)];
+            for (int i = 0; i < lootOptions.Length; i++) {
+                lootOptions[i] = possibleLootOptions[i].New(lootPhase.powerLevel);
+            }
             lootPhase.options[player.Account.Id] = lootOptions;
         }
         return lootPhase;
@@ -130,11 +141,38 @@ public partial class LootPhase : GamePhase, Choosable {
             lootPhaseUI = null;
         }
     }
+
+    private static List<LootOption> GetAllPossibleLootOptions(int powerLevel) {
+        List<LootOption> options = new List<LootOption>();
+        
+        options.Add(new GoldOffer(powerLevel));
+        
+        if (powerLevel >= POWER_PER_COMPONENT && powerLevel <= (POWER_PER_COMPONENT*5)) {
+            options.Add(new ComponentOffer(powerLevel));
+        }
+        
+        if (powerLevel >= POWER_PER_ITEM) {
+            options.Add(new ItemOffer(powerLevel));
+        }
+        
+        if (powerLevel >= POWER_PER_ITEM_UPGRADE) {
+            options.Add(new ItemUpgradeOffer(powerLevel));
+        }
+        
+        if (powerLevel >= POWER_PER_UTILITY && powerLevel <= (POWER_PER_COMPONENT*3)) {
+            options.Add(new UtilityOffer(powerLevel));
+        }
+        
+        return options;
+    }
 }
 
 [ProtoContract]
 [ProtoInclude(100, typeof(GoldOffer))]
 [ProtoInclude(101, typeof(ItemOffer))]
+[ProtoInclude(102, typeof(ComponentOffer))]
+[ProtoInclude(103, typeof(ItemUpgradeOffer))]
+[ProtoInclude(104, typeof(UtilityOffer))]
 public abstract class LootOption {
 
     public virtual Func<bool> IsEnabledFunc() {
@@ -146,7 +184,8 @@ public abstract class LootOption {
     public abstract string GetName();
     public abstract string GetDescription();
     public abstract void Choose();
-    
+    public abstract LootOption New(int powerLevel);
+
 }
 
 [ProtoContract]
@@ -180,6 +219,10 @@ public class GoldOffer : LootOption {
     
     public override void Choose() {
         PlayerController.Current.Player.AddGold(goldAmount);
+    }
+
+    public override LootOption New(int powerLevel) {
+        return new GoldOffer(powerLevel);
     }
 }
 
@@ -246,10 +289,159 @@ public class ItemOffer : LootOption {
             PlayerController.Current.Player.Inventory.AddItem(new Item(itemType));
         }
         PlayerController.Current.Player.AddGold(leftOverGold);
-        
-        // for testing
-        PlayerController.Current.Player.Inventory.AddItem(new Item(GD.Load<ItemType>("res://assets/items/juggerblade.tres")));
-        PlayerController.Current.Player.Inventory.AddItem(new Item(GameSession.Instance.GetItemConfig().GetRandomItemType(ItemCategory.COMPONENT)));
-        PlayerController.Current.Player.Inventory.AddItem(new Item(GameSession.Instance.GetItemConfig().GetRandomItemType(ItemCategory.COMPONENT)));
+    }
+
+    public override LootOption New(int powerLevel) {
+        return new ItemOffer(powerLevel);
+    }
+}
+
+public class ComponentOffer : LootOption {
+    
+    private static readonly Texture2D COMPONENT_TEXTURE = ResourceLoader.Load<Texture2D>("res://assets/ui/any_item_icon");
+
+    [ProtoMember(1)] private int componentCount;
+    [ProtoMember(2)] private int leftOverGold; // any power level that is left over after choosing components is given as gold
+
+    private ComponentOffer() { } // For ProtoBuf
+    
+    public ComponentOffer(int powerLevel) {
+        SetPowerLevel(powerLevel);
+    }
+
+    public sealed override void SetPowerLevel(int powerLevel) {
+        componentCount = powerLevel / LootPhase.POWER_PER_COMPONENT;
+        int leftOver = powerLevel % LootPhase.POWER_PER_COMPONENT;
+        leftOverGold = leftOver / LootPhase.POWER_PER_GOLD;
+    }
+
+    public override Texture2D GetTexture() {
+        return COMPONENT_TEXTURE;
+    }
+    
+    public override string GetName() {
+        return "Components";
+    }
+    
+    public override string GetDescription() {
+        string description = "Gain " + componentCount + " component" + (componentCount > 1 ? "s" : "");
+        if (leftOverGold > 0) {
+            description += " and " + leftOverGold + " gold";
+        }
+        description += ".";
+        return description;
+    }
+    
+    public override void Choose() {
+        for (int i = 0; i < componentCount; i++) {
+            ItemType itemType = GameSession.Instance.GetItemConfig().GetRandomItemType(ItemCategory.COMPONENT);
+            PlayerController.Current.Player.Inventory.AddItem(new Item(itemType));
+        }
+        PlayerController.Current.Player.AddGold(leftOverGold);
+    }
+
+    public override LootOption New(int powerLevel) {
+        return new ComponentOffer(powerLevel);
+    }
+}
+
+[ProtoContract]
+public class ItemUpgradeOffer : LootOption {
+    
+    private static readonly Texture2D UPGRADE_TEXTURE = ResourceLoader.Load<Texture2D>("res://assets/ui/item_upgrade.png");
+
+    [ProtoMember(1)] private int upgradeCount;
+    [ProtoMember(2)] private int leftOverGold; // any power level that is left over after choosing items is given as gold
+
+    private ItemUpgradeOffer() { } // For ProtoBuf
+    
+    public ItemUpgradeOffer(int powerLevel) {
+        SetPowerLevel(powerLevel);
+    }
+
+    public sealed override void SetPowerLevel(int powerLevel) {
+        upgradeCount = powerLevel / LootPhase.POWER_PER_ITEM_UPGRADE;
+        int leftOver = powerLevel % LootPhase.POWER_PER_ITEM_UPGRADE;
+        leftOverGold = leftOver / LootPhase.POWER_PER_GOLD;
+    }
+
+    public override Texture2D GetTexture() {
+        return UPGRADE_TEXTURE;
+    }
+    
+    public override string GetName() {
+        return "Item Upgrade";
+    }
+    
+    public override string GetDescription() {
+        string description = "Gain " + upgradeCount + " item upgrade" + (upgradeCount > 1 ? "s" : "");
+        if (leftOverGold > 0) {
+            description += " and " + leftOverGold + " gold";
+        }
+        description += ".";
+        return description;
+    }
+    
+    public override void Choose() {
+        Consumable consumable = Consumable.Get<ItemUpgrade>();
+        PlayerController.Current.Player.SetConsumableCount(consumable, PlayerController.Current.Player.GetConsumableCount(consumable) + (uint) upgradeCount);
+        PlayerController.Current.Player.AddGold(leftOverGold);
+    }
+
+    public override LootOption New(int powerLevel) {
+        return new ItemUpgradeOffer(powerLevel);
+    }
+}
+
+[ProtoContract]
+public class UtilityOffer : LootOption {
+    
+    private static readonly Texture2D UTILITY_TEXTURE = ResourceLoader.Load<Texture2D>("res://assets/ui/magnet.png");
+
+    [ProtoMember(1)] private int utilityCount;
+    [ProtoMember(2)] private int leftOverGold; // any power level that is left over after choosing items is given as gold
+
+    private UtilityOffer() { } // For ProtoBuf
+    
+    public UtilityOffer(int powerLevel) {
+        SetPowerLevel(powerLevel);
+    }
+
+
+    public sealed override void SetPowerLevel(int powerLevel) {
+        utilityCount = powerLevel / LootPhase.POWER_PER_UTILITY;
+        int leftOver = powerLevel % LootPhase.POWER_PER_UTILITY;
+        leftOverGold = leftOver / LootPhase.POWER_PER_GOLD;
+    }
+    
+    public override Texture2D GetTexture() {
+        return UTILITY_TEXTURE;
+    }
+    
+    public override string GetName() {
+        return "Nifty Utilities";
+    }
+    
+    public override string GetDescription() {
+        string description = "Gain " + utilityCount + " nifty utilit" + (utilityCount > 1 ? "ies" : "y");
+        if (leftOverGold > 0) {
+            description += " and " + leftOverGold + " gold";
+        }
+        description += ".";
+        return description;
+    }
+    
+    public override void Choose() {
+        int magnetCount = Mathf.FloorToInt(utilityCount / 2f);
+        int rerollCount = utilityCount - magnetCount;
+        Consumable magnet = Consumable.Get<ItemRemover>();
+        Consumable reroll = Consumable.Get<ItemReroll>();
+        PlayerController.Current.Player.SetConsumableCount(magnet, PlayerController.Current.Player.GetConsumableCount(magnet) + (uint) magnetCount);
+        PlayerController.Current.Player.SetConsumableCount(reroll, PlayerController.Current.Player.GetConsumableCount(reroll) + (uint) rerollCount);
+        PlayerController.Current.Player.AddGold(leftOverGold);
+    }
+    
+    public override LootOption New(int powerLevel) {
+        return new UtilityOffer(powerLevel);
     }
 }

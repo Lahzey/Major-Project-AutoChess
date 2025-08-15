@@ -104,7 +104,7 @@ public partial class ServerController : Node {
             GD.Print($"Added player {player.Account.Name} with id {player.Account.Id} to the game.");
         }
         
-        GameSession.Initialize(new Season0(), gameMode, Players); // TODO: read season and mode from command line arguments
+        GameSession.Initialize(new Season0(), gameMode, Players);
         GD.Print("Game session initialized with " + Players.Length + " players.");  
     }
 

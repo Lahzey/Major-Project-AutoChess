@@ -36,7 +36,7 @@ public partial class LobbyController : Node {
         if (ws == null) return;
         ws.Poll();
 
-        while (ws.GetAvailablePacketCount() > 0) {
+        while (ws != null && ws.GetAvailablePacketCount() > 0) { // start game is executed in this loop, which means exit tree may also effectively run in this loop
             string packet = ws.GetPacket().GetStringFromUtf8();
             GD.Print("Received: ", packet);
 

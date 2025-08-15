@@ -41,8 +41,7 @@ public class Shop : IIdentifiable {
     }
 
     public float[] GetNormalizedRarityOdds() {
-        // TODO calculate from player level and fire event
-        float[] odds = { 40, 30, 15, 10, 5 };
+        float[] odds = GetShopOdds(PlayerController.Current.Player.Level);
 
         float totalOdds = 0;
         foreach (float odd in odds) totalOdds += odd;
@@ -98,5 +97,38 @@ public class Shop : IIdentifiable {
 
     public int IndexOf(ShopOffer offer) {
         return Offers.IndexOf(offer);
+    }
+
+
+    private static float[] GetShopOdds(int playerLevel) {
+        playerLevel = Math.Clamp(playerLevel, 1, 12);
+        switch (playerLevel) {
+            case 1:
+                return new float[] { 90, 10, 0, 0, 0 };
+            case 2:
+                return new float[] { 75, 25, 0, 0, 0 };
+            case 3:
+                return new float[] { 60, 30, 10, 0, 0 };
+            case 4:
+                return new float[] { 55, 32, 13, 0, 0 };
+            case 5:
+                return new float[] { 40, 35, 20, 5, 0 };
+            case 6:
+                return new float[] { 35, 32, 23, 10, 0 };
+            case 7:
+                return new float[] { 22, 27, 35, 15, 1 };
+            case 8:
+                return new float[] { 18, 22, 30, 22, 8 };
+            case 9:
+                return new float[] { 10, 15, 25, 35, 15 };
+            case 10:
+                return new float[] { 8, 12, 20, 40, 20 };
+            case 11:
+                return new float[] { 7, 8, 15, 40, 30 };
+            case 12:
+                return new float[] { 7, 8, 10, 35, 40 };
+        }
+
+        return null;
     }
 }

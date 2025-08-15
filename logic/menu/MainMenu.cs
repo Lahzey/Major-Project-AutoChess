@@ -8,7 +8,6 @@ public partial class MainMenu : Control {
     
     [Export] public Button QuitButton { get; set; }
     [Export] public Button TutorialButton { get; set; }
-    [Export] public TextureButton FullScreenButton { get; set; }
     
     [Export] public LineEdit PlayerNameInput { get; set; }
     [Export] public Button ConnectButton { get; set; }
@@ -31,10 +30,6 @@ public partial class MainMenu : Control {
         
         TutorialButton.Pressed += () => {
             GetTree().ChangeSceneToPacked(ResourceLoader.Load<PackedScene>("res://scenes/TutorialScene.tscn"));
-        };
-
-        FullScreenButton.Toggled += toggled => {
-            DisplayServer.WindowSetMode(toggled ? DisplayServer.WindowMode.Fullscreen : DisplayServer.WindowMode.Windowed);
         };
 
         PlayerNameInput.TextChanged += text => {

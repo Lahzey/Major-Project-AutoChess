@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://rkx14xc85mum"]
+[gd_scene load_steps=15 format=3 uid="uid://rkx14xc85mum"]
 
 [ext_resource type="Script" path="res://logic/menu/MainMenu.cs" id="1_b7dip"]
 [ext_resource type="PackedScene" uid="uid://dwn3j7yo8jn1a" path="res://scenes/InGameScene.tscn" id="2_ldoys"]
@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://bh2s0qbg8nv1l" path="res://assets/ui/help.png" id="7_454xy"]
 [ext_resource type="Texture2D" uid="uid://rw2ag5tu1iv3" path="res://assets/ui/fullscreen.png" id="9_lfj4a"]
 [ext_resource type="Texture2D" uid="uid://beryfkc0uk75b" path="res://assets/ui/fullscreen_hover.png" id="10_5s20g"]
+[ext_resource type="Script" path="res://logic/menu/FullScreenButton.cs" id="11_7qkml"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rign2"]
 content_margin_left = 20.0
@@ -27,7 +28,7 @@ keycode = 4194342
 [sub_resource type="Shortcut" id="Shortcut_xmvsb"]
 events = [SubResource("InputEventKey_40t6d")]
 
-[node name="MainMenu" type="Control" node_paths=PackedStringArray("QuitButton", "TutorialButton", "FullScreenButton", "PlayerNameInput", "ConnectButton", "StartGameButton", "LobbyController")]
+[node name="MainMenu" type="Control" node_paths=PackedStringArray("QuitButton", "TutorialButton", "PlayerNameInput", "ConnectButton", "StartGameButton", "LobbyController")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -37,7 +38,6 @@ grow_vertical = 2
 script = ExtResource("1_b7dip")
 QuitButton = NodePath("QuitButtonContainer/QuitButton")
 TutorialButton = NodePath("TutorialButtonContainer/TutorialButton")
-FullScreenButton = NodePath("FullScreenButton")
 PlayerNameInput = NodePath("PlayerNameInput")
 ConnectButton = NodePath("ConnectButton")
 StartGameButton = NodePath("PlayButton")
@@ -272,4 +272,5 @@ texture_pressed = ExtResource("10_5s20g")
 texture_hover = ExtResource("10_5s20g")
 ignore_texture_size = true
 stretch_mode = 5
+script = ExtResource("11_7qkml")
 metadata/_edit_use_anchors_ = true

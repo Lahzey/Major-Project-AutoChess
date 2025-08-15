@@ -30,7 +30,7 @@ public partial class Player : Node2D {
     [Export] [ProtoMember(4)] public int Experience { get; private set; }
     [Export] [ProtoMember(5)] public int Level { get; private set; } = 1;
     [Export] [ProtoMember(6)] public int Gold { get; private set; }
-    [Export] [ProtoMember(7)] public int FreeRerolls { get; set; } = 10; // TODO reset to 0 (just for testing)
+    [Export] [ProtoMember(7)] public int FreeRerolls { get; set; }
     [ProtoMember(8)] public Shop Shop { get; private set; }
 
     public bool Dead => CurrentHealth <= 0;
@@ -175,6 +175,7 @@ public partial class Player : Node2D {
     
     public void MoveToTemporaryBench(Unit unit) {
         // TODO: Implement logic to move the unit to a temporary bench
+        unit.Sell();
     }
 
     public void TakeDamage(float damage, Player? source) {

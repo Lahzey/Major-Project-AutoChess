@@ -76,7 +76,7 @@ public partial class CombatPhase : GamePhase {
     }
     
     public override void Start() {
-        RemainingTime = 5; // TODO swap back to 30
+        RemainingTime = 30;
     }
 
     public override bool IsFinished() {

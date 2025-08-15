@@ -25,7 +25,8 @@ public class UnitCloner : Consumable {
             SingleUnitSlot? targetSlot = PlayerController.Current.Player.Bench.GetFirstFreeSlot();
             Unit createdUnit = UnitPool.For(unitInstance.Unit.Type).TryTakeUnit(unitInstance.Unit.Type, true);
             if (targetSlot != null) targetSlot.AddUnit(createdUnit, Vector2.Zero);
-            else PlayerController.Current.Player.MoveToTemporaryBench(createdUnit);
+            // else PlayerController.Current.Player.MoveToTemporaryBench(createdUnit);
+            else return false;
             return true;
         }
         
